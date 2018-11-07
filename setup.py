@@ -30,7 +30,7 @@ setup(
     description='A Python computer vision library for animal behavior',
     long_description=long_description,
     long_description_content_type="text/markdown",
-    requires=['numpy'],
+    requires=['numpy', 'darr', 'opencv'],
     install_requires=['numpy'],
     data_files=[("", ["LICENSE"])],
     classifiers=[

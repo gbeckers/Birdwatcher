@@ -9,6 +9,8 @@ behavior.
 It is being used in our lab but not stable enough yet for general use. More
 info will be provided when a first release is appropriate.
 
+Code can be found on GitHub: https://github.com/gbeckers/Birdwatcher
+
 It is open source and freely available under the `New BSD License
 <https://opensource.org/licenses/BSD-3-Clause>`__ terms.
 
