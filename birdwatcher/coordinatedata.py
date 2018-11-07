@@ -1,21 +1,23 @@
+from contextlib import contextmanager
 from pathlib import Path
 import numpy as np
 import tarfile
 
 from darr import RaggedArray, delete_raggedarray
 
-from .videoinput import VideoFile
+from .utils import tempdir
 
-__all__ = ['CoordinateData']
+__all__ = ['CoordinateData', 'open_archivedcoordinatedata']
 
 class CoordinateData(RaggedArray):
 
-    def __init__(self, path):
+    def __init__(self, path, accessmode='r'):
 
-        super().__init__(path=path)
+        super().__init__(path=path, accessmode=accessmode)
         md = dict(self.metadata)
-        self.width = md['videowidth']
-        self.height = md['videoheight']
+        self.width = md['videofile_width']
+        self.height = md['videofile_height']
+
 
     def get_frame(self, frameno):
         frame = np.zeros((self.height, self.width), dtype=np.bool)
@@ -29,6 +31,20 @@ class CoordinateData(RaggedArray):
             tf.add(self.path)
         if remove_source:
             delete_raggedarray(self)
+
+@ contextmanager
+def open_archivedcoordinatedata(path):
+    path = Path(path)
+    if not path.suffix == '.xz':
+        raise OSError(f'{path} does not seem to be archived coordinate data')
+
+    with tempdir() as dirname:
+        tar = tarfile.open(path)
+        tar.extractall(path=dirname)
+        tar.close()
+        p = path.parts[-1].split('.tar.xz')[0]
+        yield CoordinateData(Path(dirname)/Path(p))
+
 
 # class CoordinateAnalyis(CoordinateH5Data):
 #

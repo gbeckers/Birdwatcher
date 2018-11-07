@@ -1,2 +1,5 @@
 numpy>=1.13.0
 darr>=0.1.8
+matplotlib
+opencv-python
+opencv-contrib-python

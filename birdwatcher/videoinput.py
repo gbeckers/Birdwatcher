@@ -2,7 +2,8 @@ import sys
 from contextlib import contextmanager
 import pathlib
 import cv2 as cv
-from darr.vlarraylist import create_vlarraylist
+from darr import create_raggedarray
+from .coordinatedata import CoordinateData
 
 __all__ = ['VideoFile']
 
@@ -86,9 +87,10 @@ class VideoFile():
             metadata = {}
         for key, item in (self._get_videoproperties().items()):
             metadata[f'videofile_{key}'] = item
-        return create_vlarraylist(fpath, atom=(2,), dtype='uint16',
-                                  metadata=metadata, accessmode='r+',
-                                  overwrite=overwrite)
+        ra = create_raggedarray(fpath, atom=(2,), dtype='uint16',
+                                metadata=metadata, accessmode='r+',
+                                overwrite=overwrite)
+        return CoordinateData(ra.path, accessmode='r+')
 
     @contextmanager
     def open_videowriter(self, s, path=None):
