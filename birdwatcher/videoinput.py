@@ -2,7 +2,6 @@ import sys
 from contextlib import contextmanager
 import pathlib
 import cv2 as cv
-import tables
 from darr.vlarraylist import create_vlarraylist
 
 __all__ = ['VideoFile']
