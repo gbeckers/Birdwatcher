@@ -2,8 +2,7 @@ import sys
 from contextlib import contextmanager
 import pathlib
 import cv2 as cv
-from darr import create_raggedarray
-from .coordinatedata import CoordinateData
+
 
 __all__ = ['VideoFile']
 
@@ -16,7 +15,7 @@ class VideoFile():
         self.filepath = fp = pathlib.Path(filepath)
         if not fp.exists():
             raise FileNotFoundError(f'"{fp.name}" does not exist')
-        vp = self._get_videoproperties()
+        vp = self.get_properties()
         self.fourcccode = vp['fourcc']
         self.fourcc = cv.VideoWriter_fourcc(*self.fourcccode)
         self.shape = vp['shape']
@@ -25,7 +24,7 @@ class VideoFile():
         self.format = vp['format']
         self.framecount = vp['framecount']
     
-    def _get_videoproperties(self):
+    def get_properties(self, affix=None):
         d = {}
         cap = cv.VideoCapture(str(self.filepath))
         d['width'] = int(cap.get(cv.CAP_PROP_FRAME_WIDTH))
@@ -39,6 +38,11 @@ class VideoFile():
         d['filename'] = self.filepath.parts[-1]
         d['version'] = self._version
         cap.release()
+        if affix is not None:
+            ad = {}
+            for key, item in (d.items()):
+                ad[f'videofile_{key}'] = item
+            d = ad
         return d
     
     def derive_filepath(self, s, suffix=None, path=None):
@@ -80,17 +84,6 @@ class VideoFile():
                 cap.release()
                 break
         cap.release()
-
-    def create_coordarray(self, s, path=None, metadata=None, overwrite=False):
-        fpath = self.derive_filepath(s, suffix='.drarr', path=path)
-        if metadata is None:
-            metadata = {}
-        for key, item in (self._get_videoproperties().items()):
-            metadata[f'videofile_{key}'] = item
-        ra = create_raggedarray(fpath, atom=(2,), dtype='uint16',
-                                metadata=metadata, accessmode='r+',
-                                overwrite=overwrite)
-        return CoordinateData(ra.path, accessmode='r+')
 
     @contextmanager
     def open_videowriter(self, s, path=None):

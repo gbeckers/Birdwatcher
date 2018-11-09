@@ -11,7 +11,7 @@ __all__ = ['CoordinateData', 'open_archivedcoordinatedata']
 
 class CoordinateData(RaggedArray):
 
-    def __init__(self, path, accessmode='r'):
+    def __init__(self, path, metadata=None, accessmode='r'):
 
         super().__init__(path=path, accessmode=accessmode)
         md = dict(self.metadata)
@@ -30,7 +30,9 @@ class CoordinateData(RaggedArray):
         with tarfile.open(apath, "w:xz") as tf:
             tf.add(self.path)
         if remove_source:
+            self.accessmode = 'r+'
             delete_raggedarray(self)
+        return Path(apath)
 
 @ contextmanager
 def open_archivedcoordinatedata(path):

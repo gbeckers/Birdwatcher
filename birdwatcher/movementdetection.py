@@ -1,7 +1,13 @@
+import os
+from pathlib import Path
 import numpy as np
 import cv2 as cv
+import darr
 
-__all__ = ['DetectMovementKnn']
+from .videoinput import VideoFile
+from. coordinatedata import CoordinateData
+
+__all__ = ['detect_movementknn', 'batch_detect_movementknn']
 
 class DetecMovement():
     
@@ -169,3 +175,60 @@ class DetectMovementKnn(DetecMovement):
 #         else:
 #             thresh = thresh_rect
 #         yield frame, thresh, idx
+
+
+def batch_detect_movementknn(videofilepaths, nprocesses=6, *args, **kwargs):
+    """The reason for having a special batch function, instead of just
+    applying functions in a loop, is that compression of coordinate results
+    takes a long time and is single-threaded. We therefore do this in
+    parallel. Use the `nprocesses` parameter to specify the number of cores
+    devoted to this.
+
+    """
+    from multiprocessing import Pool
+
+    def f(m):
+        return m(True)
+
+    tobearchived = []
+    for i, videofilepath in enumerate(videofilepaths):
+        cd, cc, cm = detect_movementknn(videofilepath, *args, **kwargs)
+        tobearchived.append(cd)
+        if (len(tobearchived) == nprocesses) or (
+                i == (len(videofilepaths) - 1)):
+            with Pool(processes=nprocesses) as pool:
+                pool.imap_unordered(f, tobearchived)
+            tobearchived = []
+
+
+def coordcount(coords):
+    return np.array([idx.shape[0] for idx in coords.iter_arrays()])
+
+def coordmean(coords):
+        return np.array([idx.mean(0) for idx in coords.iter_arrays()])
+
+def detect_movementknn(videofilepath, morphologyex=2, analysispath='.',
+                       ignore_rectcoord=None):
+
+    vf = VideoFile(videofilepath)
+    analysispath = Path(analysispath) / Path(
+        f'{vf.filepath.stem}_movementknn_me{morphologyex}')
+    if not analysispath.exists():
+        os.mkdir(analysispath)
+    dm = DetectMovementKnn(morphologyex=morphologyex,
+                              ignore_rectcoord=ignore_rectcoord)
+    metadata = vf.get_properties(affix='video_')
+    metadata.update(dm.get_params())
+    coords = darr.create_raggedarray(analysispath / 'coordinates.drarr',
+                                     atom=(2,),
+                                     metadata=metadata, overwrite=True)
+    with coords._view():
+        for i, frame in enumerate(vf.iter_frames()):
+            thresh, idx = dm.apply(frame)
+            coords.append(idx)
+    cc = darr.asarray(analysispath / 'coordscount.darr', coordcount(coords),
+                      metadata=metadata, overwrite=True)
+    cm = darr.asarray(analysispath / 'coordsmean.darr', coordmean(coords),
+                      metadata=metadata, overwrite=True)
+    cd = CoordinateData(coords.path)
+    return cd, cc, cm
