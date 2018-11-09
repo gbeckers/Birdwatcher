@@ -5,7 +5,7 @@ import cv2 as cv
 import darr
 
 from .videoinput import VideoFile
-from. coordinatearrays import CoordinateArrays
+from. coordinatearrays import create_coordarray
 
 __all__ = ['detect_movementknn', 'batch_detect_movementknn']
 
@@ -218,20 +218,17 @@ def detect_movementknn(videofilepath, morphologyex=2, analysispath='.',
     dm = DetectMovementKnn(morphologyex=morphologyex,
                            ignore_rectcoord=ignore_rectcoord,
                            ignore_firstnframes=ignore_firstnframes, **kwargs)
-    metadata = vf.get_properties(affix='video_')
-    metadata.update(dm.get_params())
-    coords = darr.create_raggedarray(analysispath / 'coordinates.drarr',
-                                     atom=(2,),
-                                     metadata=metadata, overwrite=True)
-    with coords._view():
+    metadata = dm.get_params()
+    cd = create_coordarray(analysispath / 'coordinates.drarr',
+                           videofile=vf, metadata=metadata, overwrite=True)
+    with cd._view():
         for i, frame in enumerate(vf.iter_frames()):
             thresh, idx = dm.apply(frame)
-            coords.append(idx)
-    cc = darr.asarray(analysispath / 'coordscount.darr', coordcount(coords),
+            cd.append(idx)
+    cc = darr.asarray(analysispath / 'coordscount.darr', coordcount(cd),
                       metadata=metadata, overwrite=True)
-    cm = darr.asarray(analysispath / 'coordsmean.darr', coordmean(coords),
+    cm = darr.asarray(analysispath / 'coordsmean.darr', coordmean(cd),
                       metadata=metadata, overwrite=True)
-    cd = CoordinateArrays(coords.path)
     return cd, cc, cm
 
 
