@@ -92,7 +92,8 @@ class DetectMovementKnn(DetecMovement):
     _version = get_versions()['version']
     
     def __init__(self, history=1, knnsamples=10, nsamples=6, dist2threshold=500, 
-                 learningrate=-1, morphologyex=2, focus_rectcoord=None, ignore_firstnframes=50,
+                 learningrate=-1, morphologyex=2, focus_rectcoord=None,
+                 ignore_firstnframes=50,
                  ignore_rectcoord=None, downscale=None, detect_shadows=False):
         self.history = history
         self.knnsamples = knnsamples
@@ -207,7 +208,7 @@ def coordmean(coords):
         return np.array([idx.mean(0) for idx in coords.iter_arrays()])
 
 def detect_movementknn(videofilepath, morphologyex=2, analysispath='.',
-                       ignore_rectcoord=None, ignore_firstnframes=None,
+                       ignore_rectcoord=None, ignore_firstnframes=50,
                        **kwargs):
 
     vf = VideoFile(videofilepath)

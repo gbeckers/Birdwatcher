@@ -39,7 +39,7 @@ class VideoFile():
         if affix is not None:
             ad = {}
             for key, item in (d.items()):
-                ad[f'videofile_{key}'] = item
+                ad[f'{affix}{key}'] = item
             d = ad
         return d
     
