@@ -8,8 +8,7 @@ __all__ = ['VideoFile']
 
 
 class VideoFile():
-    
-    _version = '0.1.0'
+
     
     def __init__(self, filepath):
         self.filepath = fp = pathlib.Path(filepath)
@@ -36,7 +35,6 @@ class VideoFile():
         d['format'] = cap.get(cv.CAP_PROP_FORMAT)
         d['duration'] = d['framecount'] / d['framerate']
         d['filename'] = self.filepath.parts[-1]
-        d['version'] = self._version
         cap.release()
         if affix is not None:
             ad = {}

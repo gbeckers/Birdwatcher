@@ -1,22 +1,35 @@
+"""This module provides objects and functions for coordinate data.
+Coordinates are pixel positions (x,y). This is a convenient way of storing
+output from image algorithms that determine whether or not a pixel is
+categorized as something (e.g. crossing some threshold). Since the number of
+pixels per image in a video is different, we use disk-based ragged arrays
+from the python library Darr to store them. They can be archived in
+compressed form (lzma) when data is large.
+
+"""
+
+
 from contextlib import contextmanager
 from pathlib import Path
 import numpy as np
 import tarfile
 
-from darr import RaggedArray, delete_raggedarray
+from darr import RaggedArray, delete_raggedarray, create_raggedarray
 
+from ._version import get_versions
 from .utils import tempdir
 
-__all__ = ['CoordinateData', 'open_archivedcoordinatedata']
+__all__ = ['CoordinateArrays', 'open_archivedcoordinatedata',
+           'create_coordarray']
 
-class CoordinateData(RaggedArray):
+# fixme, should we allow for 3 values: (x, y, val)?
+class CoordinateArrays(RaggedArray):
 
-    def __init__(self, path, metadata=None, accessmode='r'):
-
+    def __init__(self, path, accessmode='r'):
         super().__init__(path=path, accessmode=accessmode)
         md = dict(self.metadata)
-        self.width = md['videofile_width']
-        self.height = md['videofile_height']
+        self.width = md['video_width']
+        self.height = md['video_height']
 
 
     def get_frame(self, frameno):
@@ -34,6 +47,19 @@ class CoordinateData(RaggedArray):
             delete_raggedarray(self)
         return Path(apath)
 
+
+def create_coordarray(path, videofile,  metadata=None, overwrite=True):
+
+    if metadata is None:
+        metadata = {}
+    metadata.update(videofile.get_properties(affix='video_'))
+    metadata.update({'birdwatcher_version': get_versions()['version']})
+    coords = create_raggedarray(path, atom=(2,), metadata=metadata,
+                                overwrite=overwrite)
+    return CoordinateArrays(coords, accessmode='r+')
+
+
+
 @ contextmanager
 def open_archivedcoordinatedata(path):
     path = Path(path)
@@ -45,7 +71,7 @@ def open_archivedcoordinatedata(path):
         tar.extractall(path=dirname)
         tar.close()
         p = path.parts[-1].split('.tar.xz')[0]
-        yield CoordinateData(Path(dirname)/Path(p))
+        yield CoordinateArrays(Path(dirname) / Path(p))
 
 
 # class CoordinateAnalyis(CoordinateH5Data):

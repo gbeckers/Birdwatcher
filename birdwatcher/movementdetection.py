@@ -5,7 +5,7 @@ import cv2 as cv
 import darr
 
 from .videoinput import VideoFile
-from. coordinatedata import CoordinateData
+from. coordinatearrays import CoordinateArrays
 
 __all__ = ['detect_movementknn', 'batch_detect_movementknn']
 
@@ -194,8 +194,7 @@ def batch_detect_movementknn(videofilepaths, nprocesses=6, *args, **kwargs):
     for i, videofilepath in enumerate(videofilepaths):
         cd, cc, cm = detect_movementknn(videofilepath, *args, **kwargs)
         tobearchived.append(cd)
-        if (len(tobearchived) == nprocesses) or (
-                i == (len(videofilepaths) - 1)):
+        if (len(tobearchived) == nprocesses) or (i == (len(videofilepaths) - 1)):
             with Pool(processes=nprocesses) as pool:
                 pool.imap_unordered(f, tobearchived)
             tobearchived = []
@@ -232,5 +231,15 @@ def detect_movementknn(videofilepath, morphologyex=2, analysispath='.',
                       metadata=metadata, overwrite=True)
     cm = darr.asarray(analysispath / 'coordsmean.darr', coordmean(coords),
                       metadata=metadata, overwrite=True)
-    cd = CoordinateData(coords.path)
+    cd = CoordinateArrays(coords.path)
     return cd, cc, cm
+
+
+def calc_meanframe(videofilepath):
+    vf = VideoFile(videofilepath)
+    meanframe = vf.get_framebynumber(0).astype('float64')
+    meanframe[:] = 0.0
+    for i, frame in enumerate(vf.iter_frames()):
+        meanframe += frame
+    meanframe /= i
+    return meanframe
