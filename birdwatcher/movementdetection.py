@@ -6,12 +6,13 @@ import darr
 
 from .videoinput import VideoFile
 from. coordinatearrays import create_coordarray
+from ._version import get_versions
 
 __all__ = ['detect_movementknn', 'batch_detect_movementknn']
 
 class DetecMovement():
     
-    _version = '0.1.0'
+    _version = get_versions()['version']
     
     def __init__(self, bgsubtractor, learningrate=-1, ignore_firstnframes=0, 
                  focus_rectcoord=None, ignore_rectcoord=None, downscale=None, 
@@ -85,11 +86,10 @@ class DetecMovement():
             params.update(self.bgsubtractorparams)
         return params
 
-        
-        
+
 class DetectMovementKnn(DetecMovement):
     
-    _version = '0.1.1'
+    _version = get_versions()['version']
     
     def __init__(self, history=1, knnsamples=10, nsamples=6, dist2threshold=500, 
                  learningrate=-1, morphologyex=2, focus_rectcoord=None, ignore_firstnframes=50,
