@@ -208,7 +208,8 @@ def coordmean(coords):
         return np.array([idx.mean(0) for idx in coords.iter_arrays()])
 
 def detect_movementknn(videofilepath, morphologyex=2, analysispath='.',
-                       ignore_rectcoord=None):
+                       ignore_rectcoord=None, ignore_firstnframes=None,
+                       **kwargs):
 
     vf = VideoFile(videofilepath)
     analysispath = Path(analysispath) / Path(
@@ -216,7 +217,8 @@ def detect_movementknn(videofilepath, morphologyex=2, analysispath='.',
     if not analysispath.exists():
         os.mkdir(analysispath)
     dm = DetectMovementKnn(morphologyex=morphologyex,
-                              ignore_rectcoord=ignore_rectcoord)
+                           ignore_rectcoord=ignore_rectcoord,
+                           ignore_firstnframes=ignore_firstnframes, **kwargs)
     metadata = vf.get_properties(affix='video_')
     metadata.update(dm.get_params())
     coords = darr.create_raggedarray(analysispath / 'coordinates.drarr',
