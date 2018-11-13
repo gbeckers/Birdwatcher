@@ -14,6 +14,20 @@ Code can be found on GitHub: https://github.com/gbeckers/Birdwatcher
 It is open source and freely available under the `New BSD License
 <https://opensource.org/licenses/BSD-3-Clause>`__ terms.
 
+Installation
+------------
+
+As long as there is no official release:
+
+Install dependencies::
+
+    $ pip install opencv-python
+    $ pip install opencv-contrib-python
+
+Install Birdwatcher from git repo::
+
+    $ pip install git+https://github.com/gbeckers/birdwatcher
+
 
 ..  |Repo Status| image:: https://www.repostatus.org/badges/latest/wip.svg
     :alt: Project Status: WIP – Initial development is in progress, but there has not yet been a stable, usable release suitable for the public.

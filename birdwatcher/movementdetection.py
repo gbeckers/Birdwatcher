@@ -189,7 +189,8 @@ def batch_detect_movementknn(videofilepaths, nprocesses=6, *args, **kwargs):
     from multiprocessing import Pool
 
     def f(rar):
-        return rar.archive(overwrite=True)
+        rar.archive(overwrite=True)
+        darr.delete_raggedarray(rar)
 
     tobearchived = []
     for i, videofilepath in enumerate(videofilepaths):
