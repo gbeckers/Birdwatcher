@@ -21,6 +21,7 @@ As long as there is no official release:
 
 Install dependencies::
 
+    $ pip install darr
     $ pip install opencv-python
     $ pip install opencv-contrib-python
 
