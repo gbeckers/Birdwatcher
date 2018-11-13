@@ -188,8 +188,8 @@ def batch_detect_movementknn(videofilepaths, nprocesses=6, *args, **kwargs):
     """
     from multiprocessing import Pool
 
-    def f(m):
-        return m(True)
+    def f(rar):
+        return rar.archive(overwrite=True)
 
     tobearchived = []
     for i, videofilepath in enumerate(videofilepaths):
@@ -197,7 +197,7 @@ def batch_detect_movementknn(videofilepaths, nprocesses=6, *args, **kwargs):
         tobearchived.append(cd)
         if (len(tobearchived) == nprocesses) or (i == (len(videofilepaths) - 1)):
             with Pool(processes=nprocesses) as pool:
-                pool.imap_unordered(f, tobearchived)
+                [i for i in pool.imap_unordered(f, tobearchived)]
             tobearchived = []
 
 
