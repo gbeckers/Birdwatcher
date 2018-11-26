@@ -1,7 +1,7 @@
 Birdwatcher
 ===========
 
-|Repo Status|
+|Repo Status| |Travis Status|
 
 Birdwatcher is a Python computer vision library for the analysis of animal
 behavior.
@@ -54,3 +54,6 @@ See notebook directory.
 ..  |Repo Status| image:: https://www.repostatus.org/badges/latest/wip.svg
     :alt: Project Status: WIP – Initial development is in progress, but there has not yet been a stable, usable release suitable for the public.
     :target: https://www.repostatus.org/#wip
+
+.. |Travis Status| image:: https://travis-ci.org/gbeckers/Birdwatcher.svg?branch=master
+   :target: https://travis-ci.org/gbeckers/Birdwatcher?branch=master
