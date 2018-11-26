@@ -33,7 +33,8 @@ setup(
     long_description=long_description,
     long_description_content_type="text/markdown",
     requires=['numpy', 'darr', 'opencv'],
-    install_requires=['numpy'],
+    install_requires=['numpy', 'darr','matplotlib', 'opencv-python',
+                      'opencv-contrib-python'],
     data_files=[("", ["LICENSE"])],
     classifiers=[
         "Programming Language :: Python :: 3",
