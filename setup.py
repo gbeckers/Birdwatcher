@@ -22,7 +22,7 @@ setup(
     name='birdwatcher',
     version=versioneer.get_version(),
     cmdclass=versioneer.get_cmdclass(),
-    packages=['birdwatcher'],
+    packages=['birdwatcher', 'birdwatcher.tests'],
     package_data={'birdwatcher.testvideos': ['*.mp4']},
     include_package_data=True,
     url='https://github.com/gbeckers/birdwatcher',

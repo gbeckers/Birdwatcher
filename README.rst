@@ -30,6 +30,22 @@ Install Birdwatcher from git repo::
     $ pip install git+https://github.com/gbeckers/birdwatcher
 
 
+Test
+----
+To run the test suite:
+
+.. code:: python
+
+    >>>import birdwatcher as bw
+    >>>bw.test()
+    .
+    ----------------------------------------------------------------------
+    Ran 1 test in 0.012s
+
+    OK
+    <unittest.runner.TextTestResult run=1 errors=0 failures=0>
+
+
 ..  |Repo Status| image:: https://www.repostatus.org/badges/latest/wip.svg
     :alt: Project Status: WIP – Initial development is in progress, but there has not yet been a stable, usable release suitable for the public.
     :target: https://www.repostatus.org/#wip

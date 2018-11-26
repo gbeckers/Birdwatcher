@@ -3,7 +3,7 @@ import pathlib
 from contextlib import contextmanager
 import cv2 as cv
 
-__all__ = ['VideoFile', 'testvideo_small']
+__all__ = ['VideoFile', 'testvideosmall']
 
 
 class VideoFile():
@@ -89,6 +89,6 @@ class VideoFile():
         video_writer.release()
 
 
-def testvideo_small(file='zf20s_low.mp4'):
+def testvideosmall(file='zf20s_low.mp4'):
     path = pathlib.Path(__file__).parent / 'testvideos' / file
     return VideoFile(path)
