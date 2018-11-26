@@ -23,6 +23,8 @@ setup(
     version=versioneer.get_version(),
     cmdclass=versioneer.get_cmdclass(),
     packages=['birdwatcher'],
+    package_data={'birdwatcher.testvideos': ['*.mp4']},
+    include_package_data=True,
     url='https://github.com/gbeckers/birdwatcher',
     license='BSD-3',
     author='Gabriel J.L. Beckers',

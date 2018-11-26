@@ -1,10 +1,9 @@
 import sys
-from contextlib import contextmanager
 import pathlib
+from contextlib import contextmanager
 import cv2 as cv
 
-
-__all__ = ['VideoFile']
+__all__ = ['VideoFile', 'testvideo_small']
 
 
 class VideoFile():
@@ -13,7 +12,7 @@ class VideoFile():
     def __init__(self, filepath):
         self.filepath = fp = pathlib.Path(filepath)
         if not fp.exists():
-            raise FileNotFoundError(f'"{fp.name}" does not exist')
+            raise FileNotFoundError(f'"{filepath}" does not exist')
         vp = self.get_properties()
         self.fourcccode = vp['fourcc']
         self.fourcc = cv.VideoWriter_fourcc(*self.fourcccode)
@@ -88,3 +87,8 @@ class VideoFile():
         video_writer = self.derive_videowriter(s, path=path)
         yield video_writer
         video_writer.release()
+
+
+def testvideo_small(file='zf20s_low.mp4'):
+    path = pathlib.Path(__file__).parent / 'testvideos' / file
+    return VideoFile(path)
