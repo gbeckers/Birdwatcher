@@ -43,13 +43,12 @@ class VideoFile():
         return d
     
     def derive_filepath(self, s, suffix=None, path=None):
-        parts = list(self.filepath.parts)
         stem = self.filepath.stem
         if suffix is None:
             suffix = self.filepath.suffix
         filename = f'{stem}_{s}{suffix}'
         if path is None:
-            dpath =  pathlib.Path('/'.join(parts[:-1] + [filename]))
+            dpath =  self.filepath.parent / filename
         else:
             dpath = pathlib.Path(path) / filename
         return dpath
