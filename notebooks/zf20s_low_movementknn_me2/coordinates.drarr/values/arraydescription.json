@@ -1,0 +1,11 @@
+{
+    "arrayorder": "C",
+    "byteorder": "little",
+    "darrversion": "0.1.9+50.ga953999.dirty",
+    "dtypedescr": "<u2",
+    "numtype": "uint16",
+    "shape": [
+        418397,
+        2
+    ]
+}
