@@ -16,7 +16,8 @@ install:
   - "SET PATH=%PYTHON%;%PYTHON%\\Scripts;%PYTHON%\\Library\\bin;%PATH%"
   - "%PYTHON%\\python -m pip install --upgrade pip"
   - "%PYTHON%\\python.exe -m pip install wheel"
-  - "%PYTHON%\\python.exe -m pip install numpy"
+  #- "%PYTHON%\\python.exe -m pip install numpy"
+  - "%PYTHON%\\python.exe -m pip install -rrequirements.txt"
 
 build: off
 
@@ -30,7 +31,7 @@ test_script:
   # to put the Python version you want to use on PATH.
   - "%PYTHON%\\python.exe -m pip install -rrequirements_dev.txt"
   - "%PYTHON%\\python.exe -m birdwatcher.tests.test_videoinput"
-  
+
 after_test:
   # This step builds your wheels.
   # Again, you only need build.cmd if you're building C extensions for
