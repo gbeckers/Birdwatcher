@@ -20,7 +20,8 @@ It is open source and freely available under the `New BSD License
 Installation
 ------------
 
-As long as there is no official release:
+Birdbwatcher depends on Python 3.6 or higher, and a number of libraries. As
+long as there is no official release:
 
 Install dependencies::
 
