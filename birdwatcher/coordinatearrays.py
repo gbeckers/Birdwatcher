@@ -49,6 +49,8 @@ def create_coordarray(path, videofile, metadata=None, overwrite=True):
     return CoordinateArrays(coords.path, accessmode='r+')
 
 
+delete_coordinatearray = delete_raggedarray
+
 
 @ contextmanager
 def open_archivedcoordinatedata(path):
