@@ -8,9 +8,10 @@ from .videoinput import VideoFile
 from. coordinatearrays import create_coordarray
 from ._version import get_versions
 
-__all__ = ['detect_movementknn', 'batch_detect_movementknn']
+__all__ = ['detect_movementknn', 'batch_detect_movementknn',
+           'detect_movementmog2']
 
-class DetecMovement():
+class DetectMovement():
     
     _version = get_versions()['version']
     
@@ -86,15 +87,20 @@ class DetecMovement():
             params.update(self.bgsubtractorparams)
         return params
 
+    def _create_bgsubtractor(self):
+        "To be implemented by subclass with actual algorithm"
 
-class DetectMovementKnn(DetecMovement):
+        pass
+
+
+class DetectMovementKnn(DetectMovement):
     
     _version = get_versions()['version']
     
     def __init__(self, history=1, knnsamples=10, nsamples=6, dist2threshold=500, 
                  learningrate=-1, morphologyex=2, focus_rectcoord=None,
-                 ignore_firstnframes=50,
-                 ignore_rectcoord=None, downscale=None, detect_shadows=False):
+                 ignore_firstnframes=50, ignore_rectcoord=None,
+                 downscale=None, detect_shadows=False):
         self.history = history
         self.knnsamples = knnsamples
         self.nsamples = nsamples
@@ -129,53 +135,53 @@ class DetectMovementKnn(DetecMovement):
                 'knn_dist2threshold': bgs.getDist2Threshold(),
                 'knn_detect_shadows': self.detect_shadows}
 
-        
-# def detect_movement_mog2(vcap, stopframe=None, history=1, complexityreductionrhreshold=0.05,
-#                         backgroundratio=0.1, nmmixtures=7, learningrate=-1,
-#                         kernelsize=2, focus_rectcoord=None, ignore_firstnframes=25,
-#                         ignore_rectcoord=None, test_rec=False):
-#     if focus_rectcoord is not None:
-#         w1,w2,h1,h2 = focus_rectcoord
-#         thresh = np.zeros(vcap.shape[::-1], dtype=np.uint8)
-#     if ignore_rectcoord is not None:
-#         iw1,iw2,ih1,ih2 = ignore_rectcoord
-#     bg_subtractor = cv.createBackgroundSubtractorMOG2(detectShadows=False)
-#     bg_subtractor.setHistory(history)
-#     bg_subtractor.setComplexityReductionThreshold(complexityreductionrhreshold)
-#     bg_subtractor.setBackgroundRatio(backgroundratio)
-#     bg_subtractor.setNMixtures(nmmixtures)
-#     #bg_subtractor.setkNNSamples(knnsamples)
-#     #bg_subtractor.setNSamples(nsamples)
-#     #bg_subtractor.setDist2Threshold(dist2threshold)
-#     kernel = np.ones((kernelsize, kernelsize), np.uint8)
-#     emptyidx = np.zeros((0,2), dtype=np.uint16)
-#     for frameno, frame in enumerate(vcap.iter_frames(stopframe=stopframe)):
-#         if focus_rectcoord is not None:
-#             frame_rect = frame[h1:h2,w1:w2]
-#         else:
-#             frame_rect = frame
-#         frame_gray = cv.cvtColor(frame_rect, cv.COLOR_BGR2GRAY)
-#         if ignore_rectcoord is not None:
-#             frame_gray[ih1:ih2,iw1:iw2] = 0
-#         thresh_rect = bg_subtractor.apply(image=frame_gray, learningRate=learningrate)
-#         #thresh_rect = cv.morphologyEx(thresh_rect, cv.MORPH_OPEN, kernel)
-#         if frameno < ignore_firstnframes:
-#             thresh_rect[:] = 0
-#         if test_rec:
-#             thresh_rect[:] = 255
-#         #where = np.array(np.nonzero(thresh_rect))
-#         idx = cv.findNonZero(thresh_rect)
-#         if idx is None:
-#             idx = emptyidx
-#         else:
-#             idx = idx[:,0,:]
-#         if focus_rectcoord is not None:
-#             thresh[h1:h2,w1:w2] = thresh_rect
-#             idx[:,0] += h1
-#             idx[:,1] += w1
-#         else:
-#             thresh = thresh_rect
-#         yield frame, thresh, idx
+
+class DetectMovementMOG2(DetectMovement):
+
+    _version = get_versions()['version']
+
+    def __init__(self, history=5, complexityreductionrhreshold=0.05,
+                 backgroundratio=0.1, nmmixtures=7, learningrate=-1,
+                 morphologyex=2, focus_rectcoord=None,
+                 ignore_firstnframes=50, ignore_rectcoord=None,
+                 downscale=None, detect_shadows=False):
+
+        self.history = history
+        self.complexityreductionrhreshold = complexityreductionrhreshold
+        self.backgroundratio = backgroundratio
+        self.nmmixtures = nmmixtures
+        self.detect_shadows = detect_shadows
+        self._mog2bgsubtractor = self._create_bgsubtractor()
+        bgsubtractorparams = self._get_bgsubtractorparams()
+
+        super().__init__(bgsubtractor=self._mog2bgsubtractor,
+                         learningrate=learningrate,
+                         morphologyex=morphologyex,
+                         ignore_firstnframes=ignore_firstnframes,
+                         focus_rectcoord=focus_rectcoord,
+                         ignore_rectcoord=ignore_rectcoord,
+                         downscale=downscale,
+                         bgsubtractorparams=bgsubtractorparams)
+
+    def _create_bgsubtractor(self):
+        bgsubtractor = cv.createBackgroundSubtractorMOG2(detectShadows=self.detect_shadows)
+        bgsubtractor.setHistory(self.history)
+        bgsubtractor.setComplexityReductionThreshold(
+            self.complexityreductionrhreshold)
+        bgsubtractor.setBackgroundRatio(self.backgroundratio)
+        bgsubtractor.setNMixtures(self.nmmixtures)
+        return bgsubtractor
+
+
+    def _get_bgsubtractorparams(self):
+        bgs = self._mog2bgsubtractor
+        return {'mog2_classversion': self._version,
+                'mog2_history': bgs.getHistory(),
+                'mog2_complexityreductionrhreshold':
+                    bgs.getComplexityReductionThreshold(),
+                'mog2_backgroundratio': bgs.getBackgroundRatio(),
+                'mog2_nmixtues': bgs.getNMixtures(),
+                'mog2_detect_shadows': self.detect_shadows}
 
 
 def batch_detect_movementknn(videofilepaths, nprocesses=6, *args, **kwargs):
@@ -208,18 +214,18 @@ def coordcount(coords):
 def coordmean(coords):
         return np.array([idx.mean(0) for idx in coords.iter_arrays()])
 
-def detect_movementknn(videofilepath, morphologyex=2, analysispath='.',
-                       ignore_rectcoord=None, ignore_firstnframes=50,
-                       **kwargs):
+def _detect_movement(algorithmclass, videofilepath, morphologyex=2,
+                     analysispath='.', ignore_rectcoord=None,
+                     ignore_firstnframes=50, **kwargs):
 
     vf = VideoFile(videofilepath)
     analysispath = Path(analysispath) / Path(
-        f'{vf.filepath.stem}_movementknn_me{morphologyex}')
+        f'{vf.filepath.stem}_movement_{algorithmclass}_me{morphologyex}')
     if not analysispath.exists():
         os.mkdir(analysispath)
-    dm = DetectMovementKnn(morphologyex=morphologyex,
-                           ignore_rectcoord=ignore_rectcoord,
-                           ignore_firstnframes=ignore_firstnframes, **kwargs)
+    dm = algorithmclass(morphologyex=morphologyex,
+                        ignore_rectcoord=ignore_rectcoord,
+                        ignore_firstnframes=ignore_firstnframes, **kwargs)
     metadata = dm.get_params()
     cd = create_coordarray(analysispath / 'coordinates.drarr',
                            videofile=vf, metadata=metadata, overwrite=True)
@@ -231,6 +237,32 @@ def detect_movementknn(videofilepath, morphologyex=2, analysispath='.',
                       metadata=metadata, overwrite=True)
     cm = darr.asarray(analysispath / 'coordsmean.darr', coordmean(cd),
                       metadata=metadata, overwrite=True)
+    return cd, cc, cm
+
+
+def detect_movementknn(videofilepath, morphologyex=2, analysispath='.',
+                       ignore_rectcoord=None, ignore_firstnframes=50,
+                       **kwargs):
+    cd, cc, cm = _detect_movement(algorithmclass=DetectMovementKnn,\
+                                  videofilepath=videofilepath,
+                                  morphologyex=morphologyex,
+                                  analysispath=analysispath,
+                                  ignore_rectcoord=ignore_rectcoord,
+                                  ignore_firstnframes=ignore_firstnframes,
+                                  **kwargs)
+    return cd, cc, cm
+
+
+def detect_movementmog2(videofilepath, morphologyex=2, analysispath='.',
+                       ignore_rectcoord=None, ignore_firstnframes=50,
+                       **kwargs):
+    cd, cc, cm = _detect_movement(algorithmclass=DetectMovementMOG2,\
+                                  videofilepath=videofilepath,
+                                  morphologyex=morphologyex,
+                                  analysispath=analysispath,
+                                  ignore_rectcoord=ignore_rectcoord,
+                                  ignore_firstnframes=ignore_firstnframes,
+                                  **kwargs)
     return cd, cc, cm
 
 
