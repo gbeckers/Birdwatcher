@@ -38,15 +38,6 @@ class CoordinateArrays(RaggedArray):
         frame[(coords[:, 1], coords[:, 0])] = 1
         return frame
 
-    def archive(self, remove_source=False):
-        apath = f'{self.path}.tar.xz'
-        with tarfile.open(apath, "w:xz") as tf:
-            tf.add(self.path)
-        if remove_source:
-            self.accessmode = 'r+'
-            delete_raggedarray(self)
-        return Path(apath)
-
 
 def create_coordarray(path, videofile, metadata=None, overwrite=True):
     if metadata is None:
