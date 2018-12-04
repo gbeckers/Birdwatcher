@@ -29,7 +29,12 @@ Install dependencies::
     $ pip install opencv-python
     $ pip install opencv-contrib-python
 
-Install Birdwatcher from git repo::
+For some functionality it is necessary to install ffmpeg. In conda this can
+be done as follows::
+
+    $ conda install ffmpeg
+
+Then, install Birdwatcher from git repo::
 
     $ pip install git+https://github.com/gbeckers/birdwatcher
 
