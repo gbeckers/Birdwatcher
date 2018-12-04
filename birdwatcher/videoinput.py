@@ -69,13 +69,12 @@ class VideoFile():
         
     def iter_frames(self, stopframe=None):
         cap = cv.VideoCapture(str(self.filepath))
-        if stopframe is None:
-            stopframe = self.framecount
-        for i in range(stopframe):
-            #cap.isOpened()
+        frameno = 0
+        while(True):
             ret, frame = cap.read()
-            if ret:
+            if ret and ((stopframe is None) or (frameno < stopframe)):
                 yield frame
+                frameno +=1
             else:
                 cap.release()
                 break
