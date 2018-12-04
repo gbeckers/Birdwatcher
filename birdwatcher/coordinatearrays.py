@@ -22,6 +22,17 @@ from .utils import tempdir
 __all__ = ['CoordinateArrays', 'open_archivedcoordinatedata',
            'create_coordarray']
 
+
+def _coordstoframe(coords, height, width, nchannels=None, dtype='uint8',
+                   value=1):
+    if nchannels is None:
+        frame = np.zeros((height, width), dtype=dtype)
+    else:
+        frame = np.zeros((height, width, nchannels), dtype=dtype)
+    frame[(coords[:, 1], coords[:, 0])] = value
+    return frame
+
+
 # fixme, should we allow for 3 values: (x, y, val)?
 class CoordinateArrays(RaggedArray):
 
@@ -32,11 +43,23 @@ class CoordinateArrays(RaggedArray):
         self.height = md['video_height']
 
 
-    def get_frame(self, frameno):
-        frame = np.zeros((self.height, self.width), dtype=np.bool)
-        coords = self[frameno]
-        frame[(coords[:, 1], coords[:, 0])] = 1
-        return frame
+    def get_frame(self, frameno, nchannels=None, dtype='uint8', value=1):
+        return _coordstoframe(coords=self[frameno], height=self.height,
+                              width=self.width, nchannels=nchannels,
+                              dtype=dtype, value=value)
+
+    def iter_frames(self, nchannels=None, dtype='uint8', value=1):
+        for coords in self:
+            yield _coordstoframe(coords=coords, height=self.height,
+                                 width=self.width, nchannels=nchannels,
+                                 dtype=dtype, value=value)
+
+    def tovideo(self, filepath, framerate=None):
+        from .ffmpeg import arraytovideo
+        if framerate is None:
+            framerate=self.metadata['video_framerate']
+        arraytovideo(self.iter_frames(nchannels=3, value=255, dtype=np.uint8),
+                     filepath, framerate=framerate)
 
 
 def create_coordarray(path, videofile, metadata=None, overwrite=True):
