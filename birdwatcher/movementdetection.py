@@ -117,7 +117,9 @@ class DetectMovementKnn(DetectMovement):
                          ignore_rectcoord=ignore_rectcoord, 
                          downscale=downscale,
                          bgsubtractorparams=bgsubtractorparams)
-    
+    def __str__(self):
+        return "DetectMovementKNN"
+
     def _create_bgsubtractor(self):
         bgsubtractor = cv.createBackgroundSubtractorKNN(detectShadows=self.detect_shadows)
         bgsubtractor.setHistory(self.history)
@@ -162,6 +164,9 @@ class DetectMovementMOG2(DetectMovement):
                          ignore_rectcoord=ignore_rectcoord,
                          downscale=downscale,
                          bgsubtractorparams=bgsubtractorparams)
+
+    def __str__(self):
+        return "DetectMovementMOG2"
 
     def _create_bgsubtractor(self):
         bgsubtractor = cv.createBackgroundSubtractorMOG2(detectShadows=self.detect_shadows)
@@ -219,13 +224,15 @@ def _detect_movement(algorithmclass, videofilepath, morphologyex=2,
                      ignore_firstnframes=50, **kwargs):
 
     vf = VideoFile(videofilepath)
-    analysispath = Path(analysispath) / Path(
-        f'{vf.filepath.stem}_movement_{algorithmclass}_me{morphologyex}')
-    if not analysispath.exists():
-        os.mkdir(analysispath)
     dm = algorithmclass(morphologyex=morphologyex,
                         ignore_rectcoord=ignore_rectcoord,
                         ignore_firstnframes=ignore_firstnframes, **kwargs)
+    algostr = str(dm)
+    analysispath = Path(analysispath) / Path(
+        f'{vf.filepath.stem}_movement_{algostr}_me{ morphologyex}')
+    if not analysispath.exists():
+        os.mkdir(analysispath)
+
     metadata = dm.get_params()
     cd = create_coordarray(analysispath / 'coordinates.drarr',
                            videofile=vf, metadata=metadata, overwrite=True)
