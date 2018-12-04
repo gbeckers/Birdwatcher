@@ -11,5 +11,9 @@ class TestVideos(unittest.TestCase):
             self.assertEqual(frame.shape, shape)
         self.assertEqual(i, 496) # 497 frames
 
+    def test_nframes(self):
+        vf = bw.testvideosmall()
+        self.assertEqual(vf.nframes, 497)
+
 
 

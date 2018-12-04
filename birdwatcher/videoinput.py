@@ -8,7 +8,6 @@ __all__ = ['VideoFile', 'testvideosmall']
 
 class VideoFile():
 
-    
     def __init__(self, filepath):
         self.filepath = fp = pathlib.Path(filepath)
         if not fp.exists():
@@ -21,7 +20,22 @@ class VideoFile():
         self.duration = vp['duration']
         self.format = vp['format']
         self.framecount = vp['framecount']
-    
+        self._nframes = None
+
+
+    @property
+    def nframes(self):
+        """Number of frames in video. This is determined by reading the
+        whole stream, which may take some time, and is more reliable than
+        the `framecount` attribute."""
+        if self._nframes is not None:
+            return self._nframes
+        else:
+            for i,_ in enumerate(self.iter_frames(),1):
+                pass
+            self._nframes = i
+            return i
+
     def get_properties(self, affix=None):
         d = {}
         cap = cv.VideoCapture(str(self.filepath))
