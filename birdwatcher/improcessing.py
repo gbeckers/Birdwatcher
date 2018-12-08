@@ -49,7 +49,9 @@ def circles(frames, centers, radius=4, color=(255, 0, 0), thickness=2,
     """
 
     for frame, center in zip(frames, centers):
+        center = np.asanyarray(center)
         if not np.isnan(center).any():
-            yield cv.circle(frame, center=center, radius=radius, color=color,
+            (x,y) = center.astype('int16')
+            yield cv.circle(frame, center=(x,y), radius=radius, color=color,
                       thickness=thickness, lineType=linetype, shift=shift)
 
