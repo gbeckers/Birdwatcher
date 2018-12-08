@@ -18,7 +18,7 @@ def colorframes(nframes, height, width, color=(0, 0, 0), dtype='uint8'):
         yield frame.copy()
 
 
-def circles(frames, centers, radius=4, color=(255, 0, 0), thickness=2,
+def draw_circles(frames, centers, radius=4, color=(255, 0, 0), thickness=2,
             linetype=8, shift=0):
     """Draws circles on a sequence of frames.
 
