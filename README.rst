@@ -29,10 +29,12 @@ Install dependencies::
     $ pip install opencv-python
     $ pip install opencv-contrib-python
 
-For some functionality it is necessary to install ffmpeg. In conda this can
+For some functionality it is necessary to install ffmpeg. In Anaconda this can
 be done as follows::
 
-    $ conda install ffmpeg
+    $ conda -c conda-forge install ffmpeg
+
+The package at conda-forge has h264 encoding, which is nice to have.
 
 Then, install Birdwatcher from git repo::
 
