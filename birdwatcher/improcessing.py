@@ -141,4 +141,6 @@ def draw_circles(frames, centers, radius=4, color=(255, 100, 0), thickness=2,
             (x,y) = center.astype('int16')
             yield cv.circle(frame, center=(x,y), radius=radius, color=color,
                             thickness=thickness, lineType=linetype, shift=shift)
+        else:
+            yield frame
 
