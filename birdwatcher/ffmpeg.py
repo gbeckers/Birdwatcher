@@ -5,9 +5,9 @@ from .utils import peek_iterable
 
 __all__ = ['arraytovideo']
 
+
 def arraytovideo(frames, filename, framerate, crf=17, format='mp4',
-                 codec='libx264', pixfmt='yuv420p', ffmpegpath='ffmpeg',
-                 report_args=False):
+                 codec='libx264', pixfmt='yuv420p', ffmpegpath='ffmpeg'):
     """Writes an iterable of numpy frames as video file using ffmpeg.
 
     Parameters
@@ -43,8 +43,7 @@ def arraytovideo(frames, filename, framerate, crf=17, format='mp4',
             '-f', f'{format}', '-crf', f'{crf}',
             '-pix_fmt', f'{pixfmt}',
             filename, '-y']
-    if report_args:
-        print(args)
+    # print(args)
     p = subprocess.Popen(args, stdin=subprocess.PIPE)
     for frame in framegen:
         p.stdin.write(frame.astype(np.uint8).tobytes())

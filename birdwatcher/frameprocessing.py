@@ -14,7 +14,6 @@ class FrameIterator:
         ----------
         frames: iterable that produces frame
 
-
         """
         self._frames = iter(frames)
         self._index = 0
@@ -26,8 +25,7 @@ class FrameIterator:
         return next(self._frames)
 
     def tovideo(self, filename, framerate, crf=17, format='mp4',
-                 codec='libx264', pixfmt='yuv420p', ffmpegpath='ffmpeg',
-                 report_args=False):
+                codec='libx264', pixfmt='yuv420p', ffmpegpath='ffmpeg'):
         """Writes frames to video file.
 
         Parameters
@@ -53,19 +51,18 @@ class FrameIterator:
         from .ffmpeg import arraytovideo
         arraytovideo(frames=self, filename=filename, framerate=framerate,
                      crf=crf, format=format, codec=codec, pixfmt=pixfmt,
-                     ffmpegpath=ffmpegpath, report_args=report_args)
+                     ffmpegpath=ffmpegpath)
 
     def draw_circles(self, centers, radius=6, color=(255, 100, 0),
                      thickness=2,
                      linetype=8, shift=0):
-        """Creates a frame iterator that draws circles on an input frames iterable.
+        """Creates a frame iterator that draws circles on an input frames
+        iterable.
 
         Frames and centers should be iterables that have the same length.
 
         Parameters
         ----------
-        frames: iterable
-            Iterable that generates frames
         centers: iterable
             Iterable that generate center coordinates (x, y) of the circles
         radius: int
@@ -77,14 +74,13 @@ class FrameIterator:
         linetype: int
             OpenCV line type of circle boundary. Default 8
         shift: int
-            Number of fractional bits in the coordinates of the center and in the
-            radius value. Default 0.
+            Number of fractional bits in the coordinates of the center and in
+            the radius value. Default 0.
 
         Returns
         -------
         iterator
             Iterator that generates frames with circles
-
 
         """
         def iter_frames():
@@ -129,9 +125,8 @@ class FramesColor(FrameIterator):
         """
         frame = framecolor(height=height, width=width, color=color,
                            dtype=dtype)
-        frames = (frame.copy() for i in range(nframes))
+        frames = (frame.copy() for _ in range(nframes))
         super().__init__(frames=frames)
-
 
 
 class FramesGray(FrameIterator):
@@ -162,9 +157,9 @@ class FramesGray(FrameIterator):
         """
 
         frame = framegray(height=height, width=width, value=value,
-                      dtype=dtype)
+                          dtype=dtype)
 
-        frames = (frame.copy() for i in range(nframes))
+        frames = (frame.copy() for _ in range(nframes))
         super().__init__(frames=frames)
 
 
@@ -193,21 +188,21 @@ def framegray(height, width, value=0, dtype='uint8'):
 def framecolor(height, width, color=(0, 0, 0), dtype='uint8'):
     """Creates a color frame.
 
-        Parameters
-        ----------
-        height: int
-            Height of frame.
-        width: int
-            Width of frame.
-        color:
-            Fill value of frame. Default (0, 0, 0) (black).
-        dtype: numpy dtype
-            Dtype of frame. Default `uint8'
+    Parameters
+    ----------
+    height: int
+        Height of frame.
+    width: int
+        Width of frame.
+    color:
+        Fill value of frame. Default (0, 0, 0) (black).
+    dtype: numpy dtype
+        Dtype of frame. Default `uint8'
 
-        Returns
-        -------
-        numpy ndarray
+    Returns
+    -------
+    numpy ndarray
 
-        """
+    """
     return np.ones((height, width, 3), dtype=dtype) * np.asanyarray(color,
                                                                     dtype=dtype)
