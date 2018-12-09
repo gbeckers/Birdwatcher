@@ -1,7 +1,7 @@
 from .videoinput import *
 from .movementdetection import *
 from .coordinatearrays import *
-from . import improcessing
+from . import frameprocessing
 #from .plotting import *
 from ._version import get_versions
 __version__ = get_versions()['version']
