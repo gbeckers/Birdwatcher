@@ -12,7 +12,7 @@ class FrameIterator:
 
         Parameters
         ----------
-        frames: iterable that produces frame
+        frames: iterable that produces frames
 
         """
         self._frames = iter(frames)
