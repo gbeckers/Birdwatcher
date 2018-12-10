@@ -179,16 +179,25 @@ class DetectMovementMOG2(DetectMovement):
 
     _version = get_versions()['version']
 
-    def __init__(self, history=5, complexityreductionrhreshold=0.05,
-                 backgroundratio=0.1, nmmixtures=7, learningrate=-1,
-                 morphologyex=2, focus_rectcoord=None,
+    def __init__(self, history=5, complexityreductionthreshold=0.05,
+                 backgroundratio=0.1, nmmixtures=7, varinit=15, varmin=4,
+                 varmax=75, varthreshold=10, varthresholdgen=9,
+                 detect_shadows=False, shadowthreshold=0.5, shadowvalue=127,
+                 learningrate=-1, morphologyex=2, focus_rectcoord=None,
                  ignore_firstnframes=50, ignore_rectcoord=None,
-                 downscale=None, detect_shadows=False):
+                 downscale=None):
 
         self.history = history
-        self.complexityreductionrhreshold = complexityreductionrhreshold
+        self.complexityreductionthreshold = complexityreductionthreshold
         self.backgroundratio = backgroundratio
         self.nmmixtures = nmmixtures
+        self.varinit = varinit
+        self.varmin = varmin
+        self.varmax = varmax
+        self.varthreshold = varthreshold
+        self.varthresholdgen = varthresholdgen
+        self.shadowthreshold = shadowthreshold
+        self.shadowvalue = shadowvalue
         self.detect_shadows = detect_shadows
         self._mog2bgsubtractor = self._create_bgsubtractor()
         bgsubtractorparams = self._get_bgsubtractorparams()
@@ -209,9 +218,15 @@ class DetectMovementMOG2(DetectMovement):
         bgsubtractor = cv.createBackgroundSubtractorMOG2(detectShadows=self.detect_shadows)
         bgsubtractor.setHistory(self.history)
         bgsubtractor.setComplexityReductionThreshold(
-            self.complexityreductionrhreshold)
+            self.complexityreductionthreshold)
         bgsubtractor.setBackgroundRatio(self.backgroundratio)
         bgsubtractor.setNMixtures(self.nmmixtures)
+        bgsubtractor.setVarInit(self.varinit)
+        bgsubtractor.setVarMin(self.varmin)
+        bgsubtractor.setVarMax(self.varmax)
+        bgsubtractor.setVarThreshold(self.varthreshold)
+        bgsubtractor.setShadowThreshold(self.shadowthreshold)
+        bgsubtractor.setShadowValue(self.shadowvalue)
         return bgsubtractor
 
 
