@@ -97,10 +97,47 @@ class DetectMovementKnn(DetectMovement):
     
     _version = get_versions()['version']
     
-    def __init__(self, history=1, knnsamples=10, nsamples=6, dist2threshold=500, 
-                 learningrate=-1, morphologyex=2, focus_rectcoord=None,
-                 ignore_firstnframes=50, ignore_rectcoord=None,
-                 downscale=None, detect_shadows=False):
+    def __init__(self, history=50, knnsamples=10, nsamples=6,
+                 dist2threshold=500, learningrate=-1, morphologyex=2,
+                 focus_rectcoord=None, ignore_firstnframes=50,
+                 ignore_rectcoord=None, downscale=None, detect_shadows=False):
+        """Detect movement based on OpenCV's `BackgroundSubtractorKNN`
+        algorithm.
+
+        Parameters
+        ----------
+        history: int
+            Length of the history. Default 50.
+        knnsamples: int
+            The number of neighbours, the k in the kNN. K is the number of
+            samples that need to be within dist2Threshold in order to decide
+            that that pixel is matching the kNN background model. Default 10.
+        nsamples: int
+            The number of data samples in the background model. Default 6.
+        dist2threshold: ifloatnt
+            Threshold on the squared distance between the pixel and the sample
+            to decide whether a pixel is close to that sample. This parameter
+            does not affect the background update. Default 500.
+        learningrate: int
+        morphologyex: int
+           Apply morphologyEx function with specifeid size after having
+           applied backgroundsubtractor. Default 2.
+        focus_rectcoord: len-4 sequence or None
+           Only consider pixels within the specified rectangle (h1, h2, w1,
+           w2). Default None.
+        ignore_firstnframes: int
+            Do not consider hits in the first n frames. Default 50.
+        ignore_rectcoord: len-4 sequence or None
+            Ignore pixels within the specified rectangle (h1, h2, w1, w2).
+        downscale: int
+            Downscale input image size with specified factor before applying
+            algorithm. Default None.
+        detect_shadows: bool
+            If true, the algorithm will detect shadows and mark them. It
+            decreases the speed a bit, so if you do not need this feature,
+            set the parameter to false. Default False.
+
+        """
         self.history = history
         self.knnsamples = knnsamples
         self.nsamples = nsamples
