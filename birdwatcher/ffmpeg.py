@@ -47,5 +47,6 @@ def arraytovideo(frames, filename, framerate, crf=17, format='mp4',
     p = subprocess.Popen(args, stdin=subprocess.PIPE)
     for frame in framegen:
         p.stdin.write(frame.astype(np.uint8).tobytes())
-    p.terminate()
+    p.stdin.close()
+    out, err = p.communicate()
     return Path(filename)
