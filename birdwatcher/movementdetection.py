@@ -34,7 +34,7 @@ class DetectMovement():
     def apply(self, frame):
         if self.focus_rectcoord is not None:
             if self._framesprocessed == 0:
-                self._emptyframe = np.zeros((frame.shape[0], frame.shape[0]),
+                self._emptyframe = np.zeros((frame.shape[0], frame.shape[1]),
                                             dtype=np.uint16)
             w1,w2,h1,h2 = self.focus_rectcoord
             frame_rect = frame[h1:h2,w1:w2]
@@ -234,10 +234,16 @@ class DetectMovementMOG2(DetectMovement):
         bgs = self._mog2bgsubtractor
         return {'mog2_classversion': self._version,
                 'mog2_history': bgs.getHistory(),
-                'mog2_complexityreductionrhreshold':
+                'mog2_complexityreductionthreshold':
                     bgs.getComplexityReductionThreshold(),
                 'mog2_backgroundratio': bgs.getBackgroundRatio(),
                 'mog2_nmixtues': bgs.getNMixtures(),
+                'mog2_varinit': bgs.getVarInit(),
+                'mog2_varmin': bgs.getVarMin(),
+                'mog2_varmax': bgs.getVarMax(),
+                'mog2_varthreshold': bgs.getVarThreshold(),
+                'mog2_shadowthreshold': bgs.getShadowThreshold(),
+                'mog2_shadowvalue': bgs.getShadowValue(),
                 'mog2_detect_shadows': self.detect_shadows}
 
 
