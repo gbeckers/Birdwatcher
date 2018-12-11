@@ -39,9 +39,8 @@ class CoordinateArrays(RaggedArray):
     def __init__(self, path, accessmode='r'):
         super().__init__(path=path, accessmode=accessmode)
         md = dict(self.metadata)
-        self.width = md['video_width']
-        self.height = md['video_height']
-
+        self.width = md['video']['width']
+        self.height = md['video']['height']
 
     def get_frame(self, frameno, nchannels=None, dtype='uint8', value=1):
         return _coordstoframe(coords=self[frameno], height=self.height,
@@ -58,7 +57,7 @@ class CoordinateArrays(RaggedArray):
                  codec='libx264', pixfmt='yuv420p', ffmpegpath='ffmpeg'):
         from .ffmpeg import arraytovideo
         if framerate is None:
-            framerate=self.metadata['video_framerate']
+            framerate=self.metadata['video']['framerate']
         arraytovideo(self.iter_frames(nchannels=3, value=255, dtype=np.uint8),
                      filepath, framerate=framerate, crf=crf, format=format,
                      codec=codec, pixfmt=pixfmt, ffmpegpath=ffmpegpath)
