@@ -9,15 +9,45 @@ from. coordinatearrays import create_coordarray
 from ._version import get_versions
 
 __all__ = ['detect_movementknn', 'batch_detect_movementknn',
-           'detect_movementmog2']
+           'detect_movementmog2', 'BackgroundSubtractorMOG2',
+           'MovementDetector']
 
-class DetectMovement():
+class MovementDetector():
     
     _version = get_versions()['version']
     
     def __init__(self, bgsubtractor, learningrate=-1, ignore_firstnframes=0, 
                  focus_rectcoord=None, ignore_rectcoord=None, downscale=None, 
-                 morphologyex=None, bgsubtractorparams=None):
+                 morphologyex=2):
+
+        """Detect movement in when iterating over frames, based on a specified
+        BackgroundSubtractor object.
+
+        Parameters
+        ----------
+        bgsubtractor: Birdwatcher BackgroundSubtractor
+        learningrate: int
+            Default -1.
+        morphologyex: int
+           Apply morphologyEx function with specifeid size after having
+           applied backgroundsubtractor. Default 2.
+        focus_rectcoord: len-4 sequence or None
+           Only consider pixels within the specified rectangle (h1, h2, w1,
+           w2). Default None.
+        ignore_firstnframes: int
+            Do not consider hits in the first n frames. Default 50.
+        ignore_rectcoord: len-4 sequence or None
+            Ignore pixels within the specified rectangle (h1, h2, w1, w2).
+        downscale: int
+            Downscale input image size with specified factor before applying
+            algorithm. Default None.
+        detect_shadows: bool
+            If true, the algorithm will detect shadows and mark them. It
+            decreases the speed a bit, so if you do not need this feature,
+            set the parameter to false. Default False.
+
+        """
+
         self.bgsubtractor = bgsubtractor
         self.learningrate = learningrate
         self.ignore_firstnframes = ignore_firstnframes
@@ -28,7 +58,6 @@ class DetectMovement():
         self.mekernel = np.ones((morphologyex, morphologyex), np.uint8)
         self.emptyidx = np.zeros((0,2), dtype=np.uint16)
         self._framesprocessed = 0
-        self.bgsubtractorparams = bgsubtractorparams
         self._emptyframe = None
         
     def apply(self, frame):
@@ -75,17 +104,13 @@ class DetectMovement():
         return thresh, idx
     
     def get_params(self):
-        params = {'detector_class': str(self.__class__),
-                  'detector_classversion': self._version,
-                  'detector_learningrate': self.learningrate,
-                  'detector_ignore_firstnframes': self.ignore_firstnframes,
-                  'detector_focus_rectcoord': self.focus_rectcoord,
-                  'detector_ignore_rectcoord': self.ignore_rectcoord,
-                  'detector_downscale': self.downscale,
-                  'detector_morphologyex': self.morphologyex}
-        if self.bgsubtractorparams is not None:
-            params.update(self.bgsubtractorparams)
-        return params
+        return  {'learningrate': self.learningrate,
+                 'ignore_firstnframes': self.ignore_firstnframes,
+                 'focus_rectcoord': self.focus_rectcoord,
+                 'ignore_rectcoord': self.ignore_rectcoord,
+                 'downscale': self.downscale,
+                 'morphologyex': self.morphologyex}
+
 
     def _create_bgsubtractor(self):
         "To be implemented by subclass with actual algorithm"
@@ -93,158 +118,82 @@ class DetectMovement():
         pass
 
 
-class DetectMovementKnn(DetectMovement):
-    
-    _version = get_versions()['version']
-    
-    def __init__(self, history=50, knnsamples=10, nsamples=6,
-                 dist2threshold=500, learningrate=-1, morphologyex=2,
-                 focus_rectcoord=None, ignore_firstnframes=50,
-                 ignore_rectcoord=None, downscale=None, detect_shadows=False):
-        """Detect movement based on OpenCV's `BackgroundSubtractorKNN`
-        algorithm.
+class BackgroundSubtractor:
 
-        Parameters
-        ----------
-        history: int
-            Length of the history. Default 50.
-        knnsamples: int
-            The number of neighbours, the k in the kNN. K is the number of
-            samples that need to be within dist2Threshold in order to decide
-            that that pixel is matching the kNN background model. Default 10.
-        nsamples: int
-            The number of data samples in the background model. Default 6.
-        dist2threshold: ifloatnt
-            Threshold on the squared distance between the pixel and the sample
-            to decide whether a pixel is close to that sample. This parameter
-            does not affect the background update. Default 500.
-        learningrate: int
-        morphologyex: int
-           Apply morphologyEx function with specifeid size after having
-           applied backgroundsubtractor. Default 2.
-        focus_rectcoord: len-4 sequence or None
-           Only consider pixels within the specified rectangle (h1, h2, w1,
-           w2). Default None.
-        ignore_firstnframes: int
-            Do not consider hits in the first n frames. Default 50.
-        ignore_rectcoord: len-4 sequence or None
-            Ignore pixels within the specified rectangle (h1, h2, w1, w2).
-        downscale: int
-            Downscale input image size with specified factor before applying
-            algorithm. Default None.
-        detect_shadows: bool
-            If true, the algorithm will detect shadows and mark them. It
-            decreases the speed a bit, so if you do not need this feature,
-            set the parameter to false. Default False.
+    _params = {} # to be implemented by subclass
+    _bgsubtractorcreatefunc = None # to be implemented by subclass
 
-        """
-        self.history = history
-        self.knnsamples = knnsamples
-        self.nsamples = nsamples
-        self.dist2threshold = dist2threshold
-        self.detect_shadows = detect_shadows
-        self._knnbgsubtractor = self._create_bgsubtractor()
-        bgsubtractorparams = self._get_bgsubtractorparams()
-        
-        super().__init__(bgsubtractor=self._knnbgsubtractor,
-                         learningrate=learningrate,
-                         morphologyex=morphologyex,
-                         ignore_firstnframes=ignore_firstnframes,
-                         focus_rectcoord=focus_rectcoord, 
-                         ignore_rectcoord=ignore_rectcoord, 
-                         downscale=downscale,
-                         bgsubtractorparams=bgsubtractorparams)
-    def __str__(self):
-        return "DetectMovementKNN"
+    def __init__(self, **kwargs):
+        # create background subtractor
+        self._bgs = self._bgsubtractorcreatefunc()
+        self.set_params(**kwargs)
 
-    def _create_bgsubtractor(self):
-        bgsubtractor = cv.createBackgroundSubtractorKNN(detectShadows=self.detect_shadows)
-        bgsubtractor.setHistory(self.history)
-        bgsubtractor.setkNNSamples(self.knnsamples)
-        bgsubtractor.setNSamples(self.nsamples)
-        bgsubtractor.setDist2Threshold(self.dist2threshold)
-        return bgsubtractor
-    
-    def _get_bgsubtractorparams(self):
-        bgs = self._knnbgsubtractor
-        return {'knn_classversion': self._version,
-                'knn_history': bgs.getHistory(),
-                'knn_knnsamples': bgs.getkNNSamples(),
-                'knn_nsamples': bgs.getNSamples(),
-                'knn_dist2threshold': bgs.getDist2Threshold(),
-                'knn_detect_shadows': self.detect_shadows}
+    def get_params(self):
+        paramdict = {}
+        for param in self._params.keys():
+            methodname = f'get{param}'
+            paramdict[param] = self._bgs.__getattribute__(methodname)()
+        return paramdict
+
+    def set_params(self, **kwargs):
+        for param, val in self._params.items():
+            if param in kwargs:
+                val = kwargs[param]
+            methodname = f'set{param}'
+            self._bgs.__getattribute__(methodname)(val)
+
+    def apply(self, image, fgmask=None, learningRate=-1):
+        return self._bgs.apply(image=image, fgmask=fgmask,
+                               learningRate=learningRate)
 
 
-class DetectMovementMOG2(DetectMovement):
-
-    _version = get_versions()['version']
-
-    def __init__(self, history=5, complexityreductionthreshold=0.05,
-                 backgroundratio=0.1, nmmixtures=7, varinit=15, varmin=4,
-                 varmax=75, varthreshold=10, varthresholdgen=9,
-                 detect_shadows=False, shadowthreshold=0.5, shadowvalue=127,
-                 learningrate=-1, morphologyex=2, focus_rectcoord=None,
-                 ignore_firstnframes=50, ignore_rectcoord=None,
-                 downscale=None):
-
-        self.history = history
-        self.complexityreductionthreshold = complexityreductionthreshold
-        self.backgroundratio = backgroundratio
-        self.nmmixtures = nmmixtures
-        self.varinit = varinit
-        self.varmin = varmin
-        self.varmax = varmax
-        self.varthreshold = varthreshold
-        self.varthresholdgen = varthresholdgen
-        self.shadowthreshold = shadowthreshold
-        self.shadowvalue = shadowvalue
-        self.detect_shadows = detect_shadows
-        self._mog2bgsubtractor = self._create_bgsubtractor()
-        bgsubtractorparams = self._get_bgsubtractorparams()
-
-        super().__init__(bgsubtractor=self._mog2bgsubtractor,
-                         learningrate=learningrate,
-                         morphologyex=morphologyex,
-                         ignore_firstnframes=ignore_firstnframes,
-                         focus_rectcoord=focus_rectcoord,
-                         ignore_rectcoord=ignore_rectcoord,
-                         downscale=downscale,
-                         bgsubtractorparams=bgsubtractorparams)
-
-    def __str__(self):
-        return "DetectMovementMOG2"
-
-    def _create_bgsubtractor(self):
-        bgsubtractor = cv.createBackgroundSubtractorMOG2(detectShadows=self.detect_shadows)
-        bgsubtractor.setHistory(self.history)
-        bgsubtractor.setComplexityReductionThreshold(
-            self.complexityreductionthreshold)
-        bgsubtractor.setBackgroundRatio(self.backgroundratio)
-        bgsubtractor.setNMixtures(self.nmmixtures)
-        bgsubtractor.setVarInit(self.varinit)
-        bgsubtractor.setVarMin(self.varmin)
-        bgsubtractor.setVarMax(self.varmax)
-        bgsubtractor.setVarThreshold(self.varthreshold)
-        bgsubtractor.setShadowThreshold(self.shadowthreshold)
-        bgsubtractor.setShadowValue(self.shadowvalue)
-        return bgsubtractor
 
 
-    def _get_bgsubtractorparams(self):
-        bgs = self._mog2bgsubtractor
-        return {'mog2_classversion': self._version,
-                'mog2_history': bgs.getHistory(),
-                'mog2_complexityreductionthreshold':
-                    bgs.getComplexityReductionThreshold(),
-                'mog2_backgroundratio': bgs.getBackgroundRatio(),
-                'mog2_nmixtues': bgs.getNMixtures(),
-                'mog2_varinit': bgs.getVarInit(),
-                'mog2_varmin': bgs.getVarMin(),
-                'mog2_varmax': bgs.getVarMax(),
-                'mog2_varthreshold': bgs.getVarThreshold(),
-                'mog2_shadowthreshold': bgs.getShadowThreshold(),
-                'mog2_shadowvalue': bgs.getShadowValue(),
-                'mog2_detect_shadows': self.detect_shadows}
+class BackgroundSubtractorKNN(BackgroundSubtractor):
+
+    """Wraps OpenCV's `BackgroundSubtractorKNN` class.
+
+    Parameters
+    ----------
+    History: int
+        Length of the history. Default 50.
+    kNNSamples: int
+        The number of neighbours, the k in the kNN. K is the number of
+        samples that need to be within dist2Threshold in order to decide
+        that that pixel is matching the kNN background model. Default 10.
+    NSamples: int
+        The number of data samples in the background model. Default 6.
+    Dist2Threshold: float
+        Threshold on the squared distance between the pixel and the sample
+        to decide whether a pixel is close to that sample. This parameter
+        does not affect the background update. Default 500.
+
+    """
+
+    _params = {'History': 5,
+               'kNNSamples': 10,
+               'NSamples': 6,
+               'Dist2Threshold': 500,}
+
+    _bgsubtractorcreatefunc = cv.createBackgroundSubtractorKNN
+
+
+class BackgroundSubtractorMOG2(BackgroundSubtractor):
+
+    _params = {'History': 5,
+               'ComplexityReductionThreshold': 0.05,
+               'BackgroundRatio': 0.1,
+               'NMixtures': 7,
+               'VarInit': 15,
+               'VarMin': 4,
+               'VarMax': 75,
+               'VarThreshold': 10,
+               'VarThresholdGen': 9,
+               'ShadowThreshold': 0.5,
+               'ShadowValue': 127
+               }
+
+    _bgsubtractorcreatefunc = cv.createBackgroundSubtractorMOG2
 
 
 def batch_detect_movementknn(videofilepaths, nprocesses=6, *args, **kwargs):
@@ -277,26 +226,26 @@ def coordcount(coords):
 def coordmean(coords):
         return np.array([idx.mean(0) for idx in coords.iter_arrays()])
 
-def _detect_movement(algorithmclass, videofilepath, morphologyex=2,
+def _detect_movement(bgsclass, videofilepath, morphologyex=2,
                      analysispath='.', ignore_rectcoord=None,
                      ignore_firstnframes=50, **kwargs):
 
     vf = VideoFile(videofilepath)
-    dm = algorithmclass(morphologyex=morphologyex,
-                        ignore_rectcoord=ignore_rectcoord,
-                        ignore_firstnframes=ignore_firstnframes, **kwargs)
-    algostr = str(dm)
+    bgs = bgsclass(**kwargs)
+    algostr = str(bgs)
+    md = MovementDetector(bgs, ignore_firstnframes=ignore_firstnframes,
+                          ignore_rectcoord=ignore_rectcoord)
     analysispath = Path(analysispath) / Path(
         f'{vf.filepath.stem}_movement_{algostr}_me{ morphologyex}')
     if not analysispath.exists():
         os.mkdir(analysispath)
 
-    metadata = dm.get_params()
+    metadata = bgs.get_params()
     cd = create_coordarray(analysispath / 'coordinates.drarr',
                            videofile=vf, metadata=metadata, overwrite=True)
     with cd._view():
         for i, frame in enumerate(vf.iter_frames()):
-            thresh, idx = dm.apply(frame)
+            thresh, idx = md.apply(frame)
             cd.append(idx)
     cc = darr.asarray(analysispath / 'coordscount.darr', coordcount(cd),
                       metadata=metadata, overwrite=True)
@@ -308,7 +257,7 @@ def _detect_movement(algorithmclass, videofilepath, morphologyex=2,
 def detect_movementknn(videofilepath, morphologyex=2, analysispath='.',
                        ignore_rectcoord=None, ignore_firstnframes=50,
                        **kwargs):
-    cd, cc, cm = _detect_movement(algorithmclass=DetectMovementKnn,\
+    cd, cc, cm = _detect_movement(bgsclass=BackgroundSubtractorKNN, \
                                   videofilepath=videofilepath,
                                   morphologyex=morphologyex,
                                   analysispath=analysispath,
@@ -321,7 +270,7 @@ def detect_movementknn(videofilepath, morphologyex=2, analysispath='.',
 def detect_movementmog2(videofilepath, morphologyex=2, analysispath='.',
                        ignore_rectcoord=None, ignore_firstnframes=50,
                        **kwargs):
-    cd, cc, cm = _detect_movement(algorithmclass=DetectMovementMOG2,\
+    cd, cc, cm = _detect_movement(bgsclass=BackgroundSubtractorMOG2, \
                                   videofilepath=videofilepath,
                                   morphologyex=morphologyex,
                                   analysispath=analysispath,
