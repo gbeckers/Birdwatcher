@@ -67,7 +67,7 @@ class CoordinateArrays(RaggedArray):
 def create_coordarray(path, videofile, metadata=None, overwrite=True):
     if metadata is None:
         metadata = {}
-    metadata.update(videofile.get_properties(affix='video_'))
+    metadata.update({'video': videofile.get_properties()})
     metadata.update({'birdwatcher_version': get_versions()['version']})
     coords = create_raggedarray(path, atom=(2,), metadata=metadata,
                                 overwrite=overwrite, dtype='uint16')

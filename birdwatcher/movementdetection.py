@@ -104,7 +104,8 @@ class MovementDetector():
         return thresh, idx
     
     def get_params(self):
-        return  {'learningrate': self.learningrate,
+        return  {'class': str(self.__class__),
+                 'learningrate': self.learningrate,
                  'ignore_firstnframes': self.ignore_firstnframes,
                  'focus_rectcoord': self.focus_rectcoord,
                  'ignore_rectcoord': self.ignore_rectcoord,
@@ -133,6 +134,7 @@ class BackgroundSubtractor:
         for param in self._params.keys():
             methodname = f'get{param}'
             paramdict[param] = self._bgs.__getattribute__(methodname)()
+        paramdict['class'] = str(self.__class__)
         return paramdict
 
     def set_params(self, **kwargs):
