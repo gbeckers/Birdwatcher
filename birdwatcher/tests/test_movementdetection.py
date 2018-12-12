@@ -9,15 +9,9 @@ class TestBackgroundSubtractorKNN(unittest.TestCase):
     def test_KNNdefaultinstantiation(self):
         bw.BackgroundSubtractorKNN()
 
-    def test_KNNgetparams(self):
+    def test_KNNparams(self):
         bgs = bw.BackgroundSubtractorKNN(History=10)
-        params = bgs.get_params()
-        self.assertEqual(params['History'], 10)
-
-    def test_KNNsetparams(self):
-        bgs = bw.BackgroundSubtractorKNN(History=10)
-        bgs.set_params(History=20)
-        self.assertEqual(bgs.get_params()['History'], 20)
+        self.assertEqual(bgs.get_params()['History'], 10)
 
     def test_KNNapply(self):
         bgs = bw.BackgroundSubtractorKNN(History=10)
@@ -32,15 +26,10 @@ class TestBackgroundSubtractorMOG2(unittest.TestCase):
     def test_MOG2defaultinstantiation(self):
         bw.BackgroundSubtractorMOG2()
 
-    def test_MOG2getparams(self):
+    def test_MOG2params(self):
         bgs = bw.BackgroundSubtractorMOG2(History=10)
-        params = bgs.get_params()
-        self.assertEqual(params['History'], 10)
+        self.assertEqual(bgs.get_params()['History'], 10)
 
-    def test_MOG2setparams(self):
-        bgs = bw.BackgroundSubtractorMOG2(History=10)
-        bgs.set_params(History=20)
-        self.assertEqual(bgs.get_params()['History'], 20)
 
     def test_MOG2apply(self):
         bgs = bw.BackgroundSubtractorMOG2(History=10)
@@ -49,3 +38,20 @@ class TestBackgroundSubtractorMOG2(unittest.TestCase):
         for frame in frames:
             bgs.apply(frame)
 
+
+
+class TestBackgroundSubtractorLSBP(unittest.TestCase):
+
+    def test_LSBPdefaultinstantiation(self):
+        bw.BackgroundSubtractorLSBP()
+
+    def test_LSBPparams(self):
+        bgs = bw.BackgroundSubtractorLSBP(nSamples=10)
+        self.assertEqual(bgs.get_params()['nSamples'], 10)
+
+    def test_LSBPapply(self):
+        bgs = bw.BackgroundSubtractorLSBP()
+        frames = create_frameswithmovingcircle(nframes=5, width=1080,
+                                               height=720)
+        for frame in frames:
+            bgs.apply(frame)

@@ -10,7 +10,7 @@ from ._version import get_versions
 
 __all__ = ['detect_movementknn', 'batch_detect_movementknn',
            'detect_movementmog2', 'BackgroundSubtractorMOG2',
-           'BackgroundSubtractorKNN',
+           'BackgroundSubtractorKNN', 'BackgroundSubtractorLSBP',
            'MovementDetector']
 
 class MovementDetector():
@@ -122,28 +122,31 @@ class MovementDetector():
 
 class BackgroundSubtractor:
 
-    _params = {} # to be implemented by subclass
+    _initparams = {}  # to be implemented by subclass
+    _setparams = {} # to be implemented by subclass
     _bgsubtractorcreatefunc = None # to be implemented by subclass
 
     def __init__(self, **kwargs):
         # create background subtractor
-        self._bgs = self._bgsubtractorcreatefunc()
-        self.set_params(**kwargs)
+        initkeys = set(kwargs.keys()) & set(self._initparams.keys())
+        initparams = self._initparams.copy()
+        for initkey in initkeys:
+            initparams[initkey] = kwargs[initkey]
+        self._bgs = self._bgsubtractorcreatefunc(**initparams)
+        setkeys = set(kwargs.keys()) & set(self._setparams.keys())
+        setparams = self._setparams.copy()
+        for setkey in setkeys:
+            setparams[setkey] = kwargs[setkey]
+        self._set_params(**setparams)
+        self._params = {**initparams, **setparams}
+
+    def _set_params(self, **kwargs):
+        for key, val in kwargs.items():
+            methodname = f'set{key}'
+            self._bgs.__getattribute__(methodname)(val)
 
     def get_params(self):
-        paramdict = {}
-        for param in self._params.keys():
-            methodname = f'get{param}'
-            paramdict[param] = self._bgs.__getattribute__(methodname)()
-        paramdict['class'] = str(self.__class__)
-        return paramdict
-
-    def set_params(self, **kwargs):
-        for param, val in self._params.items():
-            if param in kwargs:
-                val = kwargs[param]
-            methodname = f'set{param}'
-            self._bgs.__getattribute__(methodname)(val)
+        return self._params
 
     def apply(self, image, fgmask=None, learningRate=-1):
         return self._bgs.apply(image=image, fgmask=fgmask,
@@ -173,30 +176,51 @@ class BackgroundSubtractorKNN(BackgroundSubtractor):
 
     """
 
-    _params = {'History': 5,
-               'kNNSamples': 10,
-               'NSamples': 6,
-               'Dist2Threshold': 500,}
+    _setparams = {'History': 5,
+                  'kNNSamples': 10,
+                  'NSamples': 6,
+                   'Dist2Threshold': 500,}
 
     _bgsubtractorcreatefunc = cv.createBackgroundSubtractorKNN
 
 
 class BackgroundSubtractorMOG2(BackgroundSubtractor):
 
-    _params = {'History': 5,
-               'ComplexityReductionThreshold': 0.05,
-               'BackgroundRatio': 0.1,
-               'NMixtures': 7,
-               'VarInit': 15,
-               'VarMin': 4,
-               'VarMax': 75,
-               'VarThreshold': 10,
-               'VarThresholdGen': 9,
-               'ShadowThreshold': 0.5,
-               'ShadowValue': 127
-               }
+    _setparams = {'History': 5,
+                  'ComplexityReductionThreshold': 0.05,
+                  'BackgroundRatio': 0.1,
+                  'NMixtures': 7,
+                  'VarInit': 15,
+                  'VarMin': 4,
+                  'VarMax': 75,
+                  'VarThreshold': 10,
+                  'VarThresholdGen': 9,
+                  'ShadowThreshold': 0.5,
+                  'ShadowValue': 127
+                  }
 
     _bgsubtractorcreatefunc = cv.createBackgroundSubtractorMOG2
+
+
+class BackgroundSubtractorLSBP(BackgroundSubtractor):
+
+    _initparams = {'mc': 0,
+                   'nSamples': 20,
+                   'LSBPRadius': 16,
+                   'Tlower': 2.0,
+                   'Tupper': 32.0,
+                   'Tinc': 1.0,
+                   'Tdec': 0.05,
+                   'Rscale': 10.0,
+                   'Rincdec': 0.005,
+                   'noiseRemovalThresholdFacBG': 0.0004,
+                   'noiseRemovalThresholdFacFG': 0.0008,
+                   'LSBPthreshold': 8,
+                   'minCount': 2
+                   }
+
+    _bgsubtractorcreatefunc = cv.bgsegm.createBackgroundSubtractorLSBP
+
 
 
 def batch_detect_movementknn(videofilepaths, nprocesses=6, *args, **kwargs):
