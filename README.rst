@@ -89,12 +89,12 @@ To run the test suite:
 
     >>>import birdwatcher as bw
     >>>bw.test()
-    .
+    ..........
     ----------------------------------------------------------------------
-    Ran 2 tests in 0.761s
+    Ran 10 tests in 1.683s
 
     OK
-    <unittest.runner.TextTestResult run=2 errors=0 failures=0>
+    <unittest.runner.TextTestResult run=10 errors=0 failures=0>
 
 Examples
 --------
