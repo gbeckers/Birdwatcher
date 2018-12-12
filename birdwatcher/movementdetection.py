@@ -10,6 +10,7 @@ from ._version import get_versions
 
 __all__ = ['detect_movementknn', 'batch_detect_movementknn',
            'detect_movementmog2', 'BackgroundSubtractorMOG2',
+           'BackgroundSubtractorKNN',
            'MovementDetector']
 
 class MovementDetector():
