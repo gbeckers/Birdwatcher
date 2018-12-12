@@ -206,3 +206,14 @@ def framecolor(height, width, color=(0, 0, 0), dtype='uint8'):
     """
     return np.ones((height, width, 3), dtype=dtype) * np.asanyarray(color,
                                                                     dtype=dtype)
+
+
+def create_frameswithmovingcircle(nframes, height, width, framecolor=(0, 0, 0),
+                                  circlecolor=(255, 100, 0), radius=6,
+                                  thickness=2, linetype=8, dtype='uint8'):
+    frames = FramesColor(nframes=nframes, height=height, width=width,
+                         color=framecolor, dtype=dtype)
+    centers = zip(np.linspace(0, width, nframes),
+                  np.linspace(0, height, nframes))
+    return frames.draw_circles(centers, color=circlecolor, radius=radius,
+                               thickness=thickness, linetype=linetype)
