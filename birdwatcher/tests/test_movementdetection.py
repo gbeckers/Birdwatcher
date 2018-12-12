@@ -24,5 +24,5 @@ class TestBackgroundSubtractorMOG2(unittest.TestCase):
         frames = create_frameswithmovingcircle(nframes=5, width=1080,
                                                height=720)
         for frame in frames:
-            thresh = bgs.apply(frame)
+            bgs.apply(frame)
 
