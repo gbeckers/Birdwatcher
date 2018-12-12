@@ -4,6 +4,29 @@ import birdwatcher as bw
 from birdwatcher.frameprocessing import create_frameswithmovingcircle
 
 
+class TestBackgroundSubtractorKNN(unittest.TestCase):
+
+    def test_KNNdefaultinstantiation(self):
+        bw.BackgroundSubtractorKNN()
+
+    def test_KNNgetparams(self):
+        bgs = bw.BackgroundSubtractorKNN(History=10)
+        params = bgs.get_params()
+        self.assertEqual(params['History'], 10)
+
+    def test_KNNsetparams(self):
+        bgs = bw.BackgroundSubtractorKNN(History=10)
+        bgs.set_params(History=20)
+        self.assertEqual(bgs.get_params()['History'], 20)
+
+    def test_KNNapply(self):
+        bgs = bw.BackgroundSubtractorKNN(History=10)
+        frames = create_frameswithmovingcircle(nframes=5, width=1080,
+                                               height=720)
+        for frame in frames:
+            bgs.apply(frame)
+
+
 class TestBackgroundSubtractorMOG2(unittest.TestCase):
 
     def test_MOG2defaultinstantiation(self):
