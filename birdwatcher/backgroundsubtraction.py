@@ -37,6 +37,12 @@ class BaseBackgroundSubtractor:
         self._set_params(**setparams)
         self._params = {**initparams, **setparams}
 
+    def __str__(self):
+        return self.__class__.__name__
+
+    def __repr__(self):
+        return f"<{self.__class__.__name__} {hex(id(self))}>"
+
     def _set_params(self, **kwargs):
         for key, val in kwargs.items():
             methodname = f'set{key}'
