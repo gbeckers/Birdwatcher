@@ -1,15 +1,14 @@
 """Module with background subtractors. Background subtraction is a major
-preprocessing step in many computer vision applications.It extracts the moving
+preprocessing step in many computer vision applications. It extracts the moving
 foreground from static background.
 
 All classes are based on OpenCV's background subtraction algorithms. They
-can be used for example in movement detection. Note OpenCV's API to these
-classes in not standardized. In Birdwatcher you can only provide parameters
-to background subtractor objects at instantiation. You cannot change them
-after that.
+can be used for example in movement detection. Note OpenCV's API to
+parameters of these algorithms  is messy. In Birdwatcher you can only provide
+parameters to background subtractor objects at instantiation. The parameter
+names follow that of OpenCV.
 
 """
-
 
 import cv2 as cv
 
@@ -51,8 +50,6 @@ class BaseBackgroundSubtractor:
                                learningRate=learningRate)
 
 
-
-
 class BackgroundSubtractorKNN(BaseBackgroundSubtractor):
 
     """Wraps OpenCV's `BackgroundSubtractorKNN` class.
@@ -77,7 +74,7 @@ class BackgroundSubtractorKNN(BaseBackgroundSubtractor):
     _setparams = {'History': 5,
                   'kNNSamples': 10,
                   'NSamples': 6,
-                   'Dist2Threshold': 500,}
+                  'Dist2Threshold': 500}
 
     _bgsubtractorcreatefunc = cv.createBackgroundSubtractorKNN
 
@@ -94,8 +91,7 @@ class BackgroundSubtractorMOG2(BaseBackgroundSubtractor):
                   'VarThreshold': 10,
                   'VarThresholdGen': 9,
                   'ShadowThreshold': 0.5,
-                  'ShadowValue': 127
-                  }
+                  'ShadowValue': 127}
 
     _bgsubtractorcreatefunc = cv.createBackgroundSubtractorMOG2
 
@@ -114,8 +110,7 @@ class BackgroundSubtractorLSBP(BaseBackgroundSubtractor):
                    'noiseRemovalThresholdFacBG': 0.0004,
                    'noiseRemovalThresholdFacFG': 0.0008,
                    'LSBPthreshold': 8,
-                   'minCount': 2
-                   }
+                   'minCount': 2}
 
     _bgsubtractorcreatefunc = cv.bgsegm.createBackgroundSubtractorLSBP
 
