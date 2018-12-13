@@ -55,7 +55,7 @@ class FrameIterator:
 
     def draw_circles(self, centers, radius=6, color=(255, 100, 0),
                      thickness=2,
-                     linetype=8, shift=0):
+                     linetype=cv.LINE_AA, shift=0):
         """Creates a frame iterator that draws circles on an input frames
         iterable.
 
@@ -72,7 +72,7 @@ class FrameIterator:
         thickness: int
             Line thickness. Default 2.
         linetype: int
-            OpenCV line type of circle boundary. Default 8
+            OpenCV line type of circle boundary. Default cv2.LINE_AA
         shift: int
             Number of fractional bits in the coordinates of the center and in
             the radius value. Default 0.
@@ -95,6 +95,48 @@ class FrameIterator:
                 else:
                     yield frame
         return FrameIterator(iter_frames())
+
+    def draw_framenumber(self, startat=0, org=(0, 25),
+                         fontface=cv.FONT_HERSHEY_SIMPLEX,
+                         fontscale=1, color=(200, 200, 200), thickness=2,
+                         linetype=cv.LINE_AA):
+        """Creates a frame iterator that draws the frame number on an input
+        frames iterable.
+
+        Parameters
+        ----------
+        startat: int
+            The number to start counting at. Default 0
+        org: 2-tuple of ints
+            Bottom-left corner of the text string in the image.
+        fontface: OpenCV font type
+            Default cv.FONT_HERSHEY_SIMPLEX
+        fontscale: float
+            Font scale factor that is multiplied by the font-specific base
+            size.
+        color: tuple of ints
+            Color of circle (r, g, b). Default (255, 100, 0)
+        thickness: int
+            Line thickness. Default 2.
+        linetype: int
+            OpenCV line type of circle boundary. Default cv2.LINE_AA
+
+        Returns
+        -------
+        iterator
+            Iterator that generates frames with frame numbers
+
+        """
+        framegen = (cv.putText(frame, str(frameno + startat), org=org,
+                                 fontFace=fontface, fontScale=fontscale,
+                                 color=color, thickness=thickness,
+                                 lineType=linetype)
+                    for frameno, frame in enumerate(self._frames)
+                    )
+
+        return FrameIterator(framegen)
+
+
 
 
 class FramesColor(FrameIterator):
