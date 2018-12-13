@@ -6,7 +6,7 @@ import darr
 
 from .videoinput import VideoFile
 from .coordinatearrays import create_coordarray
-from .bgsegm import BackgroundSubtractorMOG2, BackgroundSubtractorKNN
+from .backgroundsubtraction import BackgroundSubtractorMOG2, BackgroundSubtractorKNN
 from ._version import get_versions
 
 __all__ = ['detect_movementknn', 'batch_detect_movementknn',
@@ -21,11 +21,11 @@ class MovementDetector():
                  morphologyex=2):
 
         """Detect movement in when iterating over frames, based on a specified
-        BackgroundSubtractor object.
+        BaseBackgroundSubtractor object.
 
         Parameters
         ----------
-        bgsubtractor: Birdwatcher BackgroundSubtractor
+        bgsubtractor: Birdwatcher BaseBackgroundSubtractor
         learningrate: int
             Default -1.
         morphologyex: int

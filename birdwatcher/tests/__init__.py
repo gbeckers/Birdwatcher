@@ -1,9 +1,11 @@
 from unittest import TestLoader, TextTestRunner, TestSuite
 
-from . import test_videoinput
+from . import test_frameprocessing
 from . import test_movementdetection
+from . import test_videoinput
 
-modules = [test_videoinput, test_movementdetection]
+
+modules = [test_frameprocessing, test_movementdetection, test_videoinput]
 
 def test(verbosity=1):
     suite =TestSuite()
