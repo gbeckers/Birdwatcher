@@ -131,8 +131,7 @@ class FrameIterator:
                                  fontFace=fontface, fontScale=fontscale,
                                  color=color, thickness=thickness,
                                  lineType=linetype)
-                    for frameno, frame in enumerate(self._frames)
-                    )
+                    for frameno, frame in enumerate(self._frames))
 
         return FrameIterator(framegen)
 

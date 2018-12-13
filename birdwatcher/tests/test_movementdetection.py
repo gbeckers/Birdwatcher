@@ -1,5 +1,4 @@
 import unittest
-import numpy as np
 import birdwatcher as bw
 from birdwatcher.frameprocessing import create_frameswithmovingcircle
 
