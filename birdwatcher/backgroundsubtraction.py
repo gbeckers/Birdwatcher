@@ -1,3 +1,15 @@
+"""Module with background subtractors. Background subtraction is a major
+preprocessing step in many computer vision applications.It extracts the moving
+foreground from static background.
+
+All classes are based on OpenCV's background subtraction algorithms. They
+can be used for example in movement detection. Note OpenCV's API to these
+classes in not standardized. In Birdwatcher you can only provide parameters
+to background subtractor objects at instantiation. You cannot change them
+after that.
+
+"""
+
 
 import cv2 as cv
 
@@ -5,11 +17,12 @@ import cv2 as cv
 __all__ = ['BackgroundSubtractorMOG2', 'BackgroundSubtractorKNN',
            'BackgroundSubtractorLSBP']
 
-class BackgroundSubtractor:
 
-    _initparams = {}  # to be implemented by subclass
-    _setparams = {} # to be implemented by subclass
-    _bgsubtractorcreatefunc = None # to be implemented by subclass
+class BaseBackgroundSubtractor:
+
+    _initparams = {}                # to be implemented by subclass
+    _setparams = {}                 # to be implemented by subclass
+    _bgsubtractorcreatefunc = None  # to be implemented by subclass
 
     def __init__(self, **kwargs):
         # create background subtractor
@@ -40,7 +53,7 @@ class BackgroundSubtractor:
 
 
 
-class BackgroundSubtractorKNN(BackgroundSubtractor):
+class BackgroundSubtractorKNN(BaseBackgroundSubtractor):
 
     """Wraps OpenCV's `BackgroundSubtractorKNN` class.
 
@@ -69,7 +82,7 @@ class BackgroundSubtractorKNN(BackgroundSubtractor):
     _bgsubtractorcreatefunc = cv.createBackgroundSubtractorKNN
 
 
-class BackgroundSubtractorMOG2(BackgroundSubtractor):
+class BackgroundSubtractorMOG2(BaseBackgroundSubtractor):
 
     _setparams = {'History': 5,
                   'ComplexityReductionThreshold': 0.05,
@@ -87,7 +100,7 @@ class BackgroundSubtractorMOG2(BackgroundSubtractor):
     _bgsubtractorcreatefunc = cv.createBackgroundSubtractorMOG2
 
 
-class BackgroundSubtractorLSBP(BackgroundSubtractor):
+class BackgroundSubtractorLSBP(BaseBackgroundSubtractor):
 
     _initparams = {'mc': 0,
                    'nSamples': 20,
