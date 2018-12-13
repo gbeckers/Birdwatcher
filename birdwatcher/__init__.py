@@ -1,5 +1,6 @@
 from .videoinput import *
 from .movementdetection import *
+from .bgsegm import *
 from .coordinatearrays import *
 from . import frameprocessing
 #from .plotting import *
