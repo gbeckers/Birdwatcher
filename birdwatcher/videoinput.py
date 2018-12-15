@@ -28,14 +28,39 @@ class VideoFile():
             raise FileNotFoundError(f'"{filepath}" does not exist')
         vp = self.get_properties()
         self.fourcccode = vp['fourcc']
-        self.fourcc = cv.VideoWriter_fourcc(*self.fourcccode)
-        self.shape = vp['shape']
-        self.framerate = vp['framerate']
-        self.duration = vp['duration']
-        self.format = vp['format']
-        self.framecount = vp['framecount']
+        self._fourcc = cv.VideoWriter_fourcc(*self.fourcccode)
+        self._shape = vp['shape']
+        self._framerate = vp['framerate']
+        self._duration = vp['duration']
+        self._format = vp['format']
+        self._framecount = vp['framecount']
         self._nframes = None
 
+    @property
+    def duration(self):
+        """Duration of video in secomds."""
+        return self._duration
+
+    @property
+    def format(self):
+        """Video format."""
+        return self._format
+
+    @property
+    def fourcc(self):
+        """Four character code video codec."""
+        return self._fourcc
+
+    @property
+    def framecount(self):
+        """Number of frame video in video as reported by header. This is not
+        necessarily accurate. If accuracy is important use `nframes`."""
+        return self._framerate
+
+    @property
+    def framerate(self):
+        """Frame rate of video in frames / second."""
+        return self._framerate
 
     @property
     def nframes(self):
@@ -52,6 +77,10 @@ class VideoFile():
                 pass
             self._nframes = i
             return i
+    @property
+    def shape(self):
+        """Shape (width, height) of video frame."""
+        return self._shape
 
     def get_properties(self, affix=None):
         d = {}
@@ -86,8 +115,8 @@ class VideoFile():
     
     def derive_videowriter(self, s, path=None):
         trackfn = str(self.derive_filepath(s, suffix='.avi', path=path))
-        return cv.VideoWriter(trackfn, cv.VideoWriter_fourcc(*'MJPG'), 
-                            self.framerate, self.shape, True)
+        return cv.VideoWriter(trackfn, cv.VideoWriter_fourcc(*'MJPG'),
+                              self._framerate, self.shape, True)
     def get_framebynumber(self, framenumber):
         cap = cv.VideoCapture(str(self.filepath)) 
         res = cap.set(cv.CAP_PROP_POS_FRAMES, framenumber)
