@@ -1,3 +1,8 @@
+"""This module contains classes and functions to work with video files. For
+now this depends on OpenCV's VideoCapture class.
+
+"""
+
 import sys
 import pathlib
 from contextlib import contextmanager
@@ -7,8 +12,17 @@ __all__ = ['VideoFile', 'testvideosmall']
 
 
 class VideoFile():
+    """Read video files.
+
+    Parameters
+    ----------
+    filepath: str of pathlib.Path
+        Path to videofile.
+
+    """
 
     def __init__(self, filepath):
+
         self.filepath = fp = pathlib.Path(filepath)
         if not fp.exists():
             raise FileNotFoundError(f'"{filepath}" does not exist')
@@ -26,8 +40,11 @@ class VideoFile():
     @property
     def nframes(self):
         """Number of frames in video. This is determined by reading the
-        whole stream, which may take some time, and is more reliable than
-        the `framecount` attribute."""
+        whole video stream, which may take a long time depending on how large
+        it is. This is accurate though, as opposed to the `framecount`
+        attribute which is not always reliable, but fast.
+
+        """
         if self._nframes is not None:
             return self._nframes
         else:
@@ -101,6 +118,15 @@ class VideoFile():
         video_writer.release()
 
 
-def testvideosmall(file='zf20s_low.mp4'):
+def testvideosmall():
+    """A 20-s video of a zebra finch for testing purposes.
+
+    Returns
+    -------
+    VideoFile
+        An instance of Birdwatcher's VideoFile class.
+
+    """
+    file = 'zf20s_low.mp4'
     path = pathlib.Path(__file__).parent / 'testvideos' / file
     return VideoFile(path)
