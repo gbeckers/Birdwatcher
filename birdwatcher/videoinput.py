@@ -82,7 +82,15 @@ class VideoFile():
         """Shape (width, height) of video frame."""
         return self._shape
 
-    def get_properties(self, affix=None):
+    def get_properties(self):
+        """Get video properties.
+
+        Returns
+        -------
+        dict
+            A dictionary with video properties.
+
+        """
         d = {}
         cap = cv.VideoCapture(str(self.filepath))
         d['width'] = int(cap.get(cv.CAP_PROP_FRAME_WIDTH))
@@ -95,29 +103,72 @@ class VideoFile():
         d['duration'] = d['framecount'] / d['framerate']
         d['filename'] = self.filepath.parts[-1]
         cap.release()
-        if affix is not None:
-            ad = {}
-            for key, item in (d.items()):
-                ad[f'{affix}{key}'] = item
-            d = ad
         return d
     
-    def derive_filepath(self, s, suffix=None, path=None):
+    def derive_filepath(self, append_string='', suffix=None, path=None):
+        """Generate a file path based on the name and potentially path of the
+        video.
+
+        Parameters
+        ----------
+        append_string: str
+            String to append to file name stem. Default: ''.
+        suffix: str or None
+            File extension to use. If None, the same as video file.
+        path: str or pathlib.Path or None
+            Path to use. If None use same path as video file.
+
+        Returns
+        -------
+        pathlib.Path
+            Path derived from video file path.
+
+        """
         stem = self.filepath.stem
         if suffix is None:
             suffix = self.filepath.suffix
-        filename = f'{stem}_{s}{suffix}'
+        filename = f'{stem}_{append_string}{suffix}'
         if path is None:
             dpath =  self.filepath.parent / filename
         else:
             dpath = pathlib.Path(path) / filename
         return dpath
     
-    def derive_videowriter(self, s, path=None):
-        trackfn = str(self.derive_filepath(s, suffix='.avi', path=path))
+    def _derive_videowriter(self, append_string, path=None):
+        """Generate a video writer object with file path based on the name and
+        potentially path of the video. For now this only produces MJPG files.
+
+        Parameters
+        ----------
+        append_string: str
+            String to append to file name stem. Default: ''.
+        path: str or pathlib.Path or None
+            Path to use. If None use same path as video file.
+
+
+        Returns
+        -------
+        cv.VideoWriter
+            Object that can be used to write frames to video file.
+
+        """
+        trackfn = str(self.derive_filepath(append_string, suffix='.avi', path=path))
         return cv.VideoWriter(trackfn, cv.VideoWriter_fourcc(*'MJPG'),
                               self._framerate, self.shape, True)
     def get_framebynumber(self, framenumber):
+        """Get a frame from the video file.
+
+        Parameters
+        ----------
+        framenumber: int
+            The frame number (start counting at 0).
+
+        Returns
+        -------
+        Numpy array frame
+            Height x width x color channel
+
+        """
         cap = cv.VideoCapture(str(self.filepath)) 
         res = cap.set(cv.CAP_PROP_POS_FRAMES, framenumber)
         if res:
@@ -128,6 +179,19 @@ class VideoFile():
         return frame
         
     def iter_frames(self, stopframe=None):
+        """Iterate over frames in video.
+
+        Parameters
+        ----------
+        stopframe: int
+            Stop at frame `stopframe`
+
+        Returns
+        -------
+        Iterator
+            Generates numpy array frames (Height x width x color channel).
+
+        """
         cap = cv.VideoCapture(str(self.filepath))
         frameno = 0
         while(True):
@@ -141,8 +205,24 @@ class VideoFile():
         cap.release()
 
     @contextmanager
-    def open_videowriter(self, s, path=None):
-        video_writer = self.derive_videowriter(s, path=path)
+    def open_videowriter(self, append_string, path=None):
+        """Open video writer file object. The file path is based on the name and
+        potentially path of the video. For now this only produces MJPG files.
+
+        Parameters
+        ----------
+        append_string: str
+            String to append to file name stem. Default: ''.
+        path: str or pathlib.Path or None
+            Path to use. If None use same path as video file.
+
+        Returns
+        -------
+        cv.VideoWriter
+            Object that can be used to write frames to video file.
+
+        """
+        video_writer = self._derive_videowriter(append_string, path=path)
         yield video_writer
         video_writer.release()
 
