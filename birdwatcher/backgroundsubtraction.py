@@ -51,16 +51,46 @@ class BaseBackgroundSubtractor:
             self._bgs.__getattribute__(methodname)(val)
 
     def get_params(self):
+        """Get parameters of the background subtraction algorithm.
+
+        Returns
+        -------
+        dict
+            Dictionary with algorithm parameters.
+
+        """
         return self._params
 
-    def apply(self, image, fgmask=None, learningRate=-1):
+    def apply(self, image, fgmask=None, learningRate=-1.0):
+        """Computes a foreground mask.
+
+        Parameters
+        ----------
+        image: numpy array image
+            Next video frame.
+        fgmask: numpy array image
+            The output foreground mask as an 8-bit binary image.
+        learningRate: float
+            The value between 0 and 1 that indicates how fast the background
+            model is learnt. Negative parameter value makes the algorithm to
+            use some automatically chosen learning rate. 0 means that the
+            background model is not updated at all, 1 means that the background
+            model is completely reinitialized from the last frame.
+
+        Returns
+        -------
+        numpy array image
+            The output foreground mask as an 8-bit binary image.
+
+        """
         return self._bgs.apply(image=image, fgmask=fgmask,
                                learningRate=learningRate)
 
 
 class BackgroundSubtractorKNN(BaseBackgroundSubtractor):
 
-    """Wraps OpenCV's `BackgroundSubtractorKNN` class.
+    """Wraps OpenCV's `BackgroundSubtractorKNN` class. Parameter names follow
+    those in OpenCV.
 
     Parameters
     ----------
@@ -76,18 +106,83 @@ class BackgroundSubtractorKNN(BaseBackgroundSubtractor):
         Threshold on the squared distance between the pixel and the sample
         to decide whether a pixel is close to that sample. This parameter
         does not affect the background update. Default 500.
+    DetectShadows: bool
+        If true, the algorithm detects shadows and marks them. Default False.
+    ShadowThreshold: float
+        A shadow is detected if pixel is a darker version of the background.
+        The shadow threshold is a threshold defining how much darker the
+        shadow can be. 0.5 means that if a pixel is more than twice darker
+        then it is not shadow. Deault 0.5.
+    ShadowValue: int
+        Shadow value is the value used to mark shadows in the foreground mask.
+        Value 0 in the mask always means background, 255 means foreground.
+        Default value is 127.
 
     """
 
+    _initparams = {}
     _setparams = {'History': 5,
                   'kNNSamples': 10,
                   'NSamples': 6,
-                  'Dist2Threshold': 500}
+                  'Dist2Threshold': 500,
+                  'DetectShadows': False,
+                  'ShadowsThreshold': 0.5,
+                  'ShadowValue': 127}
 
     _bgsubtractorcreatefunc = cv.createBackgroundSubtractorKNN
 
 
 class BackgroundSubtractorMOG2(BaseBackgroundSubtractor):
+    """Wraps OpenCV's `BackgroundSubtractorMOG2` class. Parameter names follow
+    those in OpenCV.
+
+    Parameters
+    ----------
+    History: int
+        Length of the history. Default 50.
+    ComplexityReductionThreshold: float
+        This parameter defines the number of samples needed to accept to prove
+        the component exists. CT=0.05 is a default value for all the samples.
+        By setting CT=0 you get an algorithm very similar to the standard
+        Stauffer&Grimson algorithm.
+    BackgroundRatio: float
+        If a foreground pixel keeps semi-constant value for about
+        backgroundRatio*history frames, it's considered background and added to
+        the model as a center of a new component. It corresponds to TB
+        parameter in the paper. Default 0.1.
+    NMixtures: int
+        The number of gaussian components in the background model. Default 7.
+    VarInit: int
+        The initial variance of each gaussian component. Default 15.
+    VarMin: int
+        The minimum variance of each gaussian component. Default 4.
+    VarMax: int
+        The maximum variance of each gaussian component. Default 75.
+    VarThreshold: int
+        The variance threshold for the pixel-model match. The main threshold on
+        the squared Mahalanobis distance to decide if the sample is well
+        described by the background model or not. Related to Cthr from the
+        paper.
+    VarThresholdGen: int
+        The variance threshold for the pixel-model match used for new mixture
+        component generation. Threshold for the squared Mahalanobis distance
+        that helps decide when a sample is close to the existing components
+        (corresponds to Tg in the paper). If a pixel is not close to any
+        component, it is considered foreground or added as a new component.
+        3 sigma => Tg=3*3=9 is default. A smaller Tg value generates more
+        components. A higher Tg value may result in a small number of
+        components but they can grow too large.
+    ShadowThreshold: float
+        A shadow is detected if pixel is a darker version of the background.
+        The shadow threshold is a threshold defining how much darker the
+        shadow can be. 0.5 means that if a pixel is more than twice darker
+        then it is not shadow. Deault 0.5.
+    ShadowValue: int
+        Shadow value is the value used to mark shadows in the foreground mask.
+        Value 0 in the mask always means background, 255 means foreground.
+        Default value is 127.
+
+    """
 
     _setparams = {'History': 5,
                   'ComplexityReductionThreshold': 0.05,
@@ -98,6 +193,7 @@ class BackgroundSubtractorMOG2(BaseBackgroundSubtractor):
                   'VarMax': 75,
                   'VarThreshold': 10,
                   'VarThresholdGen': 9,
+                  'DetectShadows': False,
                   'ShadowThreshold': 0.5,
                   'ShadowValue': 127}
 
