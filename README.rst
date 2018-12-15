@@ -1,7 +1,7 @@
 Birdwatcher
 ===========
 
-|Repo Status| |Travis Status| |Appveyor Status|
+|Repo Status| |Travis Status| |Appveyor Status| |Docs Status|
 
 Birdwatcher is a Python computer vision library for the analysis of animal
 behavior.
@@ -97,17 +97,28 @@ To run the test suite:
 
     <unittest.runner.TextTestResult run=13 errors=0 failures=0>
 
+
+Documentation
+-------------
+The early stages of an evolving documentation can be found at
+https://birdwatcher.readthedocs.io
+
+
 Examples
 --------
 
 See notebook directory.
 
-..  |Repo Status| image:: https://www.repostatus.org/badges/latest/wip.svg
-    :alt: Project Status: WIP – Initial development is in progress, but there has not yet been a stable, usable release suitable for the public.
-    :target: https://www.repostatus.org/#wip
+.. |Repo Status| image:: https://www.repostatus.org/badges/latest/wip.svg
+   :alt: Project Status: WIP – Initial development is in progress, but there has not yet been a stable, usable release suitable for the public.
+   :target: https://www.repostatus.org/#wip
 
 .. |Travis Status| image:: https://travis-ci.org/gbeckers/Birdwatcher.svg?branch=master
    :target: https://travis-ci.org/gbeckers/Birdwatcher?branch=master
 
 .. |Appveyor Status| image:: https://ci.appveyor.com/api/projects/status/github/gbeckers/darr?svg=true
    :target: https://ci.appveyor.com/project/gbeckers/birdwatcher
+
+.. |Docs Status| image:: https://readthedocs.org/projects/birdwatcher/badge/?version=latest
+   :target: https://birdwatcher.readthedocs.io/en/latest/
+
