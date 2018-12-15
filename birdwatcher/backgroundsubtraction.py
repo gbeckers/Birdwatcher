@@ -126,7 +126,7 @@ class BackgroundSubtractorKNN(BaseBackgroundSubtractor):
                   'NSamples': 6,
                   'Dist2Threshold': 500,
                   'DetectShadows': False,
-                  'ShadowsThreshold': 0.5,
+                  'ShadowThreshold': 0.5,
                   'ShadowValue': 127}
 
     _bgsubtractorcreatefunc = cv.createBackgroundSubtractorKNN
