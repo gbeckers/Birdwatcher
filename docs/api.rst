@@ -7,8 +7,9 @@ Video file input
 
 .. automodule:: birdwatcher.videoinput
 
-Test video
-----------
+.. autoclass:: birdwatcher.VideoFile
+   :members:
+   :inherited-members:
 
 .. autofunction:: birdwatcher.testvideosmall
 
@@ -25,4 +26,7 @@ Background subtractor classes
    :members:
    :inherited-members:
 
+.. autoclass:: birdwatcher.BackgroundSubtractorKNN
+   :members:
+   :inherited-members:
 
