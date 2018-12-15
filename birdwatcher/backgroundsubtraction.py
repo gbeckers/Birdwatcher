@@ -1,12 +1,14 @@
-"""Module with background subtractors. Background subtraction is a major
-preprocessing step in many computer vision applications. It extracts the moving
-foreground from static background.
+"""This module provides background subtractors. Background subtraction is a
+major preprocessing step in many computer vision applications. It extracts the
+moving foreground from static background.
 
 All classes are based on OpenCV's background subtraction algorithms. They
-can be used for example in movement detection. Note OpenCV's API to
-parameters of these algorithms  is messy. In Birdwatcher you can only provide
-parameters to background subtractor objects at instantiation. The parameter
-names follow that of OpenCV.
+can be used for example in movement detection. Note that OpenCV's API to
+parameters of these algorithms is inconsistent. Sometimes parameters can be
+provided at instantiation, sometimes you can change them with a method. In
+Birdwatcher you can only provide parameters to background subtractor objects
+at instantiation. The parameter names follow that of OpenCV. The parameter
+names follow those of OpenCV to avoide confusion.
 
 """
 
