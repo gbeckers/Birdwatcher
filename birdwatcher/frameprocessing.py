@@ -127,6 +127,18 @@ class Frames:
             else:
                 yield frame
 
+    #FIXME check if input is color
+    @frameiteror
+    def togray(self):
+        for frame in self._frames:
+            yield cv.cvtColor(frame, cv.COLOR_BGR2GRAY)
+
+    # FIXME check if input is gray
+    @frameiteror
+    def tocolor(self):
+        for frame in self._frames:
+            yield cv.cvtColor(frame, cv.COLOR_GRAY2BGR)
+
     @frameiteror
     def draw_framenumber(self, startat=0, org=(2, 25),
                          fontface=cv.FONT_HERSHEY_SIMPLEX,
@@ -182,6 +194,44 @@ class Frames:
             else:
                 idx = idx[:, 0, :]
             yield idx
+
+    @frameiteror
+    def morphologyex(self, morphtype='open', kernelsize=2):
+        """Performs advanced morphological transformations.
+
+        Can perform advanced morphological transformations using an erosion
+        and dilation as basic operations.
+
+        In case of multi-channel images, each channel is processed
+        independently.
+
+        Parameters
+        ----------
+        morphtype: str
+            Type of transformation. Choose from 'erode', 'dilate', 'open',
+            'close', 'gradient', 'tophat', 'blackhat'. Default: 'open'.
+        kernelsize: int
+            Size of kernel in 1 dimension. Default 2.
+
+        Returns
+        -------
+        Frames
+            Iterates over sequence of transformed image frames.
+
+        """
+        morphtypes={'erode': cv.MORPH_ERODE,
+                    'dilate': cv.MORPH_DILATE,
+                    'open': cv.MORPH_OPEN,
+                    'close': cv.MORPH_CLOSE,
+                    'gradient': cv.MORPH_GRADIENT,
+                    'tophat': cv.MORPH_TOPHAT,
+                    'blackhat': cv.MORPH_BLACKHAT}
+        morphnum = morphtypes.get(morphtype, None)
+        if morphnum is None:
+            raise ValueError(f'`{morphtype}` is not a valid morphtype')
+        kernel = np.ones((kernelsize, kernelsize), np.uint8)
+        for frame in self._frames:
+            yield cv.morphologyEx(frame, cv.MORPH_OPEN, kernel)
 
 
 
