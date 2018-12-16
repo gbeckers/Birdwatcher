@@ -8,12 +8,12 @@ import pathlib
 from contextlib import contextmanager
 import cv2 as cv
 
-from .frameprocessing import FrameIterator
+from .frameprocessing import Frames
 
 __all__ = ['VideoFile', 'testvideosmall']
 
 
-class VideoFile(FrameIterator):
+class VideoFile(Frames):
     """Read video files.
 
     Parameters

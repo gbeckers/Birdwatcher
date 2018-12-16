@@ -2,26 +2,39 @@ import numpy as np
 import cv2 as cv
 from functools import wraps
 
-__all__ = ['FrameIterator', 'FramesColor', 'FramesGray', 'framecolor',
+__all__ = ['Frames', 'FramesColor', 'FramesGray', 'framecolor',
            'framegray']
 
 def frameiteror(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
-        return FrameIterator(func(*args, **kwargs))
+        return Frames(func(*args, **kwargs))
     return wrapper
 
 
-class FrameIterator:
+class Frames:
+    """An iterator of frames with useful methods.
+
+    Parameters
+    ----------
+    frames: iterable
+        This can be anything that is iterable and that produces image frames. A
+        numpy array, a VideoFile or another Frames object.
+
+    Examples
+    --------
+    >>>import birdwatcher as bw
+    >>>import numpy as np
+    >>>noise = (np.random.randint(0, 255, (720, 1280, 3), dtype='uint8')
+    ...         for i in range(250)) # 250 noise color frames at 720p
+    >>>frames = bw.Frames(noise)
+    >>>frames = frames.draw_framenumbers()
+    >>>frames.tovideo('noisewithframenumbers.mp4', framerate=25)
+
+    """
 
     def __init__(self, frames):
-        """An iterator of frames with useful methods.
 
-        Parameters
-        ----------
-        frames: iterable that produces frames
-
-        """
         self._frames = iter(frames)
         self._index = 0
 
@@ -162,7 +175,7 @@ class FrameIterator:
 
 
 
-class FramesColor(FrameIterator):
+class FramesColor(Frames):
     """An iterator that yields color frames.
 
     """
@@ -194,7 +207,7 @@ class FramesColor(FrameIterator):
         super().__init__(frames=frames)
 
 
-class FramesGray(FrameIterator):
+class FramesGray(Frames):
     """An iterator that yields gray frames.
 
     """
