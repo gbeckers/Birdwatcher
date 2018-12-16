@@ -1,10 +1,12 @@
 import numpy as np
 import cv2 as cv
+from functools import wraps
 
 __all__ = ['FrameIterator', 'FramesColor', 'FramesGray', 'framecolor',
            'framegray']
 
 def frameiteror(func):
+    @wraps(func)
     def wrapper(*args, **kwargs):
         return FrameIterator(func(*args, **kwargs))
     return wrapper
