@@ -1,3 +1,9 @@
+"""This module contains classes for generating image frames and general
+processing functionality such as measurement, drawing of labels/text and
+saving as video files.
+
+"""
+
 import numpy as np
 import cv2 as cv
 from functools import wraps
@@ -14,6 +20,10 @@ def frameiteror(func):
 
 class Frames:
     """An iterator of frames with useful methods.
+
+    This is an important base class in Birdwatcher, as many functions and
+    methods return this type or can use it as input. It also has useful methods
+    for final output, such as a video file, measurement, or adding labels.
 
     Parameters
     ----------

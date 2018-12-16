@@ -10,9 +10,25 @@ Video file input
 .. autoclass:: birdwatcher.VideoFile
    :members:
    :inherited-members:
-    .. automethod :: find_nonzero()
 
 .. autofunction:: birdwatcher.testvideosmall
+
+Frames
+======
+
+.. automodule:: birdwatcher.frameprocessing
+
+.. autoclass:: birdwatcher.Frames
+   :members:
+   :inherited-members:
+
+.. autoclass:: birdwatcher.FramesColor
+   :members:
+   :inherited-members:
+
+.. autoclass:: birdwatcher.FramesGray
+   :members:
+   :inherited-members:
 
 
 Background subtraction
