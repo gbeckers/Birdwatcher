@@ -8,10 +8,12 @@ import pathlib
 from contextlib import contextmanager
 import cv2 as cv
 
+from .frameprocessing import FrameIterator
+
 __all__ = ['VideoFile', 'testvideosmall']
 
 
-class VideoFile():
+class VideoFile(FrameIterator):
     """Read video files.
 
     Parameters
@@ -35,6 +37,13 @@ class VideoFile():
         self._format = vp['format']
         self._framecount = vp['framecount']
         self._nframes = None
+
+    def __iter__(self):
+        return self.iter_frames()
+
+    @property
+    def _frames(self):
+        return self.iter_frames()
 
     @property
     def duration(self):
@@ -77,6 +86,7 @@ class VideoFile():
                 pass
             self._nframes = i
             return i
+
     @property
     def shape(self):
         """Shape (width, height) of video frame."""

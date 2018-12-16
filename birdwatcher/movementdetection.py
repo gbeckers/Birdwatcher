@@ -16,7 +16,7 @@ class MovementDetector():
     
     _version = get_versions()['version']
     
-    def __init__(self, bgsubtractor, learningrate=-1, ignore_firstnframes=0, 
+    def __init__(self, bgsubtractor, learningrate=-1, ignore_firstnframes=0,
                  focus_rectcoord=None, ignore_rectcoord=None, downscale=None, 
                  morphologyex=2):
 
@@ -77,7 +77,7 @@ class MovementDetector():
             frame_gray = cv.resize(frame_gray, None, fx=1/self.downscale,
                                    fy=1/self.downscale,
                                    interpolation=cv.INTER_LINEAR)
-        thresh_rect = self.bgsubtractor.apply(image=frame_gray,
+        thresh_rect = self.bgsubtractor.apply(frame=frame_gray,
                                               learningRate=self.learningrate)
         if self.morphologyex is not None:
             thresh_rect = cv.morphologyEx(thresh_rect, cv.MORPH_OPEN,

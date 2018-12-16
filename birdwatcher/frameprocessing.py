@@ -4,6 +4,11 @@ import cv2 as cv
 __all__ = ['FrameIterator', 'FramesColor', 'FramesGray', 'framecolor',
            'framegray']
 
+def frameiteror(func):
+    def wrapper(*args, **kwargs):
+        return FrameIterator(func(*args, **kwargs))
+    return wrapper
+
 
 class FrameIterator:
 
@@ -23,6 +28,7 @@ class FrameIterator:
 
     def __next__(self):
         return next(self._frames)
+
 
     def tovideo(self, filename, framerate, crf=17, format='mp4',
                 codec='libx264', pixfmt='yuv420p', ffmpegpath='ffmpeg'):
@@ -53,6 +59,7 @@ class FrameIterator:
                      crf=crf, format=format, codec=codec, pixfmt=pixfmt,
                      ffmpegpath=ffmpegpath)
 
+    @frameiteror
     def draw_circles(self, centers, radius=6, color=(255, 100, 0),
                      thickness=2,
                      linetype=cv.LINE_AA, shift=0):
@@ -83,20 +90,20 @@ class FrameIterator:
             Iterator that generates frames with circles
 
         """
-        def iter_frames():
-            for frame, center in zip(self._frames, centers):
-                center = np.asanyarray(center)
-                if not np.isnan(center).any():
-                    (x, y) = center.astype('int16')
-                    yield cv.circle(frame, center=(x, y), radius=radius,
-                                    color=color,
-                                    thickness=thickness, lineType=linetype,
-                                    shift=shift)
-                else:
-                    yield frame
-        return FrameIterator(iter_frames())
 
-    def draw_framenumber(self, startat=0, org=(0, 25),
+        for frame, center in zip(self._frames, centers):
+            center = np.asanyarray(center)
+            if not np.isnan(center).any():
+                (x, y) = center.astype('int16')
+                yield cv.circle(frame, center=(x, y), radius=radius,
+                                color=color,
+                                thickness=thickness, lineType=linetype,
+                                shift=shift)
+            else:
+                yield frame
+
+    @frameiteror
+    def draw_framenumber(self, startat=0, org=(2, 25),
                          fontface=cv.FONT_HERSHEY_SIMPLEX,
                          fontscale=1, color=(200, 200, 200), thickness=2,
                          linetype=cv.LINE_AA):
@@ -127,14 +134,29 @@ class FrameIterator:
             Iterator that generates frames with frame numbers
 
         """
-        framegen = (cv.putText(frame, str(frameno + startat), org=org,
-                                 fontFace=fontface, fontScale=fontscale,
-                                 color=color, thickness=thickness,
-                                 lineType=linetype)
-                    for frameno, frame in enumerate(self._frames))
+        for frameno, frame in enumerate(self._frames):
+            yield cv.putText(frame, str(frameno + startat), org=org,
+                             fontFace=fontface, fontScale=fontscale,
+                             color=color, thickness=thickness,
+                             lineType=linetype)
+    @frameiteror
+    def find_nonzero(self):
+        """Yields the locations of non-zero pixels.
 
-        return FrameIterator(framegen)
+        Returns
+        -------
+        Iterator
+            Iterates over a sequence of shape (N, 2) arrays, where N is the
+            number of frames.
 
+        """
+        for frame in self._frames:
+            idx = cv.findNonZero(frame)
+            if idx is None:
+                idx = np.zeros((0,2), dtype=np.uint16)
+            else:
+                idx = idx[:, 0, :]
+            yield idx
 
 
 
@@ -202,6 +224,7 @@ class FramesGray(FrameIterator):
 
         frames = (frame.copy() for _ in range(nframes))
         super().__init__(frames=frames)
+
 
 
 def framegray(height, width, value=0, dtype='uint8'):

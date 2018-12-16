@@ -13,6 +13,7 @@ names follow those of OpenCV to avoide confusion.
 """
 
 import cv2 as cv
+from .frameprocessing import frameiteror
 
 
 __all__ = ['BackgroundSubtractorMOG2', 'BackgroundSubtractorKNN',
@@ -61,12 +62,12 @@ class BaseBackgroundSubtractor:
         """
         return self._params
 
-    def apply(self, image, fgmask=None, learningRate=-1.0):
+    def apply(self, frame, fgmask=None, learningRate=-1.0):
         """Computes a foreground mask.
 
         Parameters
         ----------
-        image: numpy array image
+        frame: numpy array image
             Next video frame.
         fgmask: numpy array image
             The output foreground mask as an 8-bit binary image.
@@ -79,12 +80,41 @@ class BaseBackgroundSubtractor:
 
         Returns
         -------
-        numpy array image
-            The output foreground mask as an 8-bit binary image.
+        image frame
+            The output foreground mask as an 8-bit image.
 
         """
-        return self._bgs.apply(image=image, fgmask=fgmask,
+        return self._bgs.apply(image=frame, fgmask=fgmask,
                                learningRate=learningRate)
+
+    @frameiteror
+    def iter_frames(self, frames, fgmask=None, learningRate=-1.0):
+        """Compute foreground masks based on input sequence of frames.
+
+        Parameters
+        ----------
+        frames: frames iterable
+            Iterable that produces input frames for the background subtractor
+            to process.
+        fgmask: numpy array image
+            The output foreground mask as an 8-bit binary image.
+        learningRate: float
+            The value between 0 and 1 that indicates how fast the background
+            model is learnt. Negative parameter value makes the algorithm to
+            use some automatically chosen learning rate. 0 means that the
+            background model is not updated at all, 1 means that the background
+            model is completely reinitialized from the last frame.
+
+        Returns
+        -------
+        iterable of image frames
+            The output foreground mask as an 8-bit image.
+
+        """
+
+        for frame in frames:
+            yield self.apply(frame=frame, fgmask=fgmask,
+                             learningRate=learningRate)
 
 
 class BackgroundSubtractorKNN(BaseBackgroundSubtractor):
