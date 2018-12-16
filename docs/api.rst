@@ -10,6 +10,7 @@ Video file input
 .. autoclass:: birdwatcher.VideoFile
    :members:
    :inherited-members:
+    .. automethod :: find_nonzero()
 
 .. autofunction:: birdwatcher.testvideosmall
 
