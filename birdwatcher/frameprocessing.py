@@ -130,12 +130,26 @@ class Frames:
     #FIXME check if input is color
     @frameiteror
     def togray(self):
+        """Converts color frames to gray frames
+
+        Returns
+        -------
+        Frames
+
+        """
         for frame in self._frames:
             yield cv.cvtColor(frame, cv.COLOR_BGR2GRAY)
 
     # FIXME check if input is gray
     @frameiteror
     def tocolor(self):
+        """Converts gray frames to color frames
+
+        Returns
+        -------
+        Frames
+
+        """
         for frame in self._frames:
             yield cv.cvtColor(frame, cv.COLOR_GRAY2BGR)
 
