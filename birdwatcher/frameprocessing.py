@@ -33,13 +33,13 @@ class Frames:
 
     Examples
     --------
-    >>>import birdwatcher as bw
-    >>>import numpy as np
-    >>>noise = (np.random.randint(0, 255, (720, 1280, 3), dtype='uint8')
+    >>> import birdwatcher as bw
+    >>> import numpy as np
+    >>> noise = (np.random.randint(0, 255, (720, 1280, 3), dtype='uint8')
     ...         for i in range(250)) # 250 noise color frames at 720p
-    >>>frames = bw.Frames(noise)
-    >>>frames = frames.draw_framenumbers()
-    >>>frames.tovideo('noisewithframenumbers.mp4', framerate=25)
+    >>> frames = bw.Frames(noise)
+    >>> frames = frames.draw_framenumbers()
+    >>> frames.tovideo('noisewithframenumbers.mp4', framerate=25)
 
     """
 
