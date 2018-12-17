@@ -14,7 +14,7 @@ names follow those of OpenCV to avoid confusion.
 # TODO: incorporate the use of https://github.com/andrewssobral/bgslibrary
 
 import cv2 as cv
-from .frameprocessing import frameiteror
+from .frameprocessing import frameiterator
 
 
 __all__ = ['BackgroundSubtractorMOG2', 'BackgroundSubtractorKNN',
@@ -88,7 +88,7 @@ class BaseBackgroundSubtractor:
         return self._bgs.apply(image=frame, fgmask=fgmask,
                                learningRate=learningRate)
 
-    @frameiteror
+    @frameiterator
     def iter_apply(self, frames, fgmask=None, learningRate=-1.0):
         """Compute foreground masks based on input sequence of frames.
 
