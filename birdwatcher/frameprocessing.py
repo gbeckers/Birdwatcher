@@ -25,7 +25,7 @@ def frameiterator(func):
 class Frames:
     """An iterator of frames with useful methods.
 
-    This is an important base class in Birdwatcher, as many functions and
+    This is a main base class in Birdwatcher, as many functions and
     methods return this type or can use it as input. It also has useful methods
     for final output, such as a video file, measurement, or adding labels.
 
@@ -90,7 +90,7 @@ class Frames:
 
     @frameiterator
     def blur(self, ksize, anchor=(-1,-1), borderType=cv.BORDER_DEFAULT):
-        """Blurs an image using the normalized box filter.
+        """Blurs frames using the normalized box filter.
 
         Parameters
         ----------
@@ -117,10 +117,10 @@ class Frames:
     def draw_circles(self, centers, radius=6, color=(255, 100, 0),
                      thickness=2,
                      linetype=cv.LINE_AA, shift=0):
-        """Creates a frame iterator that draws circles on an input frames
-        iterable.
+        """Draws circles on frames.
 
-        Frames and centers should be iterables that have the same length.
+        Centers should be an iterable that has a length that corresponds to
+        the number of frames.
 
         Parameters
         ----------
@@ -187,8 +187,7 @@ class Frames:
                          fontface=cv.FONT_HERSHEY_SIMPLEX,
                          fontscale=1, color=(200, 200, 200), thickness=2,
                          linetype=cv.LINE_AA):
-        """Creates a frame iterator that draws the frame number on an input
-        frames iterable.
+        """Draws the frame number on frames.
 
         Parameters
         ----------
@@ -240,7 +239,7 @@ class Frames:
 
     @frameiterator
     def morphologyex(self, morphtype='open', kernelsize=2):
-        """Performs advanced morphological transformations.
+        """Performs advanced morphological transformations on frames.
 
         Can perform advanced morphological transformations using an erosion
         and dilation as basic operations.
