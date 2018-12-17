@@ -15,7 +15,7 @@ from functools import wraps
 __all__ = ['Frames', 'FramesColor', 'FramesGray', 'framecolor',
            'framegray']
 
-def frameiteror(func):
+def frameiterator(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
         return Frames(func(*args, **kwargs))
@@ -88,8 +88,8 @@ class Frames:
                      crf=crf, format=format, codec=codec, pixfmt=pixfmt,
                      ffmpegpath=ffmpegpath)
 
-    @frameiteror
-    def blur(self, ksize, anchor=(-1,-1), borderType=cv.BORDERDEFAULT):
+    @frameiterator
+    def blur(self, ksize, anchor=(-1,-1), borderType=cv.BORDER_DEFAULT):
         """Blurs an image using the normalized box filter.
 
         Parameters
@@ -110,9 +110,10 @@ class Frames:
 
         """
         for frame in self._frames:
-            yield cv.blur(frame, ksize)
+            yield cv.blur(frame, ksize=ksize, anchor=anchor,
+                          borderType=borderType)
 
-    @frameiteror
+    @frameiterator
     def draw_circles(self, centers, radius=6, color=(255, 100, 0),
                      thickness=2,
                      linetype=cv.LINE_AA, shift=0):
@@ -156,7 +157,7 @@ class Frames:
                 yield frame
 
     #FIXME check if input is color
-    @frameiteror
+    @frameiterator
     def togray(self):
         """Converts color frames to gray frames
 
@@ -169,7 +170,7 @@ class Frames:
             yield cv.cvtColor(frame, cv.COLOR_BGR2GRAY)
 
     # FIXME check if input is gray
-    @frameiteror
+    @frameiterator
     def tocolor(self):
         """Converts gray frames to color frames
 
@@ -181,7 +182,7 @@ class Frames:
         for frame in self._frames:
             yield cv.cvtColor(frame, cv.COLOR_GRAY2BGR)
 
-    @frameiteror
+    @frameiterator
     def draw_framenumber(self, startat=0, org=(2, 25),
                          fontface=cv.FONT_HERSHEY_SIMPLEX,
                          fontscale=1, color=(200, 200, 200), thickness=2,
@@ -218,7 +219,7 @@ class Frames:
                              fontFace=fontface, fontScale=fontscale,
                              color=color, thickness=thickness,
                              lineType=linetype)
-    @frameiteror
+    @frameiterator
     def find_nonzero(self):
         """Yields the locations of non-zero pixels.
 
@@ -237,7 +238,7 @@ class Frames:
                 idx = idx[:, 0, :]
             yield idx
 
-    @frameiteror
+    @frameiterator
     def morphologyex(self, morphtype='open', kernelsize=2):
         """Performs advanced morphological transformations.
 
