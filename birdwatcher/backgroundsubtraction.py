@@ -88,7 +88,7 @@ class BaseBackgroundSubtractor:
                                learningRate=learningRate)
 
     @frameiteror
-    def iter_frames(self, frames, fgmask=None, learningRate=-1.0):
+    def iter_apply(self, frames, fgmask=None, learningRate=-1.0):
         """Compute foreground masks based on input sequence of frames.
 
         Parameters

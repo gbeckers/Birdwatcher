@@ -53,7 +53,6 @@ def arraytovideo(frames, filename, framerate, crf=17, format='mp4',
             '-f', f'{format}', '-crf', f'{crf}',
             '-pix_fmt', f'{pixfmt}',
             filename, '-y']
-    print(args)
     p = subprocess.Popen(args, stdin=subprocess.PIPE)
     for frame in framegen:
         # if frame.ndim == 2:
