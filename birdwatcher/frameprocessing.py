@@ -89,6 +89,30 @@ class Frames:
                      ffmpegpath=ffmpegpath)
 
     @frameiteror
+    def blur(self, ksize, anchor=(-1,-1), borderType=cv.BORDERDEFAULT):
+        """Blurs an image using the normalized box filter.
+
+        Parameters
+        ----------
+        ksize: (int, int)
+            Kernel size. Tuple of ints.
+        anchor: (int, int)
+            Anchor point. Default value (-1,-1) means that the anchor is at
+            the kernel center.
+        borderType: int
+            Border mode used to extrapolate pixels outside of the image.
+            Default: 4.
+
+        Returns
+        -------
+        Frames
+            Iterator that generates blurred frames.
+
+        """
+        for frame in self._frames:
+            yield cv.blur(frame, ksize)
+
+    @frameiteror
     def draw_circles(self, centers, radius=6, color=(255, 100, 0),
                      thickness=2,
                      linetype=cv.LINE_AA, shift=0):
@@ -115,7 +139,7 @@ class Frames:
 
         Returns
         -------
-        iterator
+        Frames
             Iterator that generates frames with circles
 
         """
