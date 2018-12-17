@@ -20,6 +20,12 @@ class VideoFile(Frames):
     filepath: str of pathlib.Path
         Path to videofile.
 
+    Examples
+    --------
+    >>> import birdwatcher as bw
+    >>> vf = bw.VideoFile('zebrafinchrecording.mp4')
+    >>> vf.togray().tovideo('zebrafinchrecording_gray.mp4')
+
     """
 
     def __init__(self, filepath):
