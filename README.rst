@@ -29,8 +29,8 @@ Install dependencies::
     $ pip install opencv-python
     $ pip install opencv-contrib-python
 
-For some functionality it is necessary to install ffmpeg. In Anaconda this can
-be done as follows::
+It is also necessary to install ffmpeg. If you do not have this already, one
+way of getting it is in Anaconda, as follows::
 
     $ conda install -c conda-forge ffmpeg
 

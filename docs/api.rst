@@ -2,6 +2,9 @@
 Birdwatcher API Documentation
 #############################
 
+.. contents:: :local:
+   :depth: 2
+
 Video file input
 ================
 
@@ -24,11 +27,10 @@ Frames
 
 .. autoclass:: birdwatcher.FramesColor
    :members:
-   :inherited-members:
 
 .. autoclass:: birdwatcher.FramesGray
    :members:
-   :inherited-members:
+
 
 
 Background subtraction
@@ -36,12 +38,15 @@ Background subtraction
 
 .. automodule:: birdwatcher.backgroundsubtraction
 
-Background subtractor classes
------------------------------
+MOG2
+----
 
 .. autoclass:: birdwatcher.BackgroundSubtractorMOG2
    :members:
    :inherited-members:
+
+KNN
+---
 
 .. autoclass:: birdwatcher.BackgroundSubtractorKNN
    :members:

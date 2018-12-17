@@ -1,6 +1,5 @@
 """This module contains classes and functions to work with video files. For
 now this depends on OpenCV's VideoCapture class.
-
 """
 
 import sys

@@ -2,6 +2,10 @@
 processing functionality such as measurement, drawing of labels/text and
 saving as video files.
 
+A general tip is to look at OpenCV's documentation if you want to understand
+the parameters.
+
+
 """
 
 import numpy as np
@@ -252,6 +256,8 @@ class Frames:
 class FramesColor(Frames):
     """An iterator that yields color frames.
 
+    This class inherits from Frames, and hence has all its methods.
+
     """
 
     def __init__(self, nframes, height, width, color=(0, 0, 0), dtype='uint8'):
@@ -283,6 +289,8 @@ class FramesColor(Frames):
 
 class FramesGray(Frames):
     """An iterator that yields gray frames.
+
+    This class inherits from Frames, and hence has all its methods.
 
     """
 

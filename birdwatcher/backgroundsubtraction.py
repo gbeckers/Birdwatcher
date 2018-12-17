@@ -8,9 +8,10 @@ parameters of these algorithms is inconsistent. Sometimes parameters can be
 provided at instantiation, sometimes you can change them with a method. In
 Birdwatcher you can only provide parameters to background subtractor objects
 at instantiation. The parameter names follow that of OpenCV. The parameter
-names follow those of OpenCV to avoide confusion.
+names follow those of OpenCV to avoid confusion.
 
 """
+# TODO: incorporate the use of https://github.com/andrewssobral/bgslibrary
 
 import cv2 as cv
 from .frameprocessing import frameiteror
