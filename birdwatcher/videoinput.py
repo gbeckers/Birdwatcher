@@ -13,7 +13,10 @@ __all__ = ['VideoFile', 'testvideosmall']
 
 
 class VideoFile(Frames):
-    """Read video files.
+    """Frames from video file.
+
+    This class can read frames from a video file. It inherits from Frames,
+    and hence has also all the convenient functions from that class.
 
     Parameters
     ----------
@@ -25,6 +28,8 @@ class VideoFile(Frames):
     >>> import birdwatcher as bw
     >>> vf = bw.VideoFile('zebrafinchrecording.mp4')
     >>> vf.togray().tovideo('zebrafinchrecording_gray.mp4')
+    >>> vf.get_framebynumber(100).max()
+    255
 
     """
 
