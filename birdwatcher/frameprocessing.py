@@ -12,8 +12,8 @@ import numpy as np
 import cv2 as cv
 from functools import wraps
 
-__all__ = ['Frames', 'FramesColor', 'FramesGray', 'framecolor',
-           'framegray']
+__all__ = ['Frames', 'FramesColor', 'FramesGray', 'FramesNoise', 'framecolor',
+           'framegray', 'framenoise']
 
 def frameiterator(func):
     @wraps(func)
@@ -37,13 +37,10 @@ class Frames:
 
     Examples
     --------
-    >>> import birdwatcher as bw
-    >>> import numpy as np
-    >>> noise = (np.random.randint(0, 255, (720, 1280, 3), dtype='uint8')
-    ...         for i in range(250)) # 250 noise color frames at 720p
-    >>> frames = bw.Frames(noise)
-    >>> frames = frames.draw_framenumbers()
-    >>> frames.tovideo('noisewithframenumbers.mp4', framerate=25)
+     >>> import birdwatcher as bw
+     >>> frames = bw.FramesNoise(250, height=720, width=1280)
+     >>> frames = frames.draw_framenumbers()
+     >>> frames.tovideo('noisewithframenumbers.mp4', framerate=25)
 
     """
 
@@ -107,6 +104,13 @@ class Frames:
         -------
         Frames
             Iterator that generates blurred frames.
+
+        Examples
+        --------
+        >>> import birdwatcher as bw
+        >>> frames = bw.FramesNoise(250, height=720, width=1280)
+        >>> frames = frames.blur(ksize=(10,10))
+        >>> frames.tovideo('noiseblurred.mp4', framerate=25)
 
         """
         for frame in self._frames:
@@ -347,6 +351,38 @@ class FramesGray(Frames):
         super().__init__(frames=frames)
 
 
+class FramesNoise(Frames):
+    """An iterator that yields noise frames.
+
+    This class inherits from Frames, and hence has all its methods.
+
+    """
+
+    def __init__(self, nframes, height, width, dtype='uint8'):
+        """Creates an iterator that yields gray frames.
+
+        Parameters
+        ----------
+        nframes: int
+            Number of frames to be produced.
+        height: int
+            Height of frame.
+        width: int
+            Width of frame.
+        dtype: numpy dtype
+            Dtype of frame. Default `uint8'
+
+        Returns
+        -------
+        Iterator of numpy ndarrays
+
+        """
+
+        frames = (framenoise(height=height, width=width, dtype=dtype)
+                  for _ in range(nframes))
+        super().__init__(frames=frames)
+
+
 
 def framegray(height, width, value=0, dtype='uint8'):
     """Creates a gray frame.
@@ -391,6 +427,27 @@ def framecolor(height, width, color=(0, 0, 0), dtype='uint8'):
     """
     return np.ones((height, width, 3), dtype=dtype) * np.asanyarray(color,
                                                                     dtype=dtype)
+
+
+def framenoise(height, width, dtype='uint8'):
+    """Creates a noise frame.
+
+    Parameters
+    ----------
+    height: int
+        Height of frame.
+    width: int
+        Width of frame.
+    dtype: numpy dtype
+        Dtype of frame. Default `uint8'
+
+    Returns
+    -------
+    numpy ndarray
+
+    """
+
+    return np.random.randint(0, 255, (height, width, 3), dtype=dtype)
 
 
 def create_frameswithmovingcircle(nframes, height, width, framecolor=(0, 0, 0),
