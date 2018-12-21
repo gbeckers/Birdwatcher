@@ -198,13 +198,11 @@ class VideoFile(Frames):
         cap.release()
         return frame
         
-    def iter_frames(self, startframe=None, stopframe=None):
+    def iter_frames(self, stopframe=None):
         """Iterate over frames in video.
 
         Parameters
         ----------
-        startframe: int
-            Start at frame `startframe`
         stopframe: int
             Stop at frame `stopframe`
 
@@ -218,15 +216,12 @@ class VideoFile(Frames):
         frameno = 0
         while(True):
             ret, frame = cap.read()
-            if ret and ((startframe is None) or (frameno >= startframe))\
-                   and ((stopframe is None) or (frameno < stopframe)):
+            if ret and ((stopframe is None) or (frameno < stopframe)):
                 yield frame
                 frameno += 1
-            elif ((stopframe is not None) and (frameno >= stopframe)):
+            else:
                 cap.release()
                 break
-            else:
-                frameno += 1
         cap.release()
 
     @contextmanager
