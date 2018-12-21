@@ -222,7 +222,7 @@ class VideoFile(Frames):
                    and ((stopframe is None) or (frameno < stopframe)):
                 yield frame
                 frameno +=1
-            else:
+            elif ((stopframe is not None) and (frameno >= stopframe)):
                 cap.release()
                 break
         cap.release()
