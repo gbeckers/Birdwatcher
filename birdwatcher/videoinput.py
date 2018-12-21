@@ -221,10 +221,12 @@ class VideoFile(Frames):
             if ret and ((startframe is None) or (frameno >= startframe))\
                    and ((stopframe is None) or (frameno < stopframe)):
                 yield frame
+                frameno += 1
             elif ((stopframe is not None) and (frameno >= stopframe)):
                 cap.release()
                 break
-            frameno += 1
+            else:
+                frameno += 1
         cap.release()
 
     @contextmanager
