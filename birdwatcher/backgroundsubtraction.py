@@ -170,7 +170,7 @@ class BackgroundSubtractorMOG2(BaseBackgroundSubtractor):
     Parameters
     ----------
     History: int
-        Length of the history. Default 50.
+        Length of the history. Default 5.
     ComplexityReductionThreshold: float
         This parameter defines the number of samples needed to accept to prove
         the component exists. CT=0.05 is a default value for all the samples.
@@ -193,7 +193,7 @@ class BackgroundSubtractorMOG2(BaseBackgroundSubtractor):
         The variance threshold for the pixel-model match. The main threshold on
         the squared Mahalanobis distance to decide if the sample is well
         described by the background model or not. Related to Cthr from the
-        paper.
+        paper. Default: 10.
     VarThresholdGen: int
         The variance threshold for the pixel-model match used for new mixture
         component generation. Threshold for the squared Mahalanobis distance
