@@ -122,7 +122,7 @@ class BaseBackgroundSubtractor:
             firstframe, frames = peek_iterable(frames)
 
             completeframe = np.zeros((firstframe.shape[0],
-                                      firstframe.shape[1]), dtype=np.uint16)
+                                      firstframe.shape[1]), dtype=np.uint8)
             h1,h2,w1,w2 = roi
 
 
