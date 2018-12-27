@@ -5,7 +5,7 @@ depends on FFmpeg.
 
 
 import pathlib
-from .ffmpeg import videofileinfo, iterread_videofile
+from .ffmpeg import videofileinfo, iterread_videofile, count_frames
 from .frameprocessing import frameiterator
 
 __all__ = ['VideoFileStream', 'testvideosmall']
@@ -63,6 +63,14 @@ class VideoFileStream():
     @property
     def frameheight(self):
         return self._streammetadata['height']
+
+    @property
+    def framesize(self):
+        return (self.framewidth, self.frameheight)
+
+    def count_frames(self, threads=8, ffprobepath='ffprobe'):
+        return count_frames(self.filepath, threads=threads,
+                            ffprobepath=ffprobepath)
 
     @frameiterator
     def iter_frames(self, stopframe=None, color=True, pix_fmt='bgr24',
