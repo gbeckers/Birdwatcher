@@ -8,7 +8,6 @@ compressed form (lzma) when data is large.
 
 """
 
-
 from contextlib import contextmanager
 from pathlib import Path
 import numpy as np
@@ -23,7 +22,7 @@ __all__ = ['CoordinateArrays', 'open_archivedcoordinatedata',
            'create_coordarray']
 
 
-def _coordstoframe(coords, height, width, nchannels=None, dtype='uint8',
+def _coordstoframe(coords, width, height, nchannels=None, dtype='uint8',
                    value=1):
     if nchannels is None:
         frame = np.zeros((height, width), dtype=dtype)
@@ -39,18 +38,18 @@ class CoordinateArrays(RaggedArray):
     def __init__(self, path, accessmode='r'):
         super().__init__(path=path, accessmode=accessmode)
         md = dict(self.metadata)
-        self.width = md['video']['width']
-        self.height = md['video']['height']
+        self.framewidth = md['framewidth']
+        self.frameheight = md['frameheight']
 
     def get_frame(self, frameno, nchannels=None, dtype='uint8', value=1):
-        return _coordstoframe(coords=self[frameno], height=self.height,
-                              width=self.width, nchannels=nchannels,
+        return _coordstoframe(coords=self[frameno], width=self.framewidth,
+                              height=self.frameheight, nchannels=nchannels,
                               dtype=dtype, value=value)
 
     def iter_frames(self, nchannels=None, dtype='uint8', value=1):
         for coords in self:
-            yield _coordstoframe(coords=coords, height=self.height,
-                                 width=self.width, nchannels=nchannels,
+            yield _coordstoframe(coords=coords, width=self.framewidth,
+                                 height=self.frameheight, nchannels=nchannels,
                                  dtype=dtype, value=value)
 
     def tovideo(self, filepath, framerate=None, crf=17, format='mp4',
@@ -63,11 +62,24 @@ class CoordinateArrays(RaggedArray):
                      codec=codec, pixfmt=pixfmt, ffmpegpath=ffmpegpath)
 
 
-def create_coordarray(path, videofile, metadata=None, overwrite=True):
+    def get_coordcount(self, startframeno=0, endframeno=None):
+        coordgen = self.iter_arrays(startindex=startframeno,
+                                         endindex=endframeno)
+        return np.array([c.shape[0] for c in coordgen])
+
+    def get_coordmean(self, startframeno=0, endframeno=None):
+        coordgen = self.iter_arrays(startindex=startframeno,
+                                         endindex=endframeno)
+        return np.array([c.mean(0) for c in coordgen])
+
+
+def create_coordarray(path, framewidth, frameheight, metadata=None,
+                      overwrite=True):
     if metadata is None:
         metadata = {}
-    metadata.update({'video': videofile.get_properties()})
-    metadata.update({'birdwatcher_version': get_versions()['version']})
+    metadata.update({'framewidth': framewidth,
+                     'frameheight': frameheight,
+                     'birdwatcher_version': get_versions()['version']})
     coords = create_raggedarray(path, atom=(2,), metadata=metadata,
                                 overwrite=overwrite, dtype='uint16')
     return CoordinateArrays(coords.path, accessmode='r+')
@@ -89,36 +101,3 @@ def open_archivedcoordinatedata(path):
         p = path.parts[-1].split('.tar.xz')[0]
         yield CoordinateArrays(Path(dirname) / Path(p))
 
-
-# class CoordinateAnalyis(CoordinateH5Data):
-#
-#     def __init__(self, coordinatefilepath, videofilepath=None,
-#                  coordnode='/pixelcoordinates'):
-#         if videofilepath is not None:
-#             self.videofile = VideoFile(videofilepath)
-#         else:
-#             self.videofile = None
-#         super().__init__(coordinatefilepath=coordinatefilepath,
-#                          coordnode=coordnode)
-#
-#     def show_frame(self, frameno, includevideo=True, fig=None,
-#                    figsize=(18, 18)):
-#         import matplotlib.pyplot as plt
-#         if fig is None:
-#             fig = plt.figure(figsize=figsize)
-#         thresh = self.read_frame(frameno)
-#         if self.videofile is not None and includevideo:
-#             videoframe = self.videofile.get_framebynumber(frameno)
-#             videoframe[thresh, 2] = 255
-#             thresh = videoframe
-#         plt.imshow(thresh)
-#
-#     def get_coordcount(self, startframeno=None, endframeno=None):
-#         coordgen = self.iter_coordinates(startframeno=startframeno,
-#                                          endframeno=endframeno)
-#         return np.array([c.shape[0] for c in coordgen])
-#
-#     def get_coordmean(self, startframeno=None, endframeno=None):
-#         coordgen = self.iter_coordinates(startframeno=startframeno,
-#                                          endframeno=endframeno)
-#         return np.array([c.mean(0) for c in coordgen])
