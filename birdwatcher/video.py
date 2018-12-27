@@ -92,34 +92,6 @@ class VideoFileStream():
                                   color=color, pix_fmt=pix_fmt,
                                   ffmpegpath=ffmpegpath)
 
-    def derive_filepath(self, append_string='', suffix=None, path=None):
-        """Generate a file path based on the name and potentially path of the
-        video.
-
-        Parameters
-        ----------
-        append_string: str
-            String to append to file name stem. Default: ''.
-        suffix: str or None
-            File extension to use. If None, the same as video file.
-        path: str or pathlib.Path or None
-            Path to use. If None use same path as video file.
-
-        Returns
-        -------
-        pathlib.Path
-            Path derived from video file path.
-
-        """
-        stem = self.filepath.stem
-        if suffix is None:
-            suffix = self.filepath.suffix
-        filename = f'{stem}_{append_string}{suffix}'
-        if path is None:
-            dpath = self.filepath.parent / filename
-        else:
-            dpath = pathlib.Path(path) / filename
-        return dpath
 
 def testvideosmall():
     """A 20-s video of a zebra finch for testing purposes.
