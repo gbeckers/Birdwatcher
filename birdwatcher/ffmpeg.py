@@ -1,11 +1,19 @@
 import subprocess
 import numpy as np
-import cv2 as cv
+import json
 from pathlib import Path
 
 from .utils import peek_iterable
 
 __all__ = ['arraytovideo']
+
+
+class FFmpegError(Exception):
+    def __init__(self, cmd, stdout, stderr):
+        super().__init__(f'{cmd} error (see stderr output for '
+                                    f'detail)')
+        self.stdout = stdout
+        self.stderr = stderr
 
 
 def arraytovideo(frames, filename, framerate, crf=17, format='mp4',
@@ -42,8 +50,9 @@ def arraytovideo(frames, filename, framerate, crf=17, format='mp4',
     if frame.ndim == 2:
         ipixfmt = 'gray'
     elif frame.ndim == 3:
-        ipixfmt = 'rgb24'
+        ipixfmt = 'bgr24'
     args = [str(ffmpegpath),
+            #'-hwaccel',
             '-f', 'rawvideo',
             '-vcodec','rawvideo',
             '-pix_fmt', ipixfmt,
@@ -53,6 +62,7 @@ def arraytovideo(frames, filename, framerate, crf=17, format='mp4',
             '-f', f'{format}', '-crf', f'{crf}',
             '-pix_fmt', f'{pixfmt}',
             filename, '-y']
+    print(args)
     p = subprocess.Popen(args, stdin=subprocess.PIPE)
     for frame in framegen:
         # if frame.ndim == 2:
@@ -61,3 +71,49 @@ def arraytovideo(frames, filename, framerate, crf=17, format='mp4',
     p.stdin.close()
     out, err = p.communicate()
     return Path(filename)
+
+
+def videofileinfo(filepath, ffprobepath='ffprobe'):
+    args = [str(ffprobepath), '-print_format', 'json', '-show_format',
+            '-show_streams', str(filepath)]
+    p = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    return json.loads(p.stdout.read().decode('utf-8'))
+
+
+def iterread_videofile(filepath, stopframe=None, color=True, pix_fmt='bgr24',
+                       ffmpegpath='ffmpeg'):
+    vfi = videofileinfo(filepath)
+    frameheight = vfi['streams'][0]['height']
+    framewidth = vfi['streams'][0]['width']
+    if color:
+        frameshape = (frameheight, framewidth, 3)
+        framesize = frameheight * framewidth * 3
+    else:
+        frameshape = (frameheight, framewidth)
+        framesize = frameheight * framewidth
+    args = [str(ffmpegpath), '-i', str(filepath)]
+    if stopframe is not None:
+        args += ['-vframes', str(stopframe)]
+    args +=['-vcodec', 'rawvideo', '-pix_fmt', pix_fmt,
+            '-f', 'rawvideo', 'pipe:1']
+    with subprocess.Popen(args, stdout=subprocess.PIPE, stderr=None) as p:
+        frameno = 0
+        while True:
+            data = p.stdout.read(framesize)
+            ar = np.frombuffer(data, dtype=np.uint8)
+            if (ar.size == framesize) and ((stopframe is None) or (frameno < stopframe)):
+                yield ar.reshape(frameshape)
+                frameno += 1
+            else:
+                break
+
+def count_frames(filepath, threads=8, ffprobepath='ffprobe'):
+    args = [str(ffprobepath), '-threads:0', str(threads),
+            '-count_frames', '-select_streams', 'v:0', '-show_entries',
+            'stream=nb_read_frames', '-print_format', 'json', str(filepath)]
+    p = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    out = json.loads(p.stdout.read().decode('utf-8'))
+    err = p.stderr.read().decode('utf-8')
+    if not out:
+        raise FFmpegError(ffprobepath, out, err)
+    return int(out['streams'][0]['nb_read_frames'])
