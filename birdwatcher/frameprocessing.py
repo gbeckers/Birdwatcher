@@ -12,6 +12,8 @@ import numpy as np
 import cv2 as cv
 from functools import wraps
 
+from .utils import peek_iterable
+
 __all__ = ['Frames', 'FramesColor', 'FramesGray', 'FramesNoise', 'framecolor',
            'framegray', 'framenoise']
 
@@ -46,7 +48,15 @@ class Frames:
 
     def __init__(self, frames):
 
-        self._frames = iter(frames)
+        first, frames = peek_iterable(frames)
+
+        framewidth, frameheight, *nchannels = first.shape
+        if nchannels == []:
+            nchannels = 1
+        self._frames = frames
+        self._frameheight = frameheight
+        self._framewidth = framewidth
+        self._nchannels = nchannels
         self._index = 0
 
     def __iter__(self):
@@ -55,8 +65,19 @@ class Frames:
     def __next__(self):
         return next(self._frames)
 
+    @property
+    def frameheight(self):
+        self._frameheight
 
-    def tovideo(self, filename, framerate, crf=17, format='mp4',
+    @property
+    def framewidth(self):
+        self._framewidth
+
+    @property
+    def nchannels(self):
+        self._nchannels
+
+    def tovideo(self, filename, framerate, crf=23, format='mp4',
                 codec='libx264', pixfmt='yuv420p', ffmpegpath='ffmpeg'):
         """Writes frames to video file.
 
@@ -67,8 +88,8 @@ class Frames:
         framerate: int
             framerate of video in frames per second
         crf: int
-            Value determines quality of video. Default: 17, which is high
-            quality. See ffmpeg documentation.
+            Value determines quality of video. Default: 23, which is good
+            quality. See ffmpeg documentation. Use 17 for high quality.
         format: str
             ffmpeg video format. Default is 'mp4'. See ffmpeg documentation.
         codec: str
@@ -119,8 +140,7 @@ class Frames:
 
     @frameiterator
     def draw_circles(self, centers, radius=6, color=(255, 100, 0),
-                     thickness=2,
-                     linetype=cv.LINE_AA, shift=0):
+                     thickness=2, linetype=cv.LINE_AA, shift=0):
         """Draws circles on frames.
 
         Centers should be an iterable that has a length that corresponds to
@@ -279,6 +299,13 @@ class Frames:
         for frame in self._frames:
             yield cv.morphologyEx(frame, cv.MORPH_OPEN, kernel)
 
+    @frameiterator
+    def add_weighted(self, alpha, frames, beta, gamma=0):
+        for frame1, frame2 in zip(self._frames, frames):
+            yield cv.addWeighted(src1=frame1, alpha=alpha, src2=frame2,
+                                 beta=beta, gamma=gamma)
+
+
 
 
 class FramesColor(Frames):
@@ -288,17 +315,17 @@ class FramesColor(Frames):
 
     """
 
-    def __init__(self, nframes, height, width, color=(0, 0, 0), dtype='uint8'):
+    def __init__(self, nframes, width, height, color=(0, 0, 0), dtype='uint8'):
         """Creates an iterator that yields color frames.
 
         Parameters
         ----------
         nframes: int
             Number of frames to be produced.
-        height: int
-            Height of frame.
         width: int
             Width of frame.
+        height: int
+            Height of frame.
         color:
             Fill value of frame. Default (0, 0, 0) (black).
         dtype: numpy dtype
@@ -309,7 +336,7 @@ class FramesColor(Frames):
         Iterator of numpy ndarrays
 
         """
-        frame = framecolor(height=height, width=width, color=color,
+        frame = framecolor(width=width, height=height, color=color,
                            dtype=dtype)
         frames = (frame.copy() for _ in range(nframes))
         super().__init__(frames=frames)
@@ -322,17 +349,17 @@ class FramesGray(Frames):
 
     """
 
-    def __init__(self, nframes, height, width, value=0, dtype='uint8'):
+    def __init__(self, nframes, width, height, value=0, dtype='uint8'):
         """Creates an iterator that yields gray frames.
 
         Parameters
         ----------
         nframes: int
             Number of frames to be produced.
-        height: int
-            Height of frame.
         width: int
             Width of frame.
+        height: int
+            Height of frame.
         value:
             Fill value of frame. Default 0 (black).
         dtype: numpy dtype
@@ -344,7 +371,7 @@ class FramesGray(Frames):
 
         """
 
-        frame = framegray(height=height, width=width, value=value,
+        frame = framegray(width=width, height=height, value=value,
                           dtype=dtype)
 
         frames = (frame.copy() for _ in range(nframes))
@@ -358,17 +385,17 @@ class FramesNoise(Frames):
 
     """
 
-    def __init__(self, nframes, height, width, dtype='uint8'):
+    def __init__(self, nframes,width,  height, dtype='uint8'):
         """Creates an iterator that yields gray frames.
 
         Parameters
         ----------
         nframes: int
             Number of frames to be produced.
-        height: int
-            Height of frame.
         width: int
             Width of frame.
+        height: int
+            Height of frame.
         dtype: numpy dtype
             Dtype of frame. Default `uint8'
 
@@ -383,16 +410,15 @@ class FramesNoise(Frames):
         super().__init__(frames=frames)
 
 
-
-def framegray(height, width, value=0, dtype='uint8'):
+def framegray(width, height, value=0, dtype='uint8'):
     """Creates a gray frame.
 
     Parameters
     ----------
-    height: int
-        Height of frame.
     width: int
         Width of frame.
+    height: int
+        Height of frame.
     value:
         Fill value of frame. Default 0 (black).
     dtype: numpy dtype
@@ -406,15 +432,15 @@ def framegray(height, width, value=0, dtype='uint8'):
     return np.ones((height, width), dtype=dtype) * value
 
 
-def framecolor(height, width, color=(0, 0, 0), dtype='uint8'):
+def framecolor(width, height, color=(0, 0, 0), dtype='uint8'):
     """Creates a color frame.
 
     Parameters
     ----------
-    height: int
-        Height of frame.
     width: int
         Width of frame.
+    height: int
+        Height of frame.
     color:
         Fill value of frame. Default (0, 0, 0) (black).
     dtype: numpy dtype
@@ -429,15 +455,15 @@ def framecolor(height, width, color=(0, 0, 0), dtype='uint8'):
                                                                     dtype=dtype)
 
 
-def framenoise(height, width, dtype='uint8'):
+def framenoise(width, height, dtype='uint8'):
     """Creates a noise frame.
 
     Parameters
     ----------
-    height: int
-        Height of frame.
     width: int
         Width of frame.
+    height: int
+        Height of frame.
     dtype: numpy dtype
         Dtype of frame. Default `uint8'
 
@@ -450,10 +476,10 @@ def framenoise(height, width, dtype='uint8'):
     return np.random.randint(0, 255, (height, width, 3), dtype=dtype)
 
 
-def create_frameswithmovingcircle(nframes, height, width, framecolor=(0, 0, 0),
+def create_frameswithmovingcircle(nframes, width, height, framecolor=(0, 0, 0),
                                   circlecolor=(255, 100, 0), radius=6,
                                   thickness=2, linetype=8, dtype='uint8'):
-    frames = FramesColor(nframes=nframes, height=height, width=width,
+    frames = FramesColor(nframes=nframes,  width=width, height=height,
                          color=framecolor, dtype=dtype)
     centers = zip(np.linspace(0, width, nframes),
                   np.linspace(0, height, nframes))
