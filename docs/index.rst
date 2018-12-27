@@ -6,14 +6,18 @@
 Birdwatcher
 ===========
 
-Birdwatcher is a Python computer vision library for the analysis of animal
-behavior.
+Birdwatcher is a Python computer vision library for the measurement and
+analysis of animal behavior.
 
 It is developed by Gabriel Beckers, Sita ter Haar and Carien Mol, at
 Experimental Psychology, Utrecht University.
 
-It is being used in our lab but not stable enough yet for general use. More
-info will be provided when a first release is appropriate.
+The purpose of this library is to provide base functionality for analysing
+animal behavior in a Python scientific computing environment. Despite its
+name, Birdwatcher is not only for birds. We also successfully analyze dog
+behaviour, and it could be used on anything that moves. It is being used in our
+lab but not stable enough yet for general use. More info will be provided when
+a first release is appropriate.
 
 Code can be found on GitHub: https://github.com/gbeckers/Birdwatcher
 
