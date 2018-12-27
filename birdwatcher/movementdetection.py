@@ -4,7 +4,7 @@ import numpy as np
 import cv2 as cv
 import darr
 
-from .videoinput import VideoFile
+from .video import VideoFileStream
 from .coordinatearrays import create_coordarray
 from .backgroundsubtraction import BackgroundSubtractorMOG2, BackgroundSubtractorKNN
 from ._version import get_versions
@@ -153,7 +153,7 @@ def _detect_movement(bgsclass, videofilepath, morphologyex=2,
                      analysispath='.', ignore_rectcoord=None,
                      ignore_firstnframes=50, **kwargs):
 
-    vf = VideoFile(videofilepath)
+    vf = VideoFileStream(videofilepath)
     bgs = bgsclass(**kwargs)
     algostr = str(bgs)
     md = MovementDetector(bgs, ignore_firstnframes=ignore_firstnframes,
@@ -204,7 +204,7 @@ def detect_movementmog2(videofilepath, morphologyex=2, analysispath='.',
 
 
 def calc_meanframe(videofilepath):
-    vf = VideoFile(videofilepath)
+    vf = VideoFileStream(videofilepath)
     meanframe = vf.get_framebynumber(0).astype('float64')
     meanframe[:] = 0.0
     for i, frame in enumerate(vf.iter_frames()):
