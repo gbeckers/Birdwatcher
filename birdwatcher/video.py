@@ -13,25 +13,24 @@ __all__ = ['VideoFileStream', 'testvideosmall']
 class VideoFileStream():
     """Video stream from file.
 
-        This class can read video frames from a file.
-        Parameters
-        ----------
-        filepath: str of pathlib.Path
-            Path to videofile.
-        streamnumber: int
-            Stream number to use as input. Default 1.
+    This class can read video frames from a file.
+    Parameters
+    ----------
+    filepath: str of pathlib.Path
+        Path to videofile.
+    streamnumber: int
+        Stream number to use as input. Default 1.
 
-        Examples
-        --------
-        >>> import birdwatcher as bw
-        >>> vf = bw.VideoFile('zebrafinchrecording.mp4')
-        >>> vf.togray().tovideo('zebrafinchrecording_gray.mp4')
-        >>> vf.get_framebynumber(100).max()
-        255
+    Examples
+    --------
+    >>> import birdwatcher as bw
+    >>> vf = bw.VideoFile('zebrafinchrecording.mp4')
+    >>> vf.togray().tovideo('zebrafinchrecording_gray.mp4')
 
-        """
+    """
 
     def __init__(self, filepath, streamnumber=0):
+
         self.filepath = fp = pathlib.Path(filepath)
         self.streamnumber = streamnumber
         if not fp.exists():
@@ -43,6 +42,15 @@ class VideoFileStream():
 
     def __iter__(self):
         return self.iter_frames()
+
+    def get_info(self):
+        return {'classname': self.__class__.__name__,
+                'classarguments': {'filepath': str(self.filepath),
+                                  'streamnumber': self.streamnumber},
+                'framewidth': self.framewidth,
+                'frameheight': self.frameheight,
+                'formatmetadata': self.formatmetadata,
+                'streammetadata': self.streammetadata}
 
     @property
     def _frames(self):
