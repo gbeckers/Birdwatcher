@@ -16,8 +16,8 @@ Video input from file
 
 .. autofunction:: birdwatcher.testvideosmall
 
-Frames
-======
+Frame processing
+================
 
 .. automodule:: birdwatcher.frameprocessing
 
