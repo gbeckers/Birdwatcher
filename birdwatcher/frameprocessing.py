@@ -20,7 +20,16 @@ __all__ = ['Frames', 'FramesColor', 'FramesGray', 'FramesNoise', 'framecolor',
 def frameiterator(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
-        return Frames(func(*args, **kwargs))
+        processingdata = {}
+        self = args[0]
+        if hasattr(self, 'get_info'):
+            processingdata['processingdata'] = self.get_info()
+            processingdata['methodname'] = func.__name__
+            processingdata['methodargs'] = args
+            processingdata['methodkwargs'] = kwargs
+            processingdata['classname'] = self.__class__.__name__
+
+        return Frames(func(*args, **kwargs), processingdata=processingdata)
     return wrapper
 
 
@@ -39,14 +48,14 @@ class Frames:
 
     Examples
     --------
-     >>> import birdwatcher as bw
-     >>> frames = bw.FramesNoise(250, height=720, width=1280)
-     >>> frames = frames.draw_framenumbers()
-     >>> frames.tovideo('noisewithframenumbers.mp4', framerate=25)
+    >>> import birdwatcher as bw
+    >>> frames = bw.FramesNoise(250, height=720, width=1280)
+    >>> frames = frames.draw_framenumbers()
+    >>> frames.tovideo('noisewithframenumbers.mp4', framerate=25)
 
     """
 
-    def __init__(self, frames):
+    def __init__(self, frames, processingdata=None):
 
         first, frames = peek_iterable(frames)
 
@@ -58,6 +67,7 @@ class Frames:
         self._framewidth = framewidth
         self._nchannels = nchannels
         self._index = 0
+        self.processingdata = processingdata
 
     def __iter__(self):
         return self
@@ -67,15 +77,21 @@ class Frames:
 
     @property
     def frameheight(self):
-        self._frameheight
+        return self._frameheight
 
     @property
     def framewidth(self):
-        self._framewidth
+        return self._framewidth
 
     @property
     def nchannels(self):
-        self._nchannels
+        return self._nchannels
+
+    def get_info(self):
+        return {'classname': self.__class__.__name__,
+                'framewidth': self.framewidth,
+                'frameheight': self.frameheight,
+                'processingdata': self.processingdata}
 
     def tovideo(self, filename, framerate, crf=23, format='mp4',
                 codec='libx264', pixfmt='yuv420p', ffmpegpath='ffmpeg'):
@@ -207,10 +223,10 @@ class Frames:
             yield cv.cvtColor(frame, cv.COLOR_GRAY2BGR)
 
     @frameiterator
-    def draw_framenumber(self, startat=0, org=(2, 25),
-                         fontface=cv.FONT_HERSHEY_SIMPLEX,
-                         fontscale=1, color=(200, 200, 200), thickness=2,
-                         linetype=cv.LINE_AA):
+    def draw_framenumbers(self, startat=0, org=(2, 25),
+                          fontface=cv.FONT_HERSHEY_SIMPLEX,
+                          fontscale=1, color=(200, 200, 200), thickness=2,
+                          linetype=cv.LINE_AA):
         """Draws the frame number on frames.
 
         Parameters
