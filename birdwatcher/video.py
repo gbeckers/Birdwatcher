@@ -20,7 +20,9 @@ class VideoFileStream():
     filepath: str of pathlib.Path
         Path to videofile.
     streamnumber: int
-        Stream number to use as input. Default 1.
+        Video stream number to use as input. Often there is just
+        one video stream present in a video file, but if there are more you
+        can use this parameter to specify which one you want. Default 0.
 
     Examples
     --------
