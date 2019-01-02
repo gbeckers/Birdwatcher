@@ -2,9 +2,9 @@
 processing functionality such as measurement, drawing of labels/text and
 saving as video files.
 
-A general tip is to look at OpenCV's documentation if you want to understand
-the parameters.
-
+Many methods mirror functions from OpenCV. Doc strings are provided but
+it is a good idea to look at OpenCV's documentation and examples if you want
+to understand the parameters in more depth.
 
 """
 
