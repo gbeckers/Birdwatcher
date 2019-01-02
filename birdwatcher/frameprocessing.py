@@ -34,7 +34,7 @@ def frameiterator(func):
 
 
 class Frames:
-    """An iterator of frames with useful methods.
+    """An iterator of video frames with useful methods.
 
     This is a main base class in Birdwatcher, as many functions and
     methods return this type or can use it as input. It also has useful methods
