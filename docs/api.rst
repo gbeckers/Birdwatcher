@@ -5,7 +5,7 @@ Birdwatcher API Documentation
 .. contents:: :local:
    :depth: 2
 
-Video input from File
+Video input from file
 =====================
 
 .. automodule:: birdwatcher.video
