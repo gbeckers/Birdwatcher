@@ -5,12 +5,12 @@ Birdwatcher API Documentation
 .. contents:: :local:
    :depth: 2
 
-Video file input
-================
+Video input from File
+=====================
 
-.. automodule:: birdwatcher.videoinput
+.. automodule:: birdwatcher.video
 
-.. autoclass:: birdwatcher.VideoFile
+.. autoclass:: birdwatcher.VideoFileStream
    :members:
    :inherited-members:
 
