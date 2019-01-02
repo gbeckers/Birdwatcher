@@ -37,8 +37,9 @@ class Frames:
     """An iterator of video frames with useful methods.
 
     This is a main base class in Birdwatcher, as many functions and
-    methods return this type or can use it as input. It also has useful methods
-    for final output, such as a video file, measurement, or adding labels.
+    methods return this type and take it as input. Many methods of `Frames`
+    objects return new `Frames` objects, but some of them generate final
+    output, such as a video file or a measurement.
 
     Parameters
     ----------
@@ -52,6 +53,11 @@ class Frames:
     >>> frames = bw.FramesNoise(250, height=720, width=1280)
     >>> frames = frames.draw_framenumbers()
     >>> frames.tovideo('noisewithframenumbers.mp4', framerate=25)
+    >>> # next example based on input from video file
+    >>> vf = bw.VideoFileStream('zebrafinchrecording.mp4')
+    >>> frames = vf.iter_frames() # create Frames object
+    >>> # more concise expression
+    >>> frames.blur(ksize=(3,3)).togray().tovideo('zf_blurgray.mp4')
 
     """
 
