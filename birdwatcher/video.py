@@ -14,7 +14,7 @@ class VideoFileStream():
     """Video stream from file.
 
     This class can read video frames from a file.
-    
+
     Parameters
     ----------
     filepath: str of pathlib.Path
@@ -25,8 +25,9 @@ class VideoFileStream():
     Examples
     --------
     >>> import birdwatcher as bw
-    >>> vf = bw.VideoFile('zebrafinchrecording.mp4')
-    >>> vf.togray().tovideo('zebrafinchrecording_gray.mp4')
+    >>> vf = bw.VideoFileStream('zebrafinchrecording.mp4')
+    >>> frames = vf.iter_frames() # create frame iterator
+    >>> frames.togray().tovideo('zebrafinchrecording_gray.mp4')
 
     """
 
