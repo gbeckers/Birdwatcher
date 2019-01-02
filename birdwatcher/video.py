@@ -14,6 +14,7 @@ class VideoFileStream():
     """Video stream from file.
 
     This class can read video frames from a file.
+    
     Parameters
     ----------
     filepath: str of pathlib.Path
