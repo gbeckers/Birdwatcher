@@ -44,7 +44,7 @@ class Frames:
     ----------
     frames: iterable
         This can be anything that is iterable and that produces image frames. A
-        numpy array, a VideoFile or another Frames object.
+        numpy array, a VideoFileStream or another Frames object.
 
     Examples
     --------
@@ -317,6 +317,27 @@ class Frames:
 
     @frameiterator
     def add_weighted(self, alpha, frames, beta, gamma=0):
+        """Calculates the weighted sum of frames from self and the frames
+        of the object specified by the `frames` parameter.
+
+        Parameters
+        ----------
+        alpha: float
+            Weight of the frames of self.
+        frames: frame iterator
+            The other source of input frames.
+        beta: float
+            Weight of the frames of the other frame iterator, specified by
+            the `frames` parameter.
+        gamma: float
+            Scalar added to each sum.
+
+        Returns
+        -------
+        Frames
+            Iterates over sequence of summed image frames.
+
+        """
         for frame1, frame2 in zip(self._frames, frames):
             yield cv.addWeighted(src1=frame1, alpha=alpha, src2=frame2,
                                  beta=beta, gamma=gamma)
