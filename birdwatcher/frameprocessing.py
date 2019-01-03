@@ -25,8 +25,10 @@ def frameiterator(func):
         if hasattr(self, 'get_info'):
             processingdata['processingdata'] = self.get_info()
             processingdata['methodname'] = func.__name__
-            processingdata['methodargs'] = args
-            processingdata['methodkwargs'] = kwargs
+            processingdata['methodargs'] = [str(arg) for arg in args]
+            processingdata['methodkwargs'] = dict((str(key),str(item))
+                                                  for (key, item)
+                                                  in kwargs.items())
             processingdata['classname'] = self.__class__.__name__
 
         return Frames(func(*args, **kwargs), processingdata=processingdata)
