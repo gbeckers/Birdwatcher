@@ -373,8 +373,8 @@ class Frames:
 
         Returns
         -------
-        iterable of image frames
-            The output foreground mask as an 8-bit image.
+        Frames
+            Iterates over sequence of foreground masks.
 
         """
         bgs.iter_apply(self._frames, fgmask=fgmask, learningRate=learningRate,
