@@ -358,7 +358,8 @@ class Frames:
         Parameters
         ----------
         bgs: Subclass of BaseBackgroundSubtractor
-            Instance of Birdwatcher BaseBackgroundSubtractor class.
+            Instance of one of Birdwatcher's BackgroundSubtractor classes,
+            such as BackgroundSubtractorMOG2.
         fgmask: numpy array image
             The output foreground mask as an 8-bit binary image.
         learningRate: float
