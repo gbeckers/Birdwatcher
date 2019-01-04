@@ -350,6 +350,36 @@ class Frames:
             yield cv.addWeighted(src1=frame1, alpha=alpha, src2=frame2,
                                  beta=beta, gamma=gamma)
 
+    @frameiterator
+    def apply_backgroundsegmenter(self, bgs, fgmask=None, learningRate=-1.0,
+                                  roi=None):
+        """Compute foreground masks based on input sequence of frames.
+
+        Parameters
+        ----------
+        bgs: BaseBackgroundSubtractor
+            Instance of Birdwatcher BaseBackgroundSubtractor class.
+        fgmask: numpy array image
+            The output foreground mask as an 8-bit binary image.
+        learningRate: float
+            The value between 0 and 1 that indicates how fast the background
+            model is learnt. Negative parameter value makes the algorithm to
+            use some automatically chosen learning rate. 0 means that the
+            background model is not updated at all, 1 means that the background
+            model is completely reinitialized from the last frame.
+        roi: (int, int, int, int) or None
+            Region of interest. Only look at this rectangular region. h1,
+            h2, w1, w2. Default None.
+
+        Returns
+        -------
+        iterable of image frames
+            The output foreground mask as an 8-bit image.
+
+        """
+        bgs.iter_apply(self._frames, fgmask=fgmask, learningRate=learningRate,
+                       roi=roi)
+
 
 
 
