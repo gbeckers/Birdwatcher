@@ -378,8 +378,8 @@ class Frames:
             Iterates over sequence of foreground masks.
 
         """
-        bgs.iter_apply(self._frames, fgmask=fgmask, learningRate=learningRate,
-                       roi=roi)
+        return bgs.iter_apply(self._frames, fgmask=fgmask,
+                              learningRate=learningRate, roi=roi)
 
 
 
