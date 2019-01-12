@@ -8,7 +8,6 @@ from .video import VideoFileStream
 from .coordinatearrays import create_coordarray
 from .backgroundsubtraction import BackgroundSubtractorMOG2, BackgroundSubtractorKNN
 from ._version import get_versions
-from .utils import derive_filepath
 
 __all__ = ['detect_movement']
 
