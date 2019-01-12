@@ -8,9 +8,10 @@ from .video import VideoFileStream
 from .coordinatearrays import create_coordarray
 from .backgroundsubtraction import BackgroundSubtractorMOG2, BackgroundSubtractorKNN
 from ._version import get_versions
+from .utils import derive_filepath
 
 __all__ = ['detect_movementknn', 'batch_detect_movementknn',
-           'detect_movementmog2', 'MovementDetector']
+           'detect_movementmog2', 'MovementDetector', 'detect_movement']
 
 class MovementDetector():
     
@@ -176,9 +177,42 @@ def _detect_movement(bgsclass, videofilepath, morphologyex=2,
                       metadata=metadata, overwrite=True)
     return cd, cc, cm
 
+def detect_movement(videofilepath, bgs, morphologyex=2, gray=True,
+                    roi=None, analysispath='.', overwrite=False,
+                    resultvideo=False):
+
+    vf = VideoFileStream(videofilepath)
+    if not Path(analysispath).exists():
+        os.mkdir(analysispath)
+    coordinatesfilepath = Path(analysispath) / Path(
+        f'{vf.filepath.stem}_movement.darr')
+    metadata = {}
+    metadata['backgroundsegmentclass'] = str(bgs)
+    metadata['backgroundsegmentparams'] = bgs.get_params()
+    metadata['morphologyex'] = morphologyex
+    metadata['roi'] = roi
+    if gray:
+        frames = vf.iter_frames(pix_fmt='gray', color=False)
+    else:
+        frames = vf.iter_frames(pix_fmt='bgr24', color=True)
+    frames = frames.apply_backgroundsegmenter(bgs, roi=roi)
+    if morphologyex is not None:
+        frames = frames.morphologyex(kernelsize=morphologyex)
+    coords = create_coordarray(coordinatesfilepath, framewidth=vf.framewidth,
+                               frameheight=vf.frameheight, metadata=metadata,
+                               overwrite=overwrite)
+    coords.iterappend(frames.find_nonzero())
+    if resultvideo:
+        ovfilepath = Path(analysispath) / f'{ vf.filepath.stem}_movement.mp4'
+        cframes = coords.iter_frames(nchannels=3, value=(0, 0, 255))
+        (vf.iter_frames().add_weighted(0.7, cframes, 0.8)
+         .draw_framenumbers()
+         .tovideo(ovfilepath, framerate=vf.avgframerate, crf=25))
+    return coords
+
 
 def detect_movementknn(videofilepath, morphologyex=2, analysispath='.',
-                       ignore_rectcoord=None, ignore_firstnframes=50,
+                       ignore_rectcoord=None, ignore_firstnframes=0,
                        **kwargs):
     cd, cc, cm = _detect_movement(bgsclass=BackgroundSubtractorKNN, \
                                   videofilepath=videofilepath,
@@ -202,6 +236,17 @@ def detect_movementmog2(videofilepath, morphologyex=2, analysispath='.',
                                   **kwargs)
     return cd, cc, cm
 
+
+def detect_movementmog2_new(videofilepath, morphologyex=2, gray=True,
+                         roi=None, analysispath='.', **kwargs):
+    coords = _detect_movement(bgsclass=BackgroundSubtractorMOG2, \
+                              videofilepath=videofilepath,
+                              morphologyex=morphologyex,
+                              gray=gray,
+                              roi=roi,
+                              analysispath=analysispath,
+                              **kwargs)
+    return coords
 
 def calc_meanframe(videofilepath):
     vf = VideoFileStream(videofilepath)
