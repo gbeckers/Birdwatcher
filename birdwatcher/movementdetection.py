@@ -10,8 +10,7 @@ from .backgroundsubtraction import BackgroundSubtractorMOG2, BackgroundSubtracto
 from ._version import get_versions
 from .utils import derive_filepath
 
-__all__ = ['detect_movementknn', 'batch_detect_movementknn',
-           'detect_movementmog2', 'MovementDetector', 'detect_movement']
+__all__ = ['detect_movement']
 
 class MovementDetector():
     
