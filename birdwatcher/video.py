@@ -5,6 +5,7 @@ depends on FFmpeg.
 
 
 import pathlib
+import numpy as np
 from .ffmpeg import videofileinfo, iterread_videofile, count_frames
 from .frameprocessing import frameiterator
 
@@ -79,6 +80,11 @@ class VideoFileStream():
     @property
     def framesize(self):
         return (self.framewidth, self.frameheight)
+
+    @property
+    def avgframerate(self):
+        ar = self.streammetadata['avg_frame_rate']
+        return np.divide(*map(int, ar.split('/')))
 
     def count_frames(self, threads=8, ffprobepath='ffprobe'):
         return count_frames(self.filepath, threads=threads,
