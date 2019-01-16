@@ -230,6 +230,7 @@ class Frames:
         for frame in self._frames:
             yield cv.cvtColor(frame, cv.COLOR_GRAY2BGR)
 
+    # FIXME use draw_text
     @frameiterator
     def draw_framenumbers(self, startat=0, org=(2, 25),
                           fontface=cv.FONT_HERSHEY_SIMPLEX,
@@ -266,6 +267,18 @@ class Frames:
                              fontFace=fontface, fontScale=fontscale,
                              color=color, thickness=thickness,
                              lineType=linetype)
+
+    @frameiterator
+    def draw_text(self, textiterator, org=(2, 25),
+                  fontface=cv.FONT_HERSHEY_SIMPLEX, fontscale=1,
+                  color=(200, 200, 200), thickness=2, linetype=cv.LINE_AA):
+        for frame, text in zip(self._frames, textiterator):
+            yield cv.putText(frame, str(text), org=org,
+                             fontFace=fontface, fontScale=fontscale,
+                             color=color, thickness=thickness,
+                             lineType=linetype)
+
+
     @frameiterator
     def find_nonzero(self):
         """Yields the locations of non-zero pixels.
