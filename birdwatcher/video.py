@@ -6,7 +6,8 @@ depends on FFmpeg.
 
 import pathlib
 import numpy as np
-from .ffmpeg import videofileinfo, iterread_videofile, count_frames
+from .ffmpeg import videofileinfo, iterread_videofile, count_frames, \
+    get_frameat
 from .frameprocessing import frameiterator
 
 __all__ = ['VideoFileStream', 'testvideosmall']
@@ -91,7 +92,7 @@ class VideoFileStream():
                             ffprobepath=ffprobepath)
 
     @frameiterator
-    def iter_frames(self, stopframe=None, color=True, pix_fmt='bgr24',
+    def iter_frames(self, stopframe=None, color=True,
                     ffmpegpath='ffmpeg'):
         """Iterate over frames in video.
 
@@ -106,9 +107,12 @@ class VideoFileStream():
             Generates numpy array frames (Height x width x color channel).
 
         """
-        return iterread_videofile(self.filepath, stopframe=stopframe,
-                                  color=color, pix_fmt=pix_fmt,
-                                  ffmpegpath=ffmpegpath)
+        return iterread_videofile(self.filepath, nframes=stopframe,
+                                  color=color, ffmpegpath=ffmpegpath)
+
+    def get_frameat(self, time, color=True, ffmpegpath='ffmpeg'):
+        return get_frameat(self.filepath, time=time, color=color,
+                           ffmpegpath=ffmpegpath)
 
 
 def testvideosmall():

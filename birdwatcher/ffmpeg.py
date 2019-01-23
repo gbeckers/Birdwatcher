@@ -80,7 +80,7 @@ def videofileinfo(filepath, ffprobepath='ffprobe'):
     return json.loads(p.stdout.read().decode('utf-8'))
 
 
-def iterread_videofile(filepath, stopframe=None, color=True, pix_fmt='bgr24',
+def iterread_videofile(filepath, startat=None, nframes=None, color=True,
                        ffmpegpath='ffmpeg'):
     vfi = videofileinfo(filepath)
     frameheight = vfi['streams'][0]['height']
@@ -88,12 +88,16 @@ def iterread_videofile(filepath, stopframe=None, color=True, pix_fmt='bgr24',
     if color:
         frameshape = (frameheight, framewidth, 3)
         framesize = frameheight * framewidth * 3
+        pix_fmt = 'bgr24'
     else:
         frameshape = (frameheight, framewidth)
         framesize = frameheight * framewidth
+        pix_fmt = 'gray'
     args = [str(ffmpegpath), '-i', str(filepath)]
-    if stopframe is not None:
-        args += ['-vframes', str(stopframe)]
+    if startat is not None:
+        args += ['-ss', startat]
+    if nframes is not None:
+        args += ['-vframes', str(nframes)]
     args +=['-vcodec', 'rawvideo', '-pix_fmt', pix_fmt,
             '-f', 'rawvideo', 'pipe:1']
     with subprocess.Popen(args, stdout=subprocess.PIPE, stderr=None) as p:
@@ -101,7 +105,7 @@ def iterread_videofile(filepath, stopframe=None, color=True, pix_fmt='bgr24',
         while True:
             data = p.stdout.read(framesize)
             ar = np.frombuffer(data, dtype=np.uint8)
-            if (ar.size == framesize) and ((stopframe is None) or (frameno < stopframe)):
+            if (ar.size == framesize) and ((nframes is None) or (frameno < nframes)):
                 yield ar.reshape(frameshape)
                 frameno += 1
             else:
@@ -117,3 +121,8 @@ def count_frames(filepath, threads=8, ffprobepath='ffprobe'):
     if not out:
         raise FFmpegError(ffprobepath, out, err)
     return int(out['streams'][0]['nb_read_frames'])
+
+
+def get_frameat(filepath, time, color=True,ffmpegpath='ffmpeg'):
+    return next(iterread_videofile(filepath, startat=time, nframes=1, \
+                                   color=color, ffmpegpath=ffmpegpath))
