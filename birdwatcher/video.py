@@ -64,34 +64,39 @@ class VideoFileStream():
 
     @property
     def formatmetadata(self):
+        """Metadata of video file format as provided by ffprobe."""
         return self._formatmetadata
 
     @property
     def streammetadata(self):
+        """Metadata of video stream as provided by ffprobe."""
         return self._streammetadata
 
     @property
     def framewidth(self):
+        """width in pixels of frames in video stream."""
         return self._streammetadata['width']
 
     @property
     def frameheight(self):
+        """height in pixels of frames in video stream."""
         return self._streammetadata['height']
 
     @property
     def framesize(self):
+        """tuple (frame width, frame height) in pixels in video stream."""
         return (self.framewidth, self.frameheight)
 
     @property
     def avgframerate(self):
-        """Average frame rate of video stream"""
+        """Average frame rate of video stream."""
         ar = self.streammetadata['avg_frame_rate']
         return np.divide(*map(int, ar.split('/')))
 
     def count_frames(self, threads=8, ffprobepath='ffprobe'):
         """Count the number of frames in video file stream.
 
-        This requires decoding the whole video because th enumber of frames
+        This requires decoding the whole video because the number of frames
         specified in the metadata may not be accurate.
 
         Parameters
