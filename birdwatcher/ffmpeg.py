@@ -93,9 +93,12 @@ def iterread_videofile(filepath, startat=None, nframes=None, color=True,
         frameshape = (frameheight, framewidth)
         framesize = frameheight * framewidth
         pix_fmt = 'gray'
-    args = [str(ffmpegpath), '-i', str(filepath)]
+
     if startat is not None:
-        args += ['-ss', startat]
+        args = [str(ffmpegpath), '-ss', startat, '-i', str(filepath)]
+    else:
+        args = [str(ffmpegpath), '-i', str(filepath)]
+
     if nframes is not None:
         args += ['-vframes', str(nframes)]
     args +=['-vcodec', 'rawvideo', '-pix_fmt', pix_fmt,
