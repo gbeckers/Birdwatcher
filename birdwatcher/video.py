@@ -157,8 +157,17 @@ class VideoFileStream():
             Read as a color frame (2 dimensional) or as a gray frame (3
             dimensional). Default True.
 
+        Example
+        -------
+        >>> import birdwatcher as bw
+        >>> vf = bw.testvideosmall()
+        >>> frame = vf.get_frameat('5.05') # at 5 sec and 50 msec
+        >>> frame = vf.get_frameat('00:00:05.05') # same thing
+
         Returns
         -------
+        numpy ndarray
+            The frame at the specified time.
 
         """
         return get_frameat(self.filepath, time=time, color=color,
