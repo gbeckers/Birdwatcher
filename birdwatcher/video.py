@@ -84,22 +84,49 @@ class VideoFileStream():
 
     @property
     def avgframerate(self):
+        """Average frame rate of video stream"""
         ar = self.streammetadata['avg_frame_rate']
         return np.divide(*map(int, ar.split('/')))
 
     def count_frames(self, threads=8, ffprobepath='ffprobe'):
+        """Count the number of frames in video file stream.
+
+        This requires decoding the whole video because th enumber of frames
+        specified in the metadata may not be accurate.
+
+        Parameters
+        ----------
+        threads: int
+            The number of threads you want to devote to decoding.
+
+        ffprobepath: str or Path
+
+        Returns
+        -------
+        int
+            The number of frames in video file
+
+        """
         return count_frames(self.filepath, threads=threads,
                             ffprobepath=ffprobepath)
 
     @frameiterator
-    def iter_frames(self, stopframe=None, color=True,
+    def iter_frames(self, startat=None, nframes=None, color=True,
                     ffmpegpath='ffmpeg'):
         """Iterate over frames in video.
 
         Parameters
         ----------
-        stopframe: int
-            Stop at frame `stopframe`
+        startat: str or None
+            If specified, start at this time point in the video file. You
+            can use two different time unit formats: sexagesimal
+            (HOURS:MM:SS.MILLISECONDS, as in 01:23:45.678), or in seconds.
+            Default is None.
+        nframes: int
+            Read a specified number of frames.
+        color: bool
+            Read as a color frame (2 dimensional) or as a gray frame (3
+            dimensional). Default True.
 
         Returns
         -------
@@ -107,10 +134,28 @@ class VideoFileStream():
             Generates numpy array frames (Height x width x color channel).
 
         """
-        return iterread_videofile(self.filepath, nframes=stopframe,
-                                  color=color, ffmpegpath=ffmpegpath)
+        return iterread_videofile(self.filepath, startat=startat,
+                                  nframes=nframes, color=color,
+                                  ffmpegpath=ffmpegpath)
 
     def get_frameat(self, time, color=True, ffmpegpath='ffmpeg'):
+        """Get frame at specified time.
+
+        Parameters
+        ----------
+        time: str or None
+            If specified, start at this time point in the video file. You
+            can use two different time unit formats: sexagesimal
+            (HOURS:MM:SS.MILLISECONDS, as in 01:23:45.678), or in seconds.
+            Default is None.
+        color: bool
+            Read as a color frame (2 dimensional) or as a gray frame (3
+            dimensional). Default True.
+
+        Returns
+        -------
+
+        """
         return get_frameat(self.filepath, time=time, color=color,
                            ffmpegpath=ffmpegpath)
 
