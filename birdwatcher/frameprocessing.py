@@ -394,6 +394,26 @@ class Frames:
         return bgs.iter_apply(self._frames, fgmask=fgmask,
                               learningRate=learningRate, roi=roi)
 
+    @frameiterator
+    def absdiff_frame(self, frame):
+        """Subtract static image frame from frame iterator.
+
+        Parameters
+        ----------
+        frame: ndarray frame
+            Fixed image frame that will be subtracted from each frame of the
+            frame iterator.
+
+        Returns
+        -------
+        Frames
+            Iterates over sequence of absolute difference frames.
+
+        """
+        for frame_self in self._frames:
+            yield cv.absdiff(frame_self, frame)
+
+
 
 
 
