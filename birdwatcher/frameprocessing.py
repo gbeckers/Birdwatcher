@@ -413,9 +413,43 @@ class Frames:
         for frame_self in self._frames:
             yield cv.absdiff(frame_self, frame)
 
+    @frameiterator
+    def threshold(self, thresh,	maxval=255,	threshtype='tozero'):
+        """
 
+        Parameters
+        ----------
+        thresh: int
+        	threshold value.
+        maxval: int
+        	Maximum value to use with the THRESH_BINARY and THRESH_BINARY_INV
+        	thresholding types. Default 255
+        threshtype: int
+        	Thresholding type. Choose from 'binary', 'binary_inv', 'trunc',
+            'tozero', 'tozero_inv', 'mask', 'otsu', 'triangle'. Default:
+            'tozero', which means that everything below `thresh` will be set
+            to zero. See doc OpenCV.
 
+        Returns
+        -------
+        Frames
+            Iterates over sequence of thresholded frames.
 
+        """
+        threshtypes = {
+        'binary': cv.THRESH_BINARY,
+        'binary_inv': cv.THRESH_BINARY_INV,
+        'trunc': cv.THRESH_TRUNC,
+        'tozero': cv.THRESH_TOZERO,
+        'tozero_inv': cv.THRESH_TOZERO_INV,
+        'mask': cv.THRESH_MASK,
+        'otsu': cv.THRESH_OTSU,
+        'triangle': cv.THRESH_TRIANGLE
+        }
+        threshtype = threshtypes[threshtype]
+        for frame in self._frames:
+            yield cv.threshold(src=frame, thresh=thresh,
+                               maxval=maxval, type=threshtype)[1]
 
 class FramesColor(Frames):
     """An iterator that yields color frames.
