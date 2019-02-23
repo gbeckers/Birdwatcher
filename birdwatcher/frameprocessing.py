@@ -278,7 +278,7 @@ class Frames:
                              color=color, thickness=thickness,
                              lineType=linetype)
 
-
+    # FIXME should this be a coordinate iterator?
     @frameiterator
     def find_nonzero(self):
         """Yields the locations of non-zero pixels.
@@ -299,7 +299,7 @@ class Frames:
             yield idx
 
     @frameiterator
-    def morphologyex(self, morphtype='open', kernelsize=2):
+    def morphologyex(self, morphtype='open', kernelsize=2, iterations=1):
         """Performs advanced morphological transformations on frames.
 
         Can perform advanced morphological transformations using an erosion
@@ -315,6 +315,8 @@ class Frames:
             'close', 'gradient', 'tophat', 'blackhat'. Default: 'open'.
         kernelsize: int
             Size of kernel in 1 dimension. Default 2.
+        iterations: int
+            Number of times erosion and dilation are applied.
 
         Returns
         -------
@@ -334,7 +336,8 @@ class Frames:
             raise ValueError(f'`{morphtype}` is not a valid morphtype')
         kernel = np.ones((kernelsize, kernelsize), np.uint8)
         for frame in self._frames:
-            yield cv.morphologyEx(frame, cv.MORPH_OPEN, kernel)
+            yield cv.morphologyEx(frame, morphnum, kernel,
+                                  iterations=iterations)
 
     @frameiterator
     def add_weighted(self, alpha, frames, beta, gamma=0):
@@ -450,6 +453,28 @@ class Frames:
         for frame in self._frames:
             yield cv.threshold(src=frame, thresh=thresh,
                                maxval=maxval, type=threshtype)[1]
+
+    # FIXME should this be a coordinate iterator?
+    def find_contours(self, retrmode='tree', apprmethod='simple',
+                      offset=(0, 0)):
+        retrmode = {
+            'tree': cv.RETR_TREE,
+            'external': cv.RETR_EXTERNAL,
+            'list': cv.RETR_LIST,
+            'ccomp': cv.RETR_CCOMP,
+            'floodfill': cv.RETR_FLOODFILL
+        }[retrmode]
+        apprmethod ={
+            'none': cv.CHAIN_APPROX_NONE,
+            'simple': cv.CHAIN_APPROX_SIMPLE,
+            'tc89_l1': cv.CHAIN_APPROX_TC89_L1,
+            'tc89_kcos': cv.CHAIN_APPROX_TC89_KCOS
+        }[apprmethod]
+        for frame in self._frames:
+            yield cv.findContours(frame, mode=retrmode,
+                                  method=apprmethod, offset=offset)
+
+
 
 class FramesColor(Frames):
     """An iterator that yields color frames.

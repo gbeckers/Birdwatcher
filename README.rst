@@ -42,10 +42,13 @@ way of getting it is in Anaconda, as follows::
 
 The package at conda-forge has h264 encoding, which is nice to have.
 
-Then, install Birdwatcher from git repo::
+Then, install the master branch of Birdwatcher from git repo::
 
-    $ pip install git+https://github.com/gbeckers/birdwatcher
+    $ pip install git+https://github.com/gbeckers/birdwatcher@master
 
+Or, the development branch:
+
+    $ pip install git+https://github.com/gbeckers/birdwatcher@develop
 
 
 Installation full analysis environment
