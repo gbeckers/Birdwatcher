@@ -46,7 +46,7 @@ Then, install the master branch of Birdwatcher from git repo::
 
     $ pip install git+https://github.com/gbeckers/birdwatcher@master
 
-Or, the development branch:
+Or, the development branch::
 
     $ pip install git+https://github.com/gbeckers/birdwatcher@develop
 
