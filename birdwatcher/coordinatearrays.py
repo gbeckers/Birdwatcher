@@ -17,6 +17,7 @@ from darr import RaggedArray, delete_raggedarray, create_raggedarray
 
 from ._version import get_versions
 from .utils import tempdir
+from .frameprocessing import frameiterator
 
 __all__ = ['CoordinateArrays', 'open_archivedcoordinatedata',
            'create_coordarray']
@@ -46,6 +47,7 @@ class CoordinateArrays(RaggedArray):
                               height=self.frameheight, nchannels=nchannels,
                               dtype=dtype, value=value)
 
+    @frameiterator
     def iter_frames(self, nchannels=None, dtype='uint8', value=1):
         for coords in self:
             yield _coordstoframe(coords=coords, width=self.framewidth,
