@@ -9,7 +9,7 @@ from .coordinatearrays import create_coordarray
 from .backgroundsubtraction import BackgroundSubtractorMOG2, BackgroundSubtractorKNN
 from ._version import get_versions
 
-__all__ = ['detect_movement']
+__all__ = ['detect_movement', 'MovementDetector']
 
 class MovementDetector():
     
