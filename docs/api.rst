@@ -52,3 +52,15 @@ KNN
    :members:
    :inherited-members:
 
+
+Movement detection
+==================
+
+.. automodule:: birdwatcher.movementdetection
+
+.. autoclass:: birdwatcher.MovementDetection
+   :members:
+   :inherited-members:
+
+
+.. autofunction:: birdwatcher.detect_movement
