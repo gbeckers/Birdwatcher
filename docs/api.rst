@@ -58,7 +58,7 @@ Movement detection
 
 .. automodule:: birdwatcher.movementdetection
 
-.. autoclass:: birdwatcher.MovementDetection
+.. autoclass:: birdwatcher.MovementDetector
    :members:
    :inherited-members:
 
