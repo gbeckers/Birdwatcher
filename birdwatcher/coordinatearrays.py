@@ -55,8 +55,6 @@ class CoordinateArrays(RaggedArray):
     def tovideo(self, filepath, framerate=None, crf=17, format='mp4',
                  codec='libx264', pixfmt='yuv420p', ffmpegpath='ffmpeg'):
         from .ffmpeg import arraytovideo
-        if framerate is None:
-            framerate=self.metadata['video']['framerate']
         arraytovideo(self.iter_frames(nchannels=3, value=255, dtype=np.uint8),
                      filepath, framerate=framerate, crf=crf, format=format,
                      codec=codec, pixfmt=pixfmt, ffmpegpath=ffmpegpath)
