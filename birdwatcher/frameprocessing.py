@@ -418,7 +418,7 @@ class Frames:
 
     @frameiterator
     def threshold(self, thresh,	maxval=255,	threshtype='tozero'):
-        """
+        """Thresholds frames at value `thresh`.
 
         Parameters
         ----------
@@ -457,6 +457,21 @@ class Frames:
     # FIXME should this be a coordinate iterator?
     def find_contours(self, retrmode='tree', apprmethod='simple',
                       offset=(0, 0)):
+        """Finds contrours in frames.
+
+        Parameters
+        ----------
+        retrmode:  str
+
+        apprmethod: str
+
+        offset: (int, int)
+
+        Returns
+        -------
+        Iterator over contours.
+
+        """
         retrmode = {
             'tree': cv.RETR_TREE,
             'external': cv.RETR_EXTERNAL,
