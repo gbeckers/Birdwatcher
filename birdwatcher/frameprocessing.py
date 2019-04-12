@@ -469,7 +469,8 @@ class Frames:
 
         Returns
         -------
-        Iterator over contours.
+        Iterator
+            Iterates over contours.
 
         """
         retrmode = {
