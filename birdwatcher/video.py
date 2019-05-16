@@ -114,7 +114,9 @@ class VideoFileStream():
 
         This can be necessary as the number of frames reported in th
         evideo file metadata may not be accurate. This method requires
-        decoding the whole video stream and may take a lot of time.
+        decoding the whole video stream and may take a lot of time. Use the
+        `nframes` property if you trust the video file metadata and want
+        fast results.
 
         Parameters
         ----------
