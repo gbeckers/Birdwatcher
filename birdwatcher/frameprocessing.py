@@ -162,6 +162,7 @@ class Frames:
             yield cv.blur(frame, ksize=ksize, anchor=anchor,
                           borderType=borderType)
 
+    # FIXME multiple circles per frame?
     @frameiterator
     def draw_circles(self, centers, radius=6, color=(255, 100, 0),
                      thickness=2, linetype=cv.LINE_AA, shift=0):
@@ -199,6 +200,43 @@ class Frames:
                 (x, y) = center.astype('int16')
                 yield cv.circle(frame, center=(x, y), radius=radius,
                                 color=color,
+                                thickness=thickness, lineType=linetype,
+                                shift=shift)
+            else:
+                yield frame
+
+    @frameiterator
+    def draw_rectangles(self, points, color=(255, 100, 0),
+                     thickness=2, linetype=cv.LINE_AA, shift=0):
+        """Draws circles on frames.
+
+        Centers should be an iterable that has a length that corresponds to
+        the number of frames.
+
+        Parameters
+        ----------
+        points: iterable
+            Iterable that generates sequences of rectangle corners ((x1, y1),
+            (x2, y2)) per frame.
+        color: tuple of ints
+            Color of rectangle (r, g, b). Default (255, 100, 0)
+        thickness: int
+            Line thickness. Default 2.
+        linetype: int
+            OpenCV line type of rectangle boundary. Default cv2.LINE_AA
+        shift: int
+            Number of fractional bits in the  point coordinates. Default 0.
+
+        Returns
+        -------
+        Frames
+            Iterator that generates frames with rectangles
+
+        """
+
+        for frame, framepoints in zip(self._frames, points):
+            for (pt1, pt2) in framepoints:
+                yield cv.rectangle(frame, pt1=pt1, pt2=pt2, color=color,
                                 thickness=thickness, lineType=linetype,
                                 shift=shift)
             else:
