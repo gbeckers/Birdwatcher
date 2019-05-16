@@ -58,7 +58,8 @@ class MovementDetector():
         self.emptyidx = np.zeros((0,2), dtype=np.uint16)
         self._framesprocessed = 0
         self._emptyframe = None
-        
+
+    # FIXME what if frame is gray already?
     def apply(self, frame):
         if self.focus_rectcoord is not None:
             if self._framesprocessed == 0:
