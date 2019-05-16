@@ -63,6 +63,19 @@ class VideoFileStream():
         return self.iter_frames()
 
     @property
+    def avgframerate(self):
+        """Average frame rate of video stream, as reported in the metadata
+        of the video file."""
+        ar = self.streammetadata['avg_frame_rate']
+        return np.divide(*map(int, ar.split('/')))
+
+    @property
+    def duration(self):
+        """Duration of video stream in seconds, as reported in the metadata
+        of the video file."""
+        return float(self.streammetadata['duration'])
+
+    @property
     def formatmetadata(self):
         """Metadata of video file format as provided by ffprobe."""
         return self._formatmetadata
@@ -87,17 +100,21 @@ class VideoFileStream():
         """tuple (frame width, frame height) in pixels in video stream."""
         return (self.framewidth, self.frameheight)
 
+
     @property
-    def avgframerate(self):
-        """Average frame rate of video stream."""
-        ar = self.streammetadata['avg_frame_rate']
-        return np.divide(*map(int, ar.split('/')))
+    def nframes(self):
+        """Number of frames in video stream as reported in the metadata
+        of the video file. Note that this may not be accurate. Use
+        `count_frames` to measure the actual number (may take a lot of
+        time)."""
+        return float(self.streammetadata['nb_frames'])
 
     def count_frames(self, threads=8, ffprobepath='ffprobe'):
         """Count the number of frames in video file stream.
 
-        This requires decoding the whole video because the number of frames
-        specified in the metadata may not be accurate.
+        This can be necessary as the number of frames reported in th
+        evideo file metadata may not be accurate. This method requires
+        decoding the whole video stream and may take a lot of time.
 
         Parameters
         ----------
