@@ -150,7 +150,7 @@ class VideoFileStream():
         nframes: int
             Read a specified number of frames.
         color: bool
-            Read as a color frame (2 dimensional) or as a gray frame (3
+            Read as a color frame (3 dimensional) or as a gray frame (2
             dimensional). Default True.
 
         Returns
