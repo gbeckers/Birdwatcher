@@ -7,10 +7,19 @@ __all__ = ['imshow_frame']
 def imshow_frame(frame, fig=None, ax=None, figsize=None, cmap=None,
                  draw_rectangle=None ):
     """Create an matplotlib image plot of the frame.
-
-    draw_rectangle: (int, int, int, int) or None
-        Draw a rectangle on image. h1, h2, w1, w2. Origin is left top. Default:
-        None.
+    frame: numpy array image
+        Video frame.
+    fig: matplotlib Figure object, optional, default: None
+        Provide if you already have a figure in which the frame should be
+        plotted. Default: None.
+    ax: matplotlib Axes object, optional, default: None
+        Provide if you already have an axes in which the frame should be
+        plotted.
+    figsize: (float, float), optional, default: None
+        width, height in inches. If not provided, defaults to
+        rcParams["figure.figsize"] = [6.4, 4.8].
+    draw_rectangle: (int, int, int, int), optional, default: None
+        Draw a rectangle on image. h1, h2, w1, w2. Origin is left top.
 
     """
     if fig is None:
