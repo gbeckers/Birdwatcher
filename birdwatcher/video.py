@@ -108,7 +108,7 @@ class VideoFileStream():
         of the video file. Note that this may not be accurate. Use
         `count_frames` to measure the actual number (may take a lot of
         time)."""
-        return float(self.streammetadata['nb_frames'])
+        return int(self.streammetadata['nb_frames'])
 
     def count_frames(self, threads=8, ffprobepath='ffprobe'):
         """Count the number of frames in video file stream.
