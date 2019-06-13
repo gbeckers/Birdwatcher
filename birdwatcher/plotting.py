@@ -1,3 +1,10 @@
+"""This module provides convenient functions for plotting video-related data.
+
+These are based on Matplotlib. If you want to display things automatically
+in Jupyter, use `%matplotlib inline`
+
+"""
+
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 import cv2 as cv
