@@ -137,7 +137,7 @@ class VideoFileStream():
 
     @frameiterator
     def iter_frames(self, startat=None, nframes=None, color=True,
-                    ffmpegpath='ffmpeg', reportprogress=None):
+                    ffmpegpath='ffmpeg', reportprogress=False):
         """Iterate over frames in video.
 
         Parameters
