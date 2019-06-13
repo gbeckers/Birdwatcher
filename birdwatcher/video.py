@@ -9,6 +9,7 @@ import numpy as np
 from .ffmpeg import videofileinfo, iterread_videofile, count_frames, \
     get_frameat
 from .frameprocessing import frameiterator
+from .utils import progress
 
 __all__ = ['VideoFileStream', 'testvideosmall']
 
@@ -136,7 +137,7 @@ class VideoFileStream():
 
     @frameiterator
     def iter_frames(self, startat=None, nframes=None, color=True,
-                    ffmpegpath='ffmpeg'):
+                    ffmpegpath='ffmpeg', reportprogress=None):
         """Iterate over frames in video.
 
         Parameters
@@ -158,9 +159,15 @@ class VideoFileStream():
             Generates numpy array frames (Height x width x color channel).
 
         """
-        return iterread_videofile(self.filepath, startat=startat,
-                                  nframes=nframes, color=color,
-                                  ffmpegpath=ffmpegpath)
+        for i,frame in enumerate(iterread_videofile(self.filepath,
+                                                    startat=startat,
+                                                    nframes=nframes,
+                                                    color=color,
+                                                    ffmpegpath=ffmpegpath)):
+            if reportprogress:
+                progress(i, self.nframes)
+            yield frame
+
 
     def get_frameat(self, time, color=True, ffmpegpath='ffmpeg'):
         """Get frame at specified time.
