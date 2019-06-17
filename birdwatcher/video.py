@@ -9,7 +9,7 @@ import numpy as np
 from .ffmpeg import videofileinfo, iterread_videofile, count_frames, \
     get_frameat
 from .frameprocessing import frameiterator
-from .utils import progress
+from .utils import progress, walk_paths
 
 __all__ = ['VideoFileStream', 'testvideosmall']
 
@@ -212,3 +212,32 @@ def testvideosmall():
     file = 'zf20s_low.mp4'
     path = pathlib.Path(__file__).parent / 'testvideos' / file
     return VideoFileStream(path)
+
+
+def walk_videofiles(dirpath, extension='.avi'):
+    """Walks recursively over contents of `dirpath` and yield pathlib Path
+    objects of videofiles, as defined by their `extension`.
+
+    Parameters
+    ----------
+    dirpath: str or Path
+        The top-level directory to start at.
+    extension: str
+        Filter on this extension. Default: '.avi'
+
+    """
+
+    dirpath = pathlib.Path(dirpath)
+    if extension.startswith('.'):
+        extension = extension[1:]
+    for file in dirpath.rglob(f'*.{extension}'):
+        yield file
+
+
+## FIXME collect much more info
+def videofilesduration(dirpath, extension='avi'):
+    files = sorted(
+        [f for f in walk_videofiles(dirpath=dirpath, extension=extension)])
+    s = 0
+    for i, f in enumerate(files):
+        s += VideoFileStream(f).duration
