@@ -64,3 +64,18 @@ Movement detection
 
 
 .. autofunction:: birdwatcher.detect_movement
+
+Plotting
+========
+
+.. automodule:: birdwatcher.plotting
+
+.. autofunction:: birdwatcher.plotting.imshow_frame
+
+Utils
+========
+
+.. automodule:: birdwatcher.utils
+
+.. autofunction:: birdwatcher.utils.walk_paths
+
