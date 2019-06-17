@@ -8,8 +8,10 @@ compressed form (lzma) when data is large.
 
 """
 
+import os
 from contextlib import contextmanager
 from pathlib import Path
+import shutil
 import numpy as np
 import tarfile
 
@@ -101,3 +103,29 @@ def open_archivedcoordinatedata(path):
         p = path.parts[-1].split('.tar.xz')[0]
         yield CoordinateArrays(Path(dirname) / Path(p))
 
+
+def move_darr(sourcedirpath, targetdirpath):
+    """Move coordinate / darr data hierarchically out of a source dir and
+    move it to a target dir, keeping the hierarchy intact.
+
+    The is handy when you created a zillion coordinate / darr inside some
+    directory hierarchy of input data, and you want to separate things.
+
+    Parameters
+    ----------
+    sourcedirpath: str or Path
+
+    targetdirpath: str or Path
+        The top-level directory to which everything is moved. If it doesn't
+        exist it will be created.
+
+    """
+    tdir = Path(targetdirpath)
+    for root, dirs, files in os.walk(sourcedirpath):
+        for dname in dirs:
+            if dname.endswith('.darr'):
+                d = Path(dname)
+                newdir = tdir / root
+                print(d, newdir)
+                os.makedirs(newdir, exist_ok=True)
+                shutil.move(f"{root}/{d}", str(newdir))
