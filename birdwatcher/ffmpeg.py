@@ -78,7 +78,7 @@ def videofileinfo(filepath, ffprobepath='ffprobe'):
     p = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     return json.loads(p.stdout.read().decode('utf-8'))
 
-
+## FIXME inform before raising StopIteration that file has no frames
 def iterread_videofile(filepath, startat=None, nframes=None, color=True,
                        ffmpegpath='ffmpeg'):
     vfi = videofileinfo(filepath)
