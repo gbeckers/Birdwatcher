@@ -1,4 +1,4 @@
-import sys
+import os,sys
 import shutil
 import tempfile
 import itertools
@@ -93,3 +93,41 @@ def progress(count, total, status=''):
 
     sys.stdout.write('[%s] %s%s ...%s\r' % (bar, percents, '%', status))
     sys.stdout.flush() # As suggested by Rom Ruben (see: http://stackoverflow.com/questions/3173320/text-progress-bar-in-the-console/27871113#comment50529068_27871113)
+
+
+def print_dirstructure(dirpath):
+    """Prints the hierarchical structure of directories, starting at `dirpath`
+
+    Parameters
+    ----------
+    dirpath: str or Path
+        The top-level directory to start at.
+
+    """
+    for root, dirs, files in os.walk(dirpath):
+        level = root.replace(dirpath, '').count(os.sep)
+        indent = ' ' * 4 * (level)
+        print(f'{indent}{os.path.basename(root)}/')
+        subindent = ' ' * 4 * (level + 1)
+        for f in files:
+            if pathlib.Path(f).is_dir():
+                print(f'{subindent}{f}')
+
+
+def walk_paths(dirpath, extension='.*'):
+    """Walks recursively over contents of `dirpath` and yield contents as
+    pathlib Path objects, potentially based on their `extension`.
+
+    Parameters
+    ----------
+    dirpath: str or Path
+        The top-level directory to start at.
+    extension: str
+        Filter on this extension. Default: '.*'
+
+    """
+    dirpath = pathlib.Path(dirpath)
+    if extension.startswith('.'):
+        extension = extension[1:]
+    for file in dirpath.rglob(f'*.{extension}'):
+        yield file
