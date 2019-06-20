@@ -64,7 +64,7 @@ def arraytovideo(frames, filename, framerate, scale=None, crf=17,
             '-pix_fmt', f'{pixfmt}']
     if scale is not None:
         width, height = scale
-        args.extend([f'scale={width}:{height}'])
+        args.extend(['-vf', f'scale={width}:{height}'])
     args.extend([filename, '-y'])
     p = subprocess.Popen(args, stdin=subprocess.PIPE)
     for frame in framegen:
