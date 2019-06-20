@@ -495,6 +495,82 @@ class Frames:
             yield cv.threshold(src=frame, thresh=thresh,
                                maxval=maxval, type=threshtype)[1]
 
+    @frameiterator
+    def resize(self, dsize, interpolation='linear'):
+        """Resizes frames.
+
+        Parameters
+        ----------
+        dsize: tuple
+            Destination size (width, height).
+        interpolation: str
+            interpolation method:
+            nearest - a nearest-neighbor interpolation
+            linear - a bilinear interpolation (used by default)
+            area - resampling using pixel area relation. It may be a preferred
+                method for image decimation, as it gives moire’-free
+                results. But when the image is zoomed, it is similar to
+                the nearest method.
+            cubic - a bicubic interpolation over 4x4 pixel neighborhood
+            lanczos4 - a Lanczos interpolation over 8x8 pixel neighborhood
+
+        Returns
+        -------
+        Frames
+            Iterates over sequence of thresholded frames.
+
+        """
+        interptypes = {
+            'nearest': cv.INTER_NEAREST,
+            'linear': cv.INTER_LINEAR,
+            'area': cv.INTER_AREA,
+            'cubic': cv.INTER_CUBIC,
+            'lanczos4': cv.INTER_LANCZOS4
+        }
+        interpolation = interptypes[interpolation]
+        for frame in self._frames:
+            yield cv.resize(src=frame, dsize=dsize, fx=0, fy=0,
+                            interpolation=interpolation)
+
+    @frameiterator
+    def resizebyfactor(self, fx, fy, interpolation='linear'):
+        """Resizes frames by a specified factor.
+
+        Parameters
+        ----------
+        fx: float
+            Scale factor along the horizontal axis.
+        fy: float
+            Scale factor along the vertical axis.
+        interpolation: str
+            interpolation method:
+            nearest - a nearest-neighbor interpolation
+            linear - a bilinear interpolation (used by default)
+            area - resampling using pixel area relation. It may be a preferred
+                method for image decimation, as it gives moire’-free
+                results. But when the image is zoomed, it is similar to
+                the nearest method.
+            cubic - a bicubic interpolation over 4x4 pixel neighborhood
+            lanczos4 - a Lanczos interpolation over 8x8 pixel neighborhood
+
+        Returns
+        -------
+        Frames
+            Iterates over sequence of thresholded frames.
+
+        """
+        interptypes = {
+            'nearest': cv.INTER_NEAREST,
+            'linear': cv.INTER_LINEAR,
+            'area': cv.INTER_AREA,
+            'cubic': cv.INTER_CUBIC,
+            'lanczos4': cv.INTER_LANCZOS4
+        }
+        interpolation = interptypes[interpolation]
+        for frame in self._frames:
+            yield cv.resize(src=frame, dsize=(0,0), fx=fx, fy=fy,
+                            interpolation=interpolation)
+
     # FIXME should this be a coordinate iterator?
     def find_contours(self, retrmode='tree', apprmethod='simple',
                       offset=(0, 0)):
