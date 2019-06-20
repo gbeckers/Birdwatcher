@@ -259,7 +259,7 @@ def calc_meanframe(videofilepath):
 
 
 def create_movementvideo(vf, ca, videofilepath=None, draw_mean=True,
-                         draw_framenumbers=(2, 120)):
+                         draw_framenumbers=(2, 120), crf=17, scale=None):
     if videofilepath is None:
         videofilepath = derive_filepath(ca.path, 'results', suffix='.mp4')
     frames = ca.iter_frames(nchannels=3, value=(0,0,255)).add_weighted(0.8, vf.iter_frames(), 0.7)
@@ -267,8 +267,11 @@ def create_movementvideo(vf, ca, videofilepath=None, draw_mean=True,
         frames = frames.draw_framenumbers(org=(2, 120))
     if draw_mean:
         centers = ca.get_coordmean()
-        centers_lp = np.array([np.convolve(centers[:,0], np.ones(7)/7, 'same'), np.convolve(centers[:,1], np.ones(7)/7, 'same')]).T
         frames = frames.draw_circles(centers=centers, radius=6, color=(255, 100, 0), thickness=2, linetype=16, shift=0)
-        frames = frames.draw_circles(centers=centers_lp, radius=6, color=(100, 255, 0), thickness=2, linetype=16, shift=0)
-    frames.tovideo(videofilepath, framerate=vf.avgframerate, crf=25)
+        # centers_lp = np.array(
+        #     [np.convolve(centers[:, 0], np.ones(7) / 7, 'same'),
+        #      np.convolve(centers[:, 1], np.ones(7) / 7, 'same')]).T
+        # frames = frames.draw_circles(centers=centers_lp, radius=6, color=(100, 255, 0), thickness=2, linetype=16, shift=0)
+    frames.tovideo(videofilepath, framerate=vf.avgframerate, crf=crf,
+                   scale=scale)
     return ca
