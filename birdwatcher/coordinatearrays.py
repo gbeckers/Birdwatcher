@@ -104,7 +104,7 @@ def open_archivedcoordinatedata(path):
         yield CoordinateArrays(Path(dirname) / Path(p))
 
 
-def move_darr(sourcedirpath, targetdirpath):
+def move_coordinatearrays(sourcedirpath, targetdirpath):
     """Move coordinate / darr data hierarchically out of a source dir and
     move it to a target dir, keeping the hierarchy intact.
 
