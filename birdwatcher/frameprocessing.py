@@ -101,7 +101,7 @@ class Frames:
                 'frameheight': self.frameheight,
                 'processingdata': self.processingdata}
 
-    def tovideo(self, filename, framerate, crf=23, format='mp4',
+    def tovideo(self, filename, framerate, crf=23, scale=None, format='mp4',
                 codec='libx264', pixfmt='yuv420p', ffmpegpath='ffmpeg'):
         """Writes frames to video file.
 
@@ -114,6 +114,9 @@ class Frames:
         crf: int
             Value determines quality of video. Default: 23, which is good
             quality. See ffmpeg documentation. Use 17 for high quality.
+        scale: tuple or None
+            (width, height). If None, do not change width and height.
+            Default: None.
         format: str
             ffmpeg video format. Default is 'mp4'. See ffmpeg documentation.
         codec: str
@@ -127,8 +130,8 @@ class Frames:
         """
         from .ffmpeg import arraytovideo
         arraytovideo(frames=self, filename=filename, framerate=framerate,
-                     crf=crf, format=format, codec=codec, pixfmt=pixfmt,
-                     ffmpegpath=ffmpegpath)
+                     crf=crf, scale=scale, format=format, codec=codec, \
+                     pixfmt=pixfmt, ffmpegpath=ffmpegpath)
 
     @frameiterator
     def blur(self, ksize, anchor=(-1,-1), borderType=cv.BORDER_DEFAULT):
