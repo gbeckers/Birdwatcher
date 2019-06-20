@@ -16,8 +16,9 @@ class FFmpegError(Exception):
         self.stderr = stderr
 
 
-def arraytovideo(frames, filename, framerate, crf=17, format='mp4',
-                 codec='libx264', pixfmt='yuv420p', ffmpegpath='ffmpeg'):
+def arraytovideo(frames, filename, framerate, scale=None, crf=17,
+                 format='mp4', codec='libx264', pixfmt='yuv420p',
+                 ffmpegpath='ffmpeg'):
     """Writes an iterable of numpy frames as video file using ffmpeg.
 
     Parameters
@@ -60,8 +61,11 @@ def arraytovideo(frames, filename, framerate, crf=17, format='mp4',
             '-s', f'{width}x{height}', '-i', 'pipe:',
             '-vcodec', f'{codec}',
             '-f', f'{format}', '-crf', f'{crf}',
-            '-pix_fmt', f'{pixfmt}',
-            filename, '-y']
+            '-pix_fmt', f'{pixfmt}']
+    if scale is not None:
+        width, height = scale
+        args.extend([f'scale={width}:{height}'])
+    args.extend([filename, '-y'])
     p = subprocess.Popen(args, stdin=subprocess.PIPE)
     for frame in framegen:
         # if frame.ndim == 2:
