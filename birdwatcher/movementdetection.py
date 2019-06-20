@@ -7,6 +7,7 @@ import darr
 from .video import VideoFileStream
 from .coordinatearrays import create_coordarray
 from .backgroundsubtraction import BackgroundSubtractorMOG2, BackgroundSubtractorKNN
+from .utils import derive_filepath
 from ._version import get_versions
 
 __all__ = ['detect_movement', 'MovementDetector']
@@ -255,3 +256,19 @@ def calc_meanframe(videofilepath):
         meanframe += frame
     meanframe /= i
     return meanframe
+
+
+def create_movementvideo(vf, ca, videofilepath=None, draw_mean=True,
+                         draw_framenumbers=(2, 120)):
+    if videofilepath is None:
+        videofilepath = derive_filepath(ca.path, 'results', suffix='.mp4')
+    frames = ca.iter_frames(nchannels=3, value=(0,0,255)).add_weighted(0.8, vf.iter_frames(), 0.7)
+    if draw_framenumbers is not None:
+        frames = frames.draw_framenumbers(org=(2, 120))
+    if draw_mean:
+        centers = ca.get_coordmean()
+        centers_lp = np.array([np.convolve(centers[:,0], np.ones(7)/7, 'same'), np.convolve(centers[:,1], np.ones(7)/7, 'same')]).T
+        frames = frames.draw_circles(centers=centers, radius=6, color=(255, 100, 0), thickness=2, linetype=16, shift=0)
+        frames = frames.draw_circles(centers=centers_lp, radius=6, color=(100, 255, 0), thickness=2, linetype=16, shift=0)
+    frames.tovideo(videofilepath, framerate=vf.avgframerate, crf=25)
+    return ca
