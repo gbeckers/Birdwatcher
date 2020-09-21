@@ -7,7 +7,7 @@ depends on FFmpeg.
 import pathlib
 import numpy as np
 from .ffmpeg import videofileinfo, iterread_videofile, count_frames, \
-    get_frameat
+    get_frameat, extract_audio
 from .frameprocessing import frameiterator
 from .utils import progress, walk_paths
 
@@ -134,6 +134,22 @@ class VideoFileStream():
         """
         return count_frames(self.filepath, threads=threads,
                             ffprobepath=ffprobepath)
+
+    def extract_audio(self, outputpath=None, overwrite=False):
+        """Extract audio as 24-bit pcm wav file.
+
+        Parameters
+        ----------
+        outputpath: str | pathlib.Path | None
+            Filename and path to write audio to. Default is None, which
+            means same name as video file, but then with '.wav' extension.
+        overwrite: bool
+            Overwrite if audio file exists or not. Default is False.
+
+        """
+        filepath = self.filepath
+        return extract_audio(filepath=filepath, outputpath=outputpath,
+                             overwrite=overwrite)
 
     @frameiterator
     def iter_frames(self, startat=None, nframes=None, color=True,

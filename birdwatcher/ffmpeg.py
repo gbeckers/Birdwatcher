@@ -132,3 +132,20 @@ def count_frames(filepath, threads=8, ffprobepath='ffprobe'):
 def get_frameat(filepath, time, color=True,ffmpegpath='ffmpeg'):
     return next(iterread_videofile(filepath, startat=time, nframes=1, \
                                    color=color, ffmpegpath=ffmpegpath))
+
+# FIXME do not assume things on audio (i.e. number of channels) and make more versatile
+def extract_audio(filepath, outputpath=None, overwrite=False, verbosity=0, ffmpegpath='ffmpeg'):
+    filepath = Path(filepath)
+    if outputpath is None:
+        outputpath = filepath.with_suffix('.wav')
+    if outputpath.exists() and not overwrite:
+        raise IOError(f'"{outputpath}" already exists, use overwrite parameter')
+    args = [str(ffmpegpath), '-y',
+            '-i', str(filepath),
+            '-vn',
+            '-codec:a', 'pcm_s24le',
+            str(outputpath)]
+    p = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    out, err = p.communicate()
+    if err:
+        return err.decode('utf-8')
