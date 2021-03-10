@@ -27,7 +27,8 @@ Installation Birdwatcher package
 --------------------------------
 
 Birdwatcher depends on Python 3.6 or higher, and a number of libraries. As
-long as there is no official release:
+long as there is no official release. It is best to use the github master
+branch. The older (alpha) versions on PyPi are outdated.
 
 Install dependencies::
 
