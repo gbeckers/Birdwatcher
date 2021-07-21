@@ -129,7 +129,7 @@ See notebook directory.
    :target: https://www.repostatus.org/#wip
 
 .. |Travis Status| image:: https://travis-ci.com/gbeckers/Birdwatcher.svg?branch=master
-   :target: https://www.travis-ci.com/gbeckers/Birdwatcher.svg?branch=master
+   :target: https://www.travis-ci.com/gbeckers/Birdwatcher?branch=master
 
 .. |Appveyor Status| image:: https://ci.appveyor.com/api/projects/status/github/gbeckers/darr?svg=true
    :target: https://ci.appveyor.com/project/gbeckers/birdwatcher
