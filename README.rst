@@ -62,7 +62,7 @@ Installation full analysis environment
 3) Create new environment for Birdwatcher (name is up to you, in example
    here 'mybirdwatcher'). We install Jupter lab and git at the same time::
 
-    $ conda create -n mybirdwatcher python=3.6 jupyterlab git
+    $ conda create -n mybirdwatcher python=3.8 jupyterlab git
 
 
 4) Switch to this new environment:
