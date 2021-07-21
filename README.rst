@@ -128,8 +128,8 @@ See notebook directory.
    :alt: Project Status: WIP – Initial development is in progress, but there has not yet been a stable, usable release suitable for the public.
    :target: https://www.repostatus.org/#wip
 
-.. |Travis Status| image:: https://travis-ci.org/gbeckers/Birdwatcher.svg?branch=master
-   :target: https://travis-ci.org/gbeckers/Birdwatcher?branch=master
+.. |Travis Status| image:: https://travis-ci.com/gbeckers/Birdwatcher.svg?branch=master
+   :target: https://www.travis-ci.com/gbeckers/Birdwatcher.svg?branch=master
 
 .. |Appveyor Status| image:: https://ci.appveyor.com/api/projects/status/github/gbeckers/darr?svg=true
    :target: https://ci.appveyor.com/project/gbeckers/birdwatcher
