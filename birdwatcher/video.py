@@ -51,6 +51,15 @@ class VideoFileStream():
         return self.iter_frames()
 
     def get_info(self):
+        """Provides a dictionary will all kinds of video info.
+
+        Much of it is provided by ffprobe.
+
+
+        Returns
+        -------
+            Dictionary with info.
+        """
         return {'classname': self.__class__.__name__,
                 'classarguments': {'filepath': str(self.filepath),
                                   'streamnumber': self.streamnumber},

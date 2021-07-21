@@ -39,7 +39,7 @@ Install dependencies::
 It is also necessary to install ffmpeg. If you do not have this already, one
 way of getting it is in Anaconda, as follows::
 
-    $ conda install -c conda-forge ffmpeg
+    $ conda install ffmpeg
 
 The package at conda-forge has h264 encoding, which is nice to have.
 
