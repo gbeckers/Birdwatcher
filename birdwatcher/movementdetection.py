@@ -166,7 +166,8 @@ def _detect_movement(bgsclass, videofilepath, morphologyex=2,
 
     metadata = bgs.get_params()
     cd = create_coordarray(analysispath / 'coordinates.drarr',
-                           videofile=vf, metadata=metadata, overwrite=True)
+                           framewidth=vf.framewidth, frameheight=vf.frameheight,
+                           metadata=metadata, overwrite=True)
     with cd._view():
         for i, frame in enumerate(vf.iter_frames()):
             thresh, idx = md.apply(frame)
