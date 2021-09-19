@@ -10,6 +10,8 @@ from .backgroundsubtraction import BackgroundSubtractorMOG2, BackgroundSubtracto
 from .utils import derive_filepath
 from ._version import get_versions
 
+# FIXME nroi roi and general parameters bgs
+
 __all__ = ['detect_movement', 'MovementDetector']
 
 class MovementDetector():
@@ -165,7 +167,7 @@ def _detect_movement(bgsclass, videofilepath, morphologyex=2,
         os.mkdir(analysispath)
 
     metadata = bgs.get_params()
-    cd = create_coordarray(analysispath / 'coordinates.drarr',
+    cd = create_coordarray(analysispath / 'coordinates.darr',
                            framewidth=vf.framewidth, frameheight=vf.frameheight,
                            metadata=metadata, overwrite=True)
     with cd._view():
