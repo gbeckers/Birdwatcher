@@ -409,7 +409,7 @@ class Frames:
 
     @frameiterator
     def apply_backgroundsegmenter(self, bgs, fgmask=None, learningRate=-1.0,
-                                  roi=None):
+                                  roi=None, nroi=None):
         """Compute foreground masks based on input sequence of frames.
 
         Parameters
@@ -436,7 +436,8 @@ class Frames:
 
         """
         return bgs.iter_apply(self._frames, fgmask=fgmask,
-                              learningRate=learningRate, roi=roi)
+                              learningRate=learningRate, roi=roi,
+                              nroi=nroi)
 
     @frameiterator
     def absdiff_frame(self, frame):

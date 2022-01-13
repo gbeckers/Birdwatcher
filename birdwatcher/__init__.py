@@ -3,6 +3,7 @@ from .movementdetection import *
 from .backgroundsubtraction import *
 from .coordinatearrays import *
 from .frameprocessing import *
+from .record import *
 from .utils import *
 #from .plotting import *
 from ._version import get_versions

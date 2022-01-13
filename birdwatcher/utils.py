@@ -5,7 +5,13 @@ import itertools
 import pathlib
 from contextlib import contextmanager
 
-__all__ = ['derive_filepath', 'peek_iterable']
+__all__ = ['derive_filepath', 'peek_iterable', 'datetimestring']
+
+
+import time
+
+def datetimestring():
+    return time.strftime('%Y%m%d%H%M%S')
 
 @contextmanager
 def tempdir(dirname='.', keep=False, report=False):

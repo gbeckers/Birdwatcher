@@ -149,13 +149,14 @@ def batch_detect_movementknn(videofilepaths, nprocesses=6, *args, **kwargs):
 def coordcount(coords):
     return np.array([idx.shape[0] for idx in coords.iter_arrays()])
 
+
 def coordmean(coords):
         return np.array([idx.mean(0) for idx in coords.iter_arrays()])
+
 
 def _detect_movement(bgsclass, videofilepath, morphologyex=2,
                      analysispath='.', ignore_rectcoord=None,
                      ignore_firstnframes=50, **kwargs):
-
     vf = VideoFileStream(videofilepath)
     bgs = bgsclass(**kwargs)
     algostr = str(bgs)
@@ -180,38 +181,45 @@ def _detect_movement(bgsclass, videofilepath, morphologyex=2,
                       metadata=metadata, overwrite=True)
     return cd, cc, cm
 
-def detect_movement(videofilepath, bgs, morphologyex=2, gray=True,
-                    roi=None, analysispath='.', overwrite=False,
-                    resultvideo=False):
 
+def detect_movement(videofilepath, bgs, morphologyex=2, gray=True,
+                    roi=None, nroi=None, analysispath='.', overwrite=False,
+                    ignore_firstnframes=10, resultvideo=False):
     vf = VideoFileStream(videofilepath)
     if not Path(analysispath).exists():
         os.mkdir(analysispath)
-    coordinatesfilepath = Path(analysispath) / Path(
-        f'{vf.filepath.stem}_movement.darr')
+    movementpath = Path(analysispath) / f'{vf.filepath.stem}_movement'
+    if not movementpath.exists():
+        os.makedirs(movementpath)
     metadata = {}
     metadata['backgroundsegmentclass'] = str(bgs)
     metadata['backgroundsegmentparams'] = bgs.get_params()
     metadata['morphologyex'] = morphologyex
     metadata['roi'] = roi
+    metadata['nroi'] = nroi
     if gray:
-        frames = vf.iter_frames(pix_fmt='gray', color=False)
+        frames = vf.iter_frames(color=False)
     else:
-        frames = vf.iter_frames(pix_fmt='bgr24', color=True)
-    frames = frames.apply_backgroundsegmenter(bgs, roi=roi)
+        frames = vf.iter_frames(color=True)
+    frames = frames.apply_backgroundsegmenter(bgs, roi=roi, nroi=nroi, ignore_firstnframes=ignore_firstnframes)
     if morphologyex is not None:
         frames = frames.morphologyex(kernelsize=morphologyex)
-    coords = create_coordarray(coordinatesfilepath, framewidth=vf.framewidth,
+    cd = create_coordarray(movementpath / 'coords.darr',
+                               framewidth=vf.framewidth,
                                frameheight=vf.frameheight, metadata=metadata,
                                overwrite=overwrite)
-    coords.iterappend(frames.find_nonzero())
+    cd.iterappend(frames.find_nonzero())
+    cc = darr.asarray(movementpath / 'coordscount.darr', coordcount(cd),
+                      metadata=metadata, overwrite=True)
+    cm = darr.asarray(movementpath / 'coordsmean.darr', coordmean(cd),
+                      metadata=metadata, overwrite=True)
     if resultvideo:
-        ovfilepath = Path(analysispath) / f'{ vf.filepath.stem}_movement.mp4'
-        cframes = coords.iter_frames(nchannels=3, value=(0, 0, 255))
+        ovfilepath = Path(movementpath) / f'{ vf.filepath.stem}_movement.mp4'
+        cframes = cd.iter_frames(nchannels=3, value=(0, 0, 255))
         (vf.iter_frames().add_weighted(0.7, cframes, 0.8)
          .draw_framenumbers()
          .tovideo(ovfilepath, framerate=vf.avgframerate, crf=25))
-    return coords
+    return cd, cc, cm
 
 
 def detect_movementknn(videofilepath, morphologyex=2, analysispath='.',
@@ -241,15 +249,20 @@ def detect_movementmog2(videofilepath, morphologyex=2, analysispath='.',
 
 
 def detect_movementmog2_new(videofilepath, morphologyex=2, gray=True,
-                         roi=None, analysispath='.', **kwargs):
-    coords = _detect_movement(bgsclass=BackgroundSubtractorMOG2, \
-                              videofilepath=videofilepath,
-                              morphologyex=morphologyex,
-                              gray=gray,
-                              roi=roi,
-                              analysispath=analysispath,
-                              **kwargs)
-    return coords
+                            roi=None, nroi=None, analysispath='.',
+                            ignore_firstnframes=10, **kwargs):
+    bgs = BackgroundSubtractorMOG2(**kwargs)
+    cd, cc, cm = detect_movement(videofilepath=videofilepath,
+                                 bgs=bgs,
+                                 morphologyex=morphologyex,
+                                 gray=gray,
+                                 roi=roi,
+                                 nroi=nroi,
+                                 analysispath=analysispath,
+                                 ignore_firstnframes=ignore_firstnframes,
+                                 **kwargs)
+    return cd, cc, cm
+
 
 def calc_meanframe(videofilepath):
     vf = VideoFileStream(videofilepath)

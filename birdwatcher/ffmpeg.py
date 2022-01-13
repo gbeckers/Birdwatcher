@@ -85,6 +85,33 @@ def videofileinfo(filepath, ffprobepath='ffprobe'):
 ## FIXME inform before raising StopIteration that file has no frames
 def iterread_videofile(filepath, startat=None, nframes=None, color=True,
                        ffmpegpath='ffmpeg'):
+    """
+    Parameters
+    ----------
+    filepath
+    startat: str
+      There are two accepted syntaxes for expressing time duration.
+      [-][HH:]MM:SS[.m...], where HH expresses the number of hours,
+      MM the number of minutes for a maximum of 2 digits, and SS
+      the number of seconds for a maximum of 2 digits. The m at the
+      end expresses decimal value for SS.
+      [-]S+[.m...][s|ms|us], where S expresses the number of seconds,
+      with the optional decimal part m. The optional literal suffixes
+      ‘s’, ‘ms’ or ‘us’ indicate to interpret the value as seconds,
+      milliseconds or microseconds, respectively. The following
+      examples are all valid time duration: ‘55’ means 55 seconds,
+      ‘0.2’ means 0.2 seconds, ‘200ms’ means 200 milliseconds,
+      ‘200000us’ means 200000 microseconds, ‘12:03:45’ means 12 hours,
+      03 minutes and 45 seconds, ‘23.189’ means 23.189 seconds.
+    nframes: int
+    color: bool
+    ffmpegpath:
+
+    Returns
+    -------
+    Generates numpy arrays of video frames.
+
+    """
     vfi = videofileinfo(filepath)
     frameheight = vfi['streams'][0]['height']
     framewidth = vfi['streams'][0]['width']
