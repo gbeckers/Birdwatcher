@@ -1,6 +1,5 @@
-############
 Installation
-############
+============
 
 .. contents:: :local:
 
