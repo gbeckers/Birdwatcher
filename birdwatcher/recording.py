@@ -1,4 +1,10 @@
-import pypylon.pylon
+import warnings
+try:
+    import pypylon
+except ImportError:
+    warnings.warn("pypylon library not found, no recording functionality "
+                  "available")
+
 from pathlib import Path
 from .frameprocessing import Frames
 from .video import VideoFileStream

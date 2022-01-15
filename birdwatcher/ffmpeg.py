@@ -112,23 +112,12 @@ def iterread_videofile(filepath, startat=None, nframes=None, color=True,
     Generates numpy arrays of video frames.
 
     """
-    vfi = videofileinfo(filepath)
-    frameheight = vfi['streams'][0]['height']
-    framewidth = vfi['streams'][0]['width']
-    if color:
-        frameshape = (frameheight, framewidth, 3)
-        framesize = frameheight * framewidth * 3
-        pix_fmt = 'bgr24'
-    else:
-        frameshape = (frameheight, framewidth)
-        framesize = frameheight * framewidth
-        pix_fmt = 'gray'
-
+    frameshape, framesize, frameheight, framewidth, pix_fmt = \
+        _get_frameproperties(filepath=filepath, color=color)
     if startat is not None:
         args = [str(ffmpegpath), '-ss', startat, '-i', str(filepath)]
     else:
         args = [str(ffmpegpath), '-i', str(filepath)]
-
     if nframes is not None:
         args += ['-vframes', str(nframes)]
     args +=['-vcodec', 'rawvideo', '-pix_fmt', pix_fmt,
@@ -155,6 +144,22 @@ def count_frames(filepath, threads=8, ffprobepath='ffprobe'):
         raise FFmpegError(ffprobepath, out, err)
     return int(out['streams'][0]['nb_read_frames'])
 
+# def get_frame_old(filepath, framenumber, color=True, ffmpegpath='ffmpeg'):
+#     for frame in iterread_videofile(filepath, startat=None, nframes=framenumber+1,
+#                                     color=color, ffmpegpath=ffmpegpath):
+#         pass
+#     return frame
+
+
+def get_frame(filepath, framenumber, color=True, ffmpegpath='ffmpeg'):
+    frameshape, framesize, frameheight, framewidth, pix_fmt = \
+        _get_frameproperties(filepath=filepath, color=color)
+    args = [str(ffmpegpath), '-i', str(filepath)]
+    args +=['-vcodec', 'rawvideo',  '-vf', f"select='eq(n\,{framenumber})'",
+            '-vframes', '1', '-pix_fmt', pix_fmt,
+            '-f', 'rawvideo', 'pipe:1']
+    with subprocess.Popen(args, stdout=subprocess.PIPE, stderr=None) as p:
+        return np.frombuffer(p.stdout.read(framesize), dtype=np.uint8).reshape(frameshape)
 
 def get_frameat(filepath, time, color=True,ffmpegpath='ffmpeg'):
     return next(iterread_videofile(filepath, startat=time, nframes=1, \
@@ -176,3 +181,20 @@ def extract_audio(filepath, outputpath=None, overwrite=False, verbosity=0, ffmpe
     out, err = p.communicate()
     if err:
         return err.decode('utf-8')
+
+def _get_frameproperties(filepath, color):
+    """Convenience function that produces frame characteristics for a given
+    video. Handy if you want to know the format of a frame that is returned
+    by ffmpeg from a pipe. """
+    vfi = videofileinfo(filepath)
+    frameheight = vfi['streams'][0]['height']
+    framewidth = vfi['streams'][0]['width']
+    if color:
+        frameshape = (frameheight, framewidth, 3)
+        framesize = frameheight * framewidth * 3
+        pix_fmt = 'bgr24'
+    else:
+        frameshape = (frameheight, framewidth)
+        framesize = frameheight * framewidth
+        pix_fmt = 'gray'
+    return frameshape, framesize, frameheight, framewidth, pix_fmt

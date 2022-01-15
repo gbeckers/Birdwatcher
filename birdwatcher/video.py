@@ -7,7 +7,7 @@ depends on FFmpeg.
 import pathlib
 import numpy as np
 from .ffmpeg import videofileinfo, iterread_videofile, count_frames, \
-    get_frameat, extract_audio
+    get_frame, get_frame_alt, get_frameat, extract_audio
 from .frameprocessing import frameiterator
 from .utils import progress, walk_paths
 
@@ -193,14 +193,44 @@ class VideoFileStream():
                 progress(i, self.nframes)
             yield frame
 
+    def get_frame(self, framenumber, color=True, ffmpegpath='ffmpeg'):
+        """Get frame specified by frame sequence number.
+
+        Note that this can take a lot of processing because the video
+        has to be decoded up to that number. Specifying by time is more
+        efficient (see: `get_frameat` method.
+
+        Parameters
+        ----------
+        framenumber: int
+            Get the frame `framenumber` from the video stream.
+        color: bool
+            Read as a color frame (2 dimensional) or as a gray frame (3
+            dimensional). Default True.
+
+        Example
+        -------
+        >>> import birdwatcher as bw
+        >>> vf = bw.testvideosmall()
+        >>> frame = vf.get_frame(500)
+
+        Returns
+        -------
+        numpy ndarray
+            A frame
+
+        """
+
+        return get_frame(self.filepath, framenumber=framenumber,
+                         color=color, ffmpegpath=ffmpegpath)
 
     def get_frameat(self, time, color=True, ffmpegpath='ffmpeg'):
         """Get frame at specified time.
 
         Parameters
         ----------
-        time: str or None
-            If specified, start at this time point in the video file. You
+        time: str
+            Get frame at a time point in the video file. You
             can use two different time unit formats: sexagesimal
             (HOURS:MM:SS.MILLISECONDS, as in 01:23:45.678), or in seconds.
             Default is None.
