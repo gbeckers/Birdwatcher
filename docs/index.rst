@@ -15,7 +15,6 @@ Psychology, Utrecht University.
 The purpose of this library is to provide low-level functionality for analysing
 videos animal behavior in a Python scientific computing environment.
 
-
 Despite its name, Birdwatcher is not only for bird behavior. We also
 successfully analyze dog behavior, and it could be used on anything that moves.
 It is being used in our lab but not stable enough yet for general use. More
