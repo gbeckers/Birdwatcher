@@ -7,7 +7,7 @@ depends on FFmpeg.
 import pathlib
 import numpy as np
 from .ffmpeg import videofileinfo, iterread_videofile, count_frames, \
-    get_frame, get_frame_alt, get_frameat, extract_audio
+    get_frame, get_frameat, extract_audio
 from .frameprocessing import frameiterator
 from .utils import progress, walk_paths
 
