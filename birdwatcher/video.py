@@ -205,7 +205,7 @@ class VideoFileStream():
         framenumber: int
             Get the frame `framenumber` from the video stream.
         color: bool
-            Read as a color frame (2 dimensional) or as a gray frame (3
+            Read as a color frame (3 dimensional) or as a gray frame (2
             dimensional). Default True.
 
         Example

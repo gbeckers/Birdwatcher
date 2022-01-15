@@ -1,5 +1,6 @@
+######
 Design
-======
+######
 
 .. contents:: :local:
 
