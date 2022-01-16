@@ -223,7 +223,7 @@ def detect_movement(videofilepath, bgs, morphologyex=2, gray=True,
          .tovideo(ovfilepath, framerate=vf.avgframerate, crf=25))
     return cd, cc, cm
 
-
+#TODO adapt to new system like mog2 and remove class above
 def detect_movementknn(videofilepath, morphologyex=2, analysispath='.',
                        ignore_rectcoord=None, ignore_firstnframes=0,
                        **kwargs):
