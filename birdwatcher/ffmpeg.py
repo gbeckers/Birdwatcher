@@ -133,6 +133,7 @@ def iterread_videofile(filepath, startat=None, nframes=None, color=True,
             else:
                 break
 
+#TODO check threads code
 def count_frames(filepath, threads=8, ffprobepath='ffprobe'):
     args = [str(ffprobepath), '-threads:0', str(threads),
             '-count_frames', '-select_streams', 'v:0', '-show_entries',
