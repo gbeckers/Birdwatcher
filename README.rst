@@ -10,11 +10,15 @@ It is developed by Gabriel Beckers and Carien Mol, at Experimental Psychology,
 Utrecht University.
 
 The purpose of this library is to provide base functionality for analysing
-animal behavior in a Python scientific computing environment. Despite its
-name, Birdwatcher is not only for birds. We also successfully analyze dog
-behaviour, and it could be used on anything that moves. It is being used in our
-lab but not stable enough yet for general use. More info will be provided when
-a first release is appropriate.
+animal behavior in a Python scientific computing environment. That is: it
+is not intended as a final product to analyses specific behaviors of specific
+animals, but rather to facilitate working efficiently with videos in a
+scientific Python environment and applying computer vision algorithms.
+
+Despite its name, Birdwatcher is not only for birds. We also successfully
+analyze dog behavior, and it could be used on anything that moves. It is
+being used in our lab but not stable enough yet for general use. More info
+will be provided when a first release is appropriate.
 
 Code can be found on GitHub: https://github.com/gbeckers/Birdwatcher .
 
@@ -117,7 +121,6 @@ Documentation
 -------------
 
 https://birdwatcher.readthedocs.io
-
 
 Examples
 --------
