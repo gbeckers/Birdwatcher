@@ -129,9 +129,13 @@ class Frames:
 
         """
         from .ffmpeg import arraytovideo
-        arraytovideo(frames=self, filename=filename, framerate=framerate,
-                     crf=crf, scale=scale, format=format, codec=codec, \
-                     pixfmt=pixfmt, ffmpegpath=ffmpegpath)
+        from .video import VideoFileStream
+        filepath = arraytovideo(frames=self, filename=filename,
+                                framerate=framerate, crf=crf, scale=scale,
+                                format=format, codec=codec, pixfmt=pixfmt,
+                                ffmpegpath=ffmpegpath)
+        return VideoFileStream(filepath)
+
 
     @frameiterator
     def blur(self, ksize, anchor=(-1,-1), borderType=cv.BORDER_DEFAULT):
