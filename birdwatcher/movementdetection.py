@@ -38,10 +38,53 @@ def batch_detect_movementknn(videofilepaths, nprocesses=6, *args, **kwargs):
             tobearchived = []
 
 
-def detect_movement(videofilepath, bgs, morphologyex=2, gray=True,
+def detect_movement(videofilestream, bgs, morphologyex=2, gray=True,
                     roi=None, nroi=None, analysispath='.', overwrite=False,
                     ignore_firstnframes=10, resultvideo=False):
-    vf = VideoFileStream(videofilepath)
+    """Detects movement based on a background subtraction algorithm.
+
+    The backgound subtractor should be provided as a parameter.
+
+    Parameters
+    ----------
+    videofilestream: VideoFileStream
+        A Birdwatcher VideoFileStream object
+    bgs: BaseBackgroundSubtractor
+        Can be any child from BaseBackgroundSubtractor. Currently included
+        in Birdwatcher are BackgroundSubtractorMOG2, BackgroundSubtractorKNN,
+        BackgroundSubtractorLSBP.
+    morphologyex: int
+        Kernel size of MorphologeEx open processing. Default: 2.
+    gray: bool
+        Should detection be done on gray frames or not.
+    roi: (int, int, int, int) or None
+        Region of interest. Only look at this rectangular region. h1,
+        h2, w1, w2. Default None.
+    nroi: (int, int, int, int) or None
+        Not region of interest. Exclude this rectangular region. h1,
+        h2, w1, w2. Default None.
+    analysispath: Path or str
+        Where to write results to.
+    overwrite: bool
+        Overwrite results or not.
+    ignore_firstnframes: int
+        Do not provide coordinates for the first n frames. These often have
+        a lot of false positives.
+    resultvideo: bool
+        Automatically generate a video with results, yes or no.
+
+    Returns
+    -------
+    tuple of arrays (coordinates, coordinate count, coordinate mean)
+        These are Darr arrays that are disk-based.
+
+
+    """
+    if isinstance(videofilestream, VideoFileStream):
+        vf = videofilestream
+    else:
+        raise TypeError(f"`videofilestream` parameter not a VideoFileStream "
+                        f"object ({type(videofilestream)}).")
     if not Path(analysispath).exists():
         os.mkdir(analysispath)
     movementpath = Path(analysispath) / f'{vf.filepath.stem}_movement'
@@ -81,12 +124,12 @@ def detect_movement(videofilepath, bgs, morphologyex=2, gray=True,
     return cd, cc, cm
 
 
-def detect_movementknn(videofilepath, morphologyex=2, gray=True,
+def detect_movementknn(videofilestream, morphologyex=2, gray=True,
                         roi=None, nroi=None, analysispath='.',
                         ignore_firstnframes=10, overwrite=False,
                         **kwargs):
     bgs = BackgroundSubtractorKNN(**kwargs)
-    cd, cc, cm = detect_movement(videofilepath=videofilepath,
+    cd, cc, cm = detect_movement(videofilestream=videofilestream,
                                  bgs=bgs,
                                  morphologyex=morphologyex,
                                  gray=gray,
@@ -98,12 +141,12 @@ def detect_movementknn(videofilepath, morphologyex=2, gray=True,
     return cd, cc, cm
 
 
-def detect_movementmog2(videofilepath, morphologyex=2, gray=True,
+def detect_movementmog2(videofilestream, morphologyex=2, gray=True,
                         roi=None, nroi=None, analysispath='.',
                         ignore_firstnframes=10, overwrite=False,
                         **kwargs):
     bgs = BackgroundSubtractorMOG2(**kwargs)
-    cd, cc, cm = detect_movement(videofilepath=videofilepath,
+    cd, cc, cm = detect_movement(videofilestream=videofilestream,
                                  bgs=bgs,
                                  morphologyex=morphologyex,
                                  gray=gray,
@@ -114,12 +157,12 @@ def detect_movementmog2(videofilepath, morphologyex=2, gray=True,
                                  overwrite=overwrite)
     return cd, cc, cm
 
-def detect_movementlsbp(videofilepath, morphologyex=2, gray=True,
+def detect_movementlsbp(videofilestream, morphologyex=2, gray=True,
                         roi=None, nroi=None, analysispath='.',
                         ignore_firstnframes=10, overwrite=False,
                         **kwargs):
     bgs = BackgroundSubtractorLSBP(**kwargs)
-    cd, cc, cm = detect_movement(videofilepath=videofilepath,
+    cd, cc, cm = detect_movement(videofilestream=videofilestream,
                                  bgs=bgs,
                                  morphologyex=morphologyex,
                                  gray=gray,
@@ -131,20 +174,54 @@ def detect_movementlsbp(videofilepath, morphologyex=2, gray=True,
     return cd, cc, cm
 
 
-def create_movementvideo(vf, ca, videofilepath=None, draw_mean=True,
+def create_movementvideo(videofilestream, coordinatearrays, videofilepath=None, draw_mean=True,
                          draw_framenumbers=(2, 120), crf=17, scale=None):
+    """Create a nice video from the original video with movement detection
+    results superimposed
+
+    Parameters
+    ----------
+    videofilestream: VideoFileStream
+        A Birdwatcher VideoFileStream object
+    coordinatearrays: CoordinateArrays
+        CoordinateArrays object with movement results.
+    videofilepath: Path or str
+        Output path
+    draw_mean: bool
+        Draw the mean of the coordinates per frame, or not.
+    draw_framenumbers: None or tuple
+        Draw frame numbers, or not (None). A tuple of ints indicates
+        where to draw them.
+    crf: int
+        Quality factor output video for ffmpeg. Default: 17.
+    scale: tuple or None
+        (width, height). If None, do not change width and height.
+        Default: None.
+
+    Returns
+    -------
+    VideoFileStream
+        Videofilestream object of the output video
+
+
+    """
+    if isinstance(videofilestream, VideoFileStream):
+        vf = videofilestream
+    else:
+        raise TypeError(f"`videofilestream` parameter not a VideoFileStream "
+                        f"object ({type(videofilestream)}).")
     if videofilepath is None:
-        videofilepath = derive_filepath(ca.path, 'results', suffix='.mp4')
-    frames = ca.iter_frames(nchannels=3, value=(0,0,255)).add_weighted(0.8, vf.iter_frames(), 0.7)
+        videofilepath = derive_filepath(vf.filepath, 'results', suffix='.mp4')
+    frames = coordinatearrays.iter_frames(nchannels=3, value=(0, 0, 255)).add_weighted(0.8, vf.iter_frames(), 0.7)
     if draw_framenumbers is not None:
         frames = frames.draw_framenumbers(org=(2, 120))
     if draw_mean:
-        centers = ca.get_coordmean()
+        centers = coordinatearrays.get_coordmean()
         frames = frames.draw_circles(centers=centers, radius=6, color=(255, 100, 0), thickness=2, linetype=16, shift=0)
         # centers_lp = np.array(
         #     [np.convolve(centers[:, 0], np.ones(7) / 7, 'same'),
         #      np.convolve(centers[:, 1], np.ones(7) / 7, 'same')]).T
         # frames = frames.draw_circles(centers=centers_lp, radius=6, color=(100, 255, 0), thickness=2, linetype=16, shift=0)
-    frames.tovideo(videofilepath, framerate=vf.avgframerate, crf=crf,
+    vfs = frames.tovideo(videofilepath, framerate=vf.avgframerate, crf=crf,
                    scale=scale)
-    return ca
+    return vfs
