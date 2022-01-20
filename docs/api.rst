@@ -52,18 +52,43 @@ KNN
    :members:
    :inherited-members:
 
+LSBP
+----
+
+.. autoclass:: birdwatcher.BackgroundSubtractorLSBP
+   :members:
+   :inherited-members:
+
 
 Movement detection
 ==================
 
 .. automodule:: birdwatcher.movementdetection
 
-.. autoclass:: birdwatcher.MovementDetector
+.. autofunction:: birdwatcher.detect_movement
+
+.. autofunction:: detect_movementmog2
+
+.. autofunction:: detect_movementknn
+
+.. autofunction:: detect_movementlsbp
+
+.. autofunction:: create_movementvideo
+
+
+Coordinate Arrays
+=================
+
+.. automodule:: birdwatcher.coordinatearrays
+
+.. autoclass:: birdwatcher.CoordinateArrays
    :members:
    :inherited-members:
 
+.. autofunction:: open_archivedcoordinatedata
 
-.. autofunction:: birdwatcher.detect_movement
+.. autofunction:: create_coordarray
+
 
 Plotting
 ========
