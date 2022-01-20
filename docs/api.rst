@@ -89,6 +89,8 @@ Coordinate Arrays
 
 .. autofunction:: create_coordarray
 
+.. autofunction::  open_archivedcoordinatedata
+
 
 Plotting
 ========

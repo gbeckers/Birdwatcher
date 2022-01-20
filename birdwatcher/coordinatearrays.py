@@ -98,6 +98,25 @@ delete_coordinatearray = delete_raggedarray
 
 @ contextmanager
 def open_archivedcoordinatedata(path):
+    """A context manager that temporarily decompresses coordinate
+    data to work with coordinate array.
+
+    Parameters
+    ----------
+    path: str
+        Path to the archive.
+
+    Returns
+    -------
+    Context manager to work with temporarily uncompressed coordinate
+    array.
+
+    Examples
+    --------
+    >>> with open_archivedcoordinatedata('coord.tar.xz') as coords:
+            # do stuff with coordinate array
+
+    """
     path = Path(path)
     if not path.suffix == '.xz':
         raise OSError(f'{path} does not seem to be archived coordinate data')
