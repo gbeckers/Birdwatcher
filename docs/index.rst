@@ -13,11 +13,17 @@ analysis of animal behavior.
 
 The purpose of this library is to provide base functionality for analysing
 animal behavior in a Python scientific computing environment. It
-is not intended as a final product to analyse specific behaviors of
-specific animals, but rather to facilitate working efficiently with
+is not intended as a specialized final product to analyse specific behaviors
+of specific animals, but rather to facilitate working efficiently with
 video data in a scientific Python environment and to apply computer vision
-algorithms. It can function as a base package for more specific analysis
-code or specialized measurement tools.
+algorithms. Birdwatcher should help you getting up and running quickly when
+building your own specific analysis code or measurement tools. It provides
+functionality that is common in video analysis, such as reading and writing
+videos into and from numpy arrays, applying processing algorithms such as
+background subtraction, morphological transformation, resizing, drawing on
+frames etc. Much of the underlying video and image processing is based on
+`FFmpeg <https://www.ffmpeg.org/>`__ and `OpenCV <https://opencv.org/>`__,
+but Birdwatcher is a lot easier to use for many tasks.
 
 Despite its name, Birdwatcher is not only for birds. We also successfully
 analyze dog behavior, and it could be used on anything that moves. It is
@@ -26,10 +32,11 @@ will be provided when a first release is appropriate.
 
 Code can be found on GitHub: https://github.com/gbeckers/Birdwatcher .
 
-An incipient documentation can be found at https://birdwatcher.readthedocs.io .
+Documentation can be found at https://birdwatcher.readthedocs.io .
 
 It is developed by Gabriel Beckers and Carien Mol, at Experimental Psychology,
-Utrecht University.
+Utrecht University. It is open source, freely available under the `New BSD License
+<https://opensource.org/licenses/BSD-3-Clause>`__ terms.
 
 
 
@@ -57,9 +64,9 @@ Indices and tables
 * :ref:`search`
 
 
-.. |Repo Status| image:: https://www.repostatus.org/badges/latest/wip.svg
-   :alt: Project Status: WIP – Initial development is in progress, but there has not yet been a stable, usable release suitable for the public.
-   :target: https://www.repostatus.org/#wip
+.. |Repo Status| image:: https://www.repostatus.org/badges/latest/active.svg
+   :alt: Project Status: Active – The project has reached a stable, usable state and is being actively developed.
+   :target: https://www.repostatus.org/#active
 .. |Github CI Status| image:: https://github.com/gbeckers/Birdwatcher/actions/workflows/python_package.yml/badge.svg
    :target: https://github.com/gbeckers/Darr/actions/workflows/python_package.yml
 .. |Appveyor Status| image:: https://ci.appveyor.com/api/projects/status/github/gbeckers/darr?svg=true
