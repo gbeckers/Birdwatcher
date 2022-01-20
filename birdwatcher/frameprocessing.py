@@ -75,6 +75,7 @@ class Frames:
         self._framewidth = framewidth
         self._nchannels = nchannels
         self._index = 0
+        self._dtype = first.dtype.name
         self.processingdata = processingdata
 
     def __iter__(self):
@@ -94,6 +95,10 @@ class Frames:
     @property
     def nchannels(self):
         return self._nchannels
+
+    @property
+    def dtype(self):
+        return self._dtype
 
     def get_info(self):
         return {'classname': self.__class__.__name__,
@@ -612,6 +617,17 @@ class Frames:
             yield cv.findContours(frame, mode=retrmode,
                                   method=apprmethod, offset=offset)
 
+    def calc_meanframe(self, dtype=None):
+        if self.nchannels == 1:
+            meanframe = framegray(self.frameheight, self.framewidth, value=0, dtype='float64')
+        else:
+            meanframe = framecolor(self.frameheight, self.framewidth, color=(0, 0, 0), dtype='float64')
+        for i, frame in enumerate(self._frames):
+            meanframe += frame
+        meanframe /= i
+        if dtype is None:
+            dtype = self._dtype
+        return meanframe.astype(dtype)
 
 
 class FramesColor(Frames):
