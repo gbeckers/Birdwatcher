@@ -92,7 +92,8 @@ class BaseBackgroundSubtractor:
                                learningRate=learningRate)
 
     @frameiterator
-    def iter_apply(self, frames, fgmask=None, learningRate=-1.0, roi=None):
+    def iter_apply(self, frames, fgmask=None, learningRate=-1.0, roi=None,
+                   nroi=None):
         """Compute foreground masks based on input sequence of frames.
 
         Parameters
@@ -111,6 +112,10 @@ class BaseBackgroundSubtractor:
         roi: (int, int, int, int) or None
             Region of interest. Only look at this rectangular region. h1,
             h2, w1, w2. Default None.
+        nroi: (int, int, int, int) or None
+            Not region of interest. Exclude this rectangular region. h1,
+            h2, w1, w2. Default None.
+
 
         Returns
         -------
@@ -133,9 +138,11 @@ class BaseBackgroundSubtractor:
                               learningRate=learningRate)
             if roi is not None:
                 completeframe[h1:h2, w1:w2] = mask
-                yield completeframe
-            else:
-                yield mask
+                mask = completeframe
+            if nroi is not None:
+                h1, h2, w1, w2 = nroi
+                mask[h1:h2, w1:w2] = 0
+            yield mask
 
 
 

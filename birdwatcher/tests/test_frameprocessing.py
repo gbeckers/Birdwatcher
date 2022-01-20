@@ -15,6 +15,6 @@ class TestFrameIterator(unittest.TestCase):
         self.colorframes = FramesColor(5, height=480, width=640, color=(0,0,0))
 
     def test_drawframenumber(self):
-        for frame in self.colorframes.draw_framenumber():
+        for frame in self.colorframes.draw_framenumbers():
             self.assertGreater(frame.sum(), 0)
 

@@ -1,6 +1,5 @@
-#######
 Testing
-#######
+=======
 
 To run the test suite:
 

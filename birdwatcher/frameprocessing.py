@@ -75,6 +75,7 @@ class Frames:
         self._framewidth = framewidth
         self._nchannels = nchannels
         self._index = 0
+        self._dtype = first.dtype.name
         self.processingdata = processingdata
 
     def __iter__(self):
@@ -95,13 +96,17 @@ class Frames:
     def nchannels(self):
         return self._nchannels
 
+    @property
+    def dtype(self):
+        return self._dtype
+
     def get_info(self):
         return {'classname': self.__class__.__name__,
                 'framewidth': self.framewidth,
                 'frameheight': self.frameheight,
                 'processingdata': self.processingdata}
 
-    def tovideo(self, filename, framerate, crf=23, format='mp4',
+    def tovideo(self, filename, framerate, crf=23, scale=None, format='mp4',
                 codec='libx264', pixfmt='yuv420p', ffmpegpath='ffmpeg'):
         """Writes frames to video file.
 
@@ -114,6 +119,9 @@ class Frames:
         crf: int
             Value determines quality of video. Default: 23, which is good
             quality. See ffmpeg documentation. Use 17 for high quality.
+        scale: tuple or None
+            (width, height). If None, do not change width and height.
+            Default: None.
         format: str
             ffmpeg video format. Default is 'mp4'. See ffmpeg documentation.
         codec: str
@@ -126,9 +134,13 @@ class Frames:
 
         """
         from .ffmpeg import arraytovideo
-        arraytovideo(frames=self, filename=filename, framerate=framerate,
-                     crf=crf, format=format, codec=codec, pixfmt=pixfmt,
-                     ffmpegpath=ffmpegpath)
+        from .video import VideoFileStream
+        filepath = arraytovideo(frames=self, filename=filename,
+                                framerate=framerate, crf=crf, scale=scale,
+                                format=format, codec=codec, pixfmt=pixfmt,
+                                ffmpegpath=ffmpegpath)
+        return VideoFileStream(filepath)
+
 
     @frameiterator
     def blur(self, ksize, anchor=(-1,-1), borderType=cv.BORDER_DEFAULT):
@@ -162,6 +174,7 @@ class Frames:
             yield cv.blur(frame, ksize=ksize, anchor=anchor,
                           borderType=borderType)
 
+    # FIXME multiple circles per frame?
     @frameiterator
     def draw_circles(self, centers, radius=6, color=(255, 100, 0),
                      thickness=2, linetype=cv.LINE_AA, shift=0):
@@ -199,6 +212,43 @@ class Frames:
                 (x, y) = center.astype('int16')
                 yield cv.circle(frame, center=(x, y), radius=radius,
                                 color=color,
+                                thickness=thickness, lineType=linetype,
+                                shift=shift)
+            else:
+                yield frame
+
+    @frameiterator
+    def draw_rectangles(self, points, color=(255, 100, 0),
+                     thickness=2, linetype=cv.LINE_AA, shift=0):
+        """Draws circles on frames.
+
+        Centers should be an iterable that has a length that corresponds to
+        the number of frames.
+
+        Parameters
+        ----------
+        points: iterable
+            Iterable that generates sequences of rectangle corners ((x1, y1),
+            (x2, y2)) per frame.
+        color: tuple of ints
+            Color of rectangle (r, g, b). Default (255, 100, 0)
+        thickness: int
+            Line thickness. Default 2.
+        linetype: int
+            OpenCV line type of rectangle boundary. Default cv2.LINE_AA
+        shift: int
+            Number of fractional bits in the  point coordinates. Default 0.
+
+        Returns
+        -------
+        Frames
+            Iterator that generates frames with rectangles
+
+        """
+
+        for frame, framepoints in zip(self._frames, points):
+            for (pt1, pt2) in framepoints:
+                yield cv.rectangle(frame, pt1=pt1, pt2=pt2, color=color,
                                 thickness=thickness, lineType=linetype,
                                 shift=shift)
             else:
@@ -368,7 +418,7 @@ class Frames:
 
     @frameiterator
     def apply_backgroundsegmenter(self, bgs, fgmask=None, learningRate=-1.0,
-                                  roi=None):
+                                  roi=None, nroi=None):
         """Compute foreground masks based on input sequence of frames.
 
         Parameters
@@ -395,7 +445,8 @@ class Frames:
 
         """
         return bgs.iter_apply(self._frames, fgmask=fgmask,
-                              learningRate=learningRate, roi=roi)
+                              learningRate=learningRate, roi=roi,
+                              nroi=nroi)
 
     @frameiterator
     def absdiff_frame(self, frame):
@@ -418,7 +469,7 @@ class Frames:
 
     @frameiterator
     def threshold(self, thresh,	maxval=255,	threshtype='tozero'):
-        """
+        """Thresholds frames at value `thresh`.
 
         Parameters
         ----------
@@ -454,9 +505,101 @@ class Frames:
             yield cv.threshold(src=frame, thresh=thresh,
                                maxval=maxval, type=threshtype)[1]
 
+    @frameiterator
+    def resize(self, dsize, interpolation='linear'):
+        """Resizes frames.
+
+        Parameters
+        ----------
+        dsize: tuple
+            Destination size (width, height).
+        interpolation: str
+            interpolation method:
+            nearest - a nearest-neighbor interpolation
+            linear - a bilinear interpolation (used by default)
+            area - resampling using pixel area relation. It may be a preferred
+                method for image decimation, as it gives moire-free
+                results. But when the image is zoomed, it is similar to
+                the nearest method.
+            cubic - a bicubic interpolation over 4x4 pixel neighborhood
+            lanczos4 - a Lanczos interpolation over 8x8 pixel neighborhood
+
+        Returns
+        -------
+        Frames
+            Iterates over sequence of thresholded frames.
+
+        """
+        interptypes = {
+            'nearest': cv.INTER_NEAREST,
+            'linear': cv.INTER_LINEAR,
+            'area': cv.INTER_AREA,
+            'cubic': cv.INTER_CUBIC,
+            'lanczos4': cv.INTER_LANCZOS4
+        }
+        interpolation = interptypes[interpolation]
+        for frame in self._frames:
+            yield cv.resize(src=frame, dsize=dsize, fx=0, fy=0,
+                            interpolation=interpolation)
+
+    @frameiterator
+    def resizebyfactor(self, fx, fy, interpolation='linear'):
+        """Resizes frames by a specified factor.
+
+        Parameters
+        ----------
+        fx: float
+            Scale factor along the horizontal axis.
+        fy: float
+            Scale factor along the vertical axis.
+        interpolation: str
+            interpolation method:
+            nearest - a nearest-neighbor interpolation
+            linear - a bilinear interpolation (used by default)
+            area - resampling using pixel area relation. It may be a preferred
+                method for image decimation, as it gives moire’-free
+                results. But when the image is zoomed, it is similar to
+                the nearest method.
+            cubic - a bicubic interpolation over 4x4 pixel neighborhood
+            lanczos4 - a Lanczos interpolation over 8x8 pixel neighborhood
+
+        Returns
+        -------
+        Frames
+            Iterates over sequence of thresholded frames.
+
+        """
+        interptypes = {
+            'nearest': cv.INTER_NEAREST,
+            'linear': cv.INTER_LINEAR,
+            'area': cv.INTER_AREA,
+            'cubic': cv.INTER_CUBIC,
+            'lanczos4': cv.INTER_LANCZOS4
+        }
+        interpolation = interptypes[interpolation]
+        for frame in self._frames:
+            yield cv.resize(src=frame, dsize=(0,0), fx=fx, fy=fy,
+                            interpolation=interpolation)
+
     # FIXME should this be a coordinate iterator?
     def find_contours(self, retrmode='tree', apprmethod='simple',
                       offset=(0, 0)):
+        """Finds contrours in frames.
+
+        Parameters
+        ----------
+        retrmode:  str
+
+        apprmethod: str
+
+        offset: (int, int)
+
+        Returns
+        -------
+        Iterator
+            Iterates over contours.
+
+        """
         retrmode = {
             'tree': cv.RETR_TREE,
             'external': cv.RETR_EXTERNAL,
@@ -474,6 +617,17 @@ class Frames:
             yield cv.findContours(frame, mode=retrmode,
                                   method=apprmethod, offset=offset)
 
+    def calc_meanframe(self, dtype=None):
+        if self.nchannels == 1:
+            meanframe = framegray(self.frameheight, self.framewidth, value=0, dtype='float64')
+        else:
+            meanframe = framecolor(self.frameheight, self.framewidth, color=(0, 0, 0), dtype='float64')
+        for i, frame in enumerate(self._frames):
+            meanframe += frame
+        meanframe /= i
+        if dtype is None:
+            dtype = self._dtype
+        return meanframe.astype(dtype)
 
 
 class FramesColor(Frames):

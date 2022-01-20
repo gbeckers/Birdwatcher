@@ -21,5 +21,14 @@ class TestVideos(unittest.TestCase):
         vf = bw.testvideosmall()
         self.assertEqual(vf.count_frames(), 497)
 
+    def test_nframes(self):
+        vf = bw.testvideosmall()
+        self.assertEqual(vf.nframes, 497)
+
+    def test_duration(self):
+        vf = bw.testvideosmall()
+        self.assertEqual(vf.duration, float(19.880000))
+
+
 
 

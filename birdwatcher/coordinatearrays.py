@@ -8,8 +8,10 @@ compressed form (lzma) when data is large.
 
 """
 
+import os
 from contextlib import contextmanager
 from pathlib import Path
+import shutil
 import numpy as np
 import tarfile
 
@@ -17,6 +19,7 @@ from darr import RaggedArray, delete_raggedarray, create_raggedarray
 
 from ._version import get_versions
 from .utils import tempdir
+from .frameprocessing import frameiterator
 
 __all__ = ['CoordinateArrays', 'open_archivedcoordinatedata',
            'create_coordarray']
@@ -46,6 +49,7 @@ class CoordinateArrays(RaggedArray):
                               height=self.frameheight, nchannels=nchannels,
                               dtype=dtype, value=value)
 
+    @frameiterator
     def iter_frames(self, nchannels=None, dtype='uint8', value=1):
         for coords in self:
             yield _coordstoframe(coords=coords, width=self.framewidth,
@@ -56,7 +60,11 @@ class CoordinateArrays(RaggedArray):
                  codec='libx264', pixfmt='yuv420p', ffmpegpath='ffmpeg'):
         from .ffmpeg import arraytovideo
         if framerate is None:
-            framerate=self.metadata['video']['framerate']
+            try:
+                framerate = self.metadata['avgframerate']
+            except KeyError:
+                raise ValueError('Cannot find a frame rate, you need to '
+                                 'provide one with the `framerate` parameter')
         arraytovideo(self.iter_frames(nchannels=3, value=255, dtype=np.uint8),
                      filepath, framerate=framerate, crf=crf, format=format,
                      codec=codec, pixfmt=pixfmt, ffmpegpath=ffmpegpath)
@@ -90,6 +98,25 @@ delete_coordinatearray = delete_raggedarray
 
 @ contextmanager
 def open_archivedcoordinatedata(path):
+    """A context manager that temporarily decompresses coordinate
+    data to work with coordinate array.
+
+    Parameters
+    ----------
+    path: str
+        Path to the archive.
+
+    Returns
+    -------
+    Context manager to work with temporarily uncompressed coordinate
+    array.
+
+    Examples
+    --------
+    >>> with open_archivedcoordinatedata('coord.tar.xz') as coords:
+            # do stuff with coordinate array
+
+    """
     path = Path(path)
     if not path.suffix == '.xz':
         raise OSError(f'{path} does not seem to be archived coordinate data')
@@ -101,3 +128,29 @@ def open_archivedcoordinatedata(path):
         p = path.parts[-1].split('.tar.xz')[0]
         yield CoordinateArrays(Path(dirname) / Path(p))
 
+
+def move_coordinatearrays(sourcedirpath, targetdirpath):
+    """Move coordinate / darr data hierarchically out of a source dir and
+    move it to a target dir, keeping the hierarchy intact.
+
+    The is handy when you created a zillion coordinate / darr inside some
+    directory hierarchy of input data, and you want to separate things.
+
+    Parameters
+    ----------
+    sourcedirpath: str or Path
+
+    targetdirpath: str or Path
+        The top-level directory to which everything is moved. If it doesn't
+        exist it will be created.
+
+    """
+    tdir = Path(targetdirpath)
+    for root, dirs, files in os.walk(sourcedirpath):
+        for dname in dirs:
+            if dname.endswith('.darr'):
+                d = Path(dname)
+                newdir = tdir / root
+                print(d, newdir)
+                os.makedirs(newdir, exist_ok=True)
+                shutil.move(f"{root}/{d}", str(newdir))
