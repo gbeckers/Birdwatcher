@@ -50,9 +50,9 @@ def detect_movement(videofilestream, bgs, morphologyex=2, gray=True,
     videofilestream: VideoFileStream
         A Birdwatcher VideoFileStream object
     bgs: BaseBackgroundSubtractor
-        Can be any child from BaseBackgroundSubtractor. Currently included
-        in Birdwatcher are BackgroundSubtractorMOG2, BackgroundSubtractorKNN,
-        BackgroundSubtractorLSBP.
+        Can be any instance of child from BaseBackgroundSubtractor.
+        Currently included in Birdwatcher are BackgroundSubtractorMOG2,
+        BackgroundSubtractorKNN, BackgroundSubtractorLSBP.
     morphologyex: int
         Kernel size of MorphologeEx open processing. Default: 2.
     gray: bool
