@@ -38,14 +38,6 @@ def batch_detect_movementknn(videofilepaths, nprocesses=6, *args, **kwargs):
             tobearchived = []
 
 
-def coordcount(coords):
-    return np.array([idx.shape[0] for idx in coords.iter_arrays()])
-
-
-def coordmean(coords):
-        return np.array([idx.mean(0) for idx in coords.iter_arrays()])
-
-
 def detect_movement(videofilepath, bgs, morphologyex=2, gray=True,
                     roi=None, nroi=None, analysispath='.', overwrite=False,
                     ignore_firstnframes=10, resultvideo=False):
@@ -76,9 +68,9 @@ def detect_movement(videofilepath, bgs, morphologyex=2, gray=True,
     empty = np.zeros((0,2), dtype=np.uint16)
     coords = (c if i >= ignore_firstnframes else empty for i,c in enumerate(frames.find_nonzero()))
     cd.iterappend(coords)
-    cc = darr.asarray(movementpath / 'coordscount.darr', coordcount(cd),
+    cc = darr.asarray(movementpath / 'coordscount.darr', cd.get_coordcount(),
                       metadata=metadata, overwrite=True)
-    cm = darr.asarray(movementpath / 'coordsmean.darr', coordmean(cd),
+    cm = darr.asarray(movementpath / 'coordsmean.darr', cd.get_coordmean(),
                       metadata=metadata, overwrite=True)
     if resultvideo:
         ovfilepath = Path(movementpath) / f'{ vf.filepath.stem}_movement.mp4'
