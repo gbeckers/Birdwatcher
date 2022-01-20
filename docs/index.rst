@@ -6,7 +6,7 @@
 Birdwatcher
 ===========
 
-|Repo Status| |Github CI Status| |Appveyor Status| |Docs Status|
+|Github CI Status| |Appveyor Status| |Docs Status| |Repo Status|
 
 Birdwatcher is a Python computer vision library for the measurement and
 analysis of animal behavior.
