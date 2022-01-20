@@ -128,6 +128,46 @@ def detect_movementknn(videofilestream, morphologyex=2, gray=True,
                         roi=None, nroi=None, analysispath='.',
                         ignore_firstnframes=10, overwrite=False,
                         **kwargs):
+    """Detects movement based on a KNN background segmentation algorithm.
+
+    The parameters for the algorithm should be provided as keyword arguments.
+    There are, with their defaults {'History': 5, 'kNNSamples': 10,
+    'NSamples': 6, 'Dist2Threshold': 500, 'DetectShadows': False,
+    'ShadowThreshold': 0.5, 'ShadowValue': 127}
+
+    Parameters
+    ----------
+    videofilestream: VideoFileStream
+        A Birdwatcher VideoFileStream object
+    morphologyex: int
+        Kernel size of MorphologeEx open processing. Default: 2.
+    gray: bool
+        Should detection be done on gray frames or not.
+    roi: (int, int, int, int) or None
+        Region of interest. Only look at this rectangular region. h1,
+        h2, w1, w2. Default None.
+    nroi: (int, int, int, int) or None
+        Not region of interest. Exclude this rectangular region. h1,
+        h2, w1, w2. Default None.
+    analysispath: Path or str
+        Where to write results to.
+    overwrite: bool
+        Overwrite results or not.
+    ignore_firstnframes: int
+        Do not provide coordinates for the first n frames. These often have
+        a lot of false positives.
+    resultvideo: bool
+        Automatically generate a video with results, yes or no.
+    **kwargs: dict or additional keyword arguments
+        Parameters for the background segmentation algorithm.
+
+    Returns
+    -------
+    tuple of arrays (coordinates, coordinate count, coordinate mean)
+        These are Darr arrays that are disk-based.
+
+    """
+
     bgs = BackgroundSubtractorKNN(**kwargs)
     cd, cc, cm = detect_movement(videofilestream=videofilestream,
                                  bgs=bgs,
@@ -145,6 +185,47 @@ def detect_movementmog2(videofilestream, morphologyex=2, gray=True,
                         roi=None, nroi=None, analysispath='.',
                         ignore_firstnframes=10, overwrite=False,
                         **kwargs):
+    """Detects movement based on a MOG2 background segmentation algorithm.
+
+    The parameters for the algorithm should be provided as keyword arguments.
+    There are, with their defaults {'History': 5, 'ComplexityReductionThreshold': 0.05,
+    'BackgroundRatio': 0.1, 'NMixtures': 7, 'VarInit': 15, 'VarMin': 4, 'VarMax': 75,
+    'VarThreshold': 10, 'VarThresholdGen': 9, 'DetectShadows': False,
+    'ShadowThreshold': 0.5, 'ShadowValue': 127}
+
+    Parameters
+    ----------
+    videofilestream: VideoFileStream
+        A Birdwatcher VideoFileStream object
+    morphologyex: int
+        Kernel size of MorphologeEx open processing. Default: 2.
+    gray: bool
+        Should detection be done on gray frames or not.
+    roi: (int, int, int, int) or None
+        Region of interest. Only look at this rectangular region. h1,
+        h2, w1, w2. Default None.
+    nroi: (int, int, int, int) or None
+        Not region of interest. Exclude this rectangular region. h1,
+        h2, w1, w2. Default None.
+    analysispath: Path or str
+        Where to write results to.
+    overwrite: bool
+        Overwrite results or not.
+    ignore_firstnframes: int
+        Do not provide coordinates for the first n frames. These often have
+        a lot of false positives.
+    resultvideo: bool
+        Automatically generate a video with results, yes or no.
+    **kwargs: dict or additional keyword arguments
+        Parameters for the background segmentation algorithm.
+
+    Returns
+    -------
+    tuple of arrays (coordinates, coordinate count, coordinate mean)
+        These are Darr arrays that are disk-based.
+
+
+    """
     bgs = BackgroundSubtractorMOG2(**kwargs)
     cd, cc, cm = detect_movement(videofilestream=videofilestream,
                                  bgs=bgs,
@@ -161,6 +242,50 @@ def detect_movementlsbp(videofilestream, morphologyex=2, gray=True,
                         roi=None, nroi=None, analysispath='.',
                         ignore_firstnframes=10, overwrite=False,
                         **kwargs):
+    """Detects movement based on a LSBP background segmentation algorithm.
+
+    The parameters for the algorithm should be provided as keyword arguments.
+    There are, with their defaults {'mc': 0, 'nSamples': 20, 'LSBPRadius': 16,
+    'Tlower': 2.0, 'Tupper': 32.0, 'Tinc': 1.0, 'Tdec': 0.05, 'Rscale': 10.0,
+    'Rincdec': 0.005, 'noiseRemovalThresholdFacBG': 0.0004,
+    'noiseRemovalThresholdFacFG': 0.0008, 'LSBPthreshold': 8, 'minCount': 2}
+
+    Parameters
+    ----------
+    videofilestream: VideoFileStream
+        A Birdwatcher VideoFileStream object
+    morphologyex: int
+        Kernel size of MorphologeEx open processing. Default: 2.
+    gray: bool
+        Should detection be done on gray frames or not.
+    roi: (int, int, int, int) or None
+        Region of interest. Only look at this rectangular region. h1,
+        h2, w1, w2. Default None.
+    nroi: (int, int, int, int) or None
+        Not region of interest. Exclude this rectangular region. h1,
+        h2, w1, w2. Default None.
+    analysispath: Path or str
+        Where to write results to.
+    overwrite: bool
+        Overwrite results or not.
+    ignore_firstnframes: int
+        Do not provide coordinates for the first n frames. These often have
+        a lot of false positives.
+    resultvideo: bool
+        Automatically generate a video with results, yes or no.
+    **kwargs: dict or additional keyword arguments
+        Parameters for the background segmentation algorithm.
+
+
+    Returns
+    -------
+    tuple of arrays (coordinates, coordinate count, coordinate mean)
+        These are Darr arrays that are disk-based.
+
+
+        """
+
+
     bgs = BackgroundSubtractorLSBP(**kwargs)
     cd, cc, cm = detect_movement(videofilestream=videofilestream,
                                  bgs=bgs,
