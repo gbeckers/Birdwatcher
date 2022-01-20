@@ -60,11 +60,10 @@ Indices and tables
 .. |Repo Status| image:: https://www.repostatus.org/badges/latest/wip.svg
    :alt: Project Status: WIP – Initial development is in progress, but there has not yet been a stable, usable release suitable for the public.
    :target: https://www.repostatus.org/#wip
-.. |Github CI Status| image:: https://github.com/gbeckers/Darr/actions/workflows/python_package.yml/badge.svg
+.. |Github CI Status| image:: https://github.com/gbeckers/Birdwatcher/actions/workflows/python_package.yml/badge.svg
    :target: https://github.com/gbeckers/Darr/actions/workflows/python_package.yml
 .. |Appveyor Status| image:: https://ci.appveyor.com/api/projects/status/github/gbeckers/darr?svg=true
    :target: https://ci.appveyor.com/project/gbeckers/birdwatcher
-
 .. |Docs Status| image:: https://readthedocs.org/projects/birdwatcher/badge/?version=latest
    :target: https://birdwatcher.readthedocs.io/en/latest/
 
