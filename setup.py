@@ -8,14 +8,36 @@ if sys.version_info < (3,6):
     sys.exit(1)
 
 long_description = \
-"""Birdwatcher is a Python computer vision library for the analysis of animal
-behavior.
+"""Birdwatcher is a Python computer vision library for the measurement and
+analysis of animal behavior.
 
-It is being used in our lab but not stable enough yet for general use. More
-info will be provided when a first release is appropriate.
+The purpose of this library is to provide base functionality for analysing
+animal behavior in a Python scientific computing environment. It
+is not intended as a specialized final product to analyse specific behaviors
+of specific animals, but rather to facilitate working efficiently with
+video data in a scientific Python environment and to apply computer vision
+algorithms. Birdwatcher should help you getting up and running quickly when
+building your own specific analysis code or measurement tools. It provides
+functionality that is common in video analysis, such as reading and writing
+videos into and from numpy arrays, applying processing algorithms such as
+background subtraction, morphological transformation, resizing, drawing on
+frames etc. Much of the underlying video and image processing is based on
+`FFmpeg <https://www.ffmpeg.org/>`__ and `OpenCV <https://opencv.org/>`__,
+but Birdwatcher is a lot easier to use for many tasks.
 
-It is open source and freely available under the `New BSD License
+Despite its name, Birdwatcher is not only for birds. We also successfully
+analyze dog behavior, and it could be used on anything that moves. It is
+being used in our lab but not stable enough yet for general use. More info
+will be provided when a first release is appropriate.
+
+Code can be found on GitHub: https://github.com/gbeckers/Birdwatcher .
+
+Documentation can be found at https://birdwatcher.readthedocs.io .
+
+It is developed by Gabriel Beckers and Carien Mol, at Experimental Psychology,
+Utrecht University. It is open source, freely available under the `New BSD License
 <https://opensource.org/licenses/BSD-3-Clause>`__ terms.
+
 """
 
 setup(

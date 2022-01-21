@@ -518,7 +518,7 @@ class Frames:
             nearest - a nearest-neighbor interpolation
             linear - a bilinear interpolation (used by default)
             area - resampling using pixel area relation. It may be a preferred
-                method for image decimation, as it gives moire’-free
+                method for image decimation, as it gives moire-free
                 results. But when the image is zoomed, it is similar to
                 the nearest method.
             cubic - a bicubic interpolation over 4x4 pixel neighborhood

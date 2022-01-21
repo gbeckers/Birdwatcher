@@ -260,8 +260,8 @@ def testvideosmall():
 
     Returns
     -------
-    VideoFile
-        An instance of Birdwatcher's VideoFile class.
+    VideoFileStream
+        An instance of Birdwatcher's VideoFileSteam class.
 
     """
     file = 'zf20s_low.mp4'
