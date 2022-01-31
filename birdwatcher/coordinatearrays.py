@@ -37,6 +37,17 @@ def _coordstoframe(coords, width, height, nchannels=None, dtype='uint8',
 
 # fixme, should we allow for 3 values: (x, y, val)?
 class CoordinateArrays(RaggedArray):
+    """A disk-based data type to store frame coordinates of consecutive frames.
+
+    Maximum for frame width and height is 65535.
+
+    Parameters
+    ----------
+    path : str or pathlib.Path
+        Path to disk-based coordinate array directory.
+
+
+    """
 
     def __init__(self, path, accessmode='r'):
         super().__init__(path=path, accessmode=accessmode)
