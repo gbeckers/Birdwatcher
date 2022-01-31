@@ -47,6 +47,11 @@ class CoordinateArrays(RaggedArray):
     ----------
     path : str or pathlib.Path
         Path to disk-based coordinate array directory.
+    accessmode : {'r', 'r+'}, default 'r'
+       File access mode of the darr data. `r` means read-only, `r+` means
+       read-write. `w` does not exist. To create new coordinate arrays,
+       potentially overwriting an other one, use the `create_coordarray`
+       functions.
 
 
     """
