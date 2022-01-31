@@ -2,9 +2,11 @@
 Coordinates are pixel positions (x,y). This is a convenient way of storing
 output from image algorithms that determine whether or not a pixel is
 categorized as something (e.g. crossing some threshold). Since the number of
-pixels per image in a video is different, we use disk-based ragged arrays
-from the python library Darr to store them. They can be archived in
-compressed form (lzma) when data is large.
+pixels per frame may be different, we use disk-based ragged arrays from the
+python library Darr to store them. This is not the most disk-space efficient
+way of doing this, but it is fast and the data can easily be read in any
+computing platform. Coordinate files can be archived in compressed form
+(lzma) when data is large.
 
 """
 
