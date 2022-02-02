@@ -93,7 +93,7 @@ $ conda activate mybirdwatcher
 
 6) Install ffmpeg::
 
-    $ conda install -c ffmpeg
+    $ conda install ffmpeg
 
 7) Install Birdwatcher master branch from git repo::
 
