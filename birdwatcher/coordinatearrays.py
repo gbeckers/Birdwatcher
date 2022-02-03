@@ -63,12 +63,51 @@ class CoordinateArrays(RaggedArray):
         self.frameheight = md['frameheight']
 
     def get_frame(self, frameno, nchannels=None, dtype='uint8', value=1):
+        """Get a frame based on a sequence number in the coordinate array.
+
+        Parameters
+        ----------
+        frameno : int
+            The sequence number of the frame to get
+        nchannels : int
+            The number of color channels in the frame. Default is None which
+            leads to no color dimension, just a 2D frame with gray values.
+        dtype :
+            Numpy dtype of the returned frame. Defaults to unit8
+        value:
+            The value to set the present coordinates with. Default is 1.
+
+        Returns
+        -------
+        Numpy array
+
+
+        """
+
         return _coordstoframe(coords=self[frameno], width=self.framewidth,
                               height=self.frameheight, nchannels=nchannels,
                               dtype=dtype, value=value)
 
     @frameiterator
     def iter_frames(self, nchannels=None, dtype='uint8', value=1):
+        """Iterate over coordinate array and produce frames.
+
+        Parameters
+        ----------
+        nchannels : int
+            The number of color channels in the frame. Default is None which
+            leads to no color dimension, just a 2D frame with gray values.
+        dtype :
+            Numpy dtype of the returned frame. Defaults to unit8
+        value:
+            The value to set the present coordinates with. Default is 1.
+
+        Returns
+        -------
+        Frames
+            Iterator that produces video frames based on the coordinates.
+
+        """
         for coords in self:
             yield _coordstoframe(coords=coords, width=self.framewidth,
                                  height=self.frameheight, nchannels=nchannels,
@@ -76,6 +115,31 @@ class CoordinateArrays(RaggedArray):
 
     def tovideo(self, filepath, framerate=None, crf=17, format='mp4',
                  codec='libx264', pixfmt='yuv420p', ffmpegpath='ffmpeg'):
+        """Writes frames based on coordinate info to a video file.
+
+        Parameters
+        ----------
+        filename: str
+            Name of the videofile that should be written to
+        framerate: int
+            framerate of video in frames per second
+        crf: int
+            Value determines quality of video. Default: 23, which is good
+            quality. See ffmpeg documentation. Use 17 for high quality.
+        scale: tuple or None
+            (width, height). If None, do not change width and height.
+            Default: None.
+        format: str
+            ffmpeg video format. Default is 'mp4'. See ffmpeg documentation.
+        codec: str
+            ffmpeg video codec. Default is 'libx264'. See ffmpeg documentation.
+        pixfmt: str
+            ffmpeg pixel format. Default is 'yuv420p'. See ffmpeg documentation.
+        ffmpegpath: str or pathlib.Path
+            Path to ffmpeg executable. Default is `ffmpeg`, which means it
+            should be in the system path.
+
+        """
         from .ffmpeg import arraytovideo
         if framerate is None:
             try:
@@ -83,17 +147,47 @@ class CoordinateArrays(RaggedArray):
             except KeyError:
                 raise ValueError('Cannot find a frame rate, you need to '
                                  'provide one with the `framerate` parameter')
-        arraytovideo(self.iter_frames(nchannels=3, value=255, dtype=np.uint8),
+        arraytovideo(self.iter_frames(nchannels=3, value=255, dtype='uint8'),
                      filepath, framerate=framerate, crf=crf, format=format,
                      codec=codec, pixfmt=pixfmt, ffmpegpath=ffmpegpath)
 
 
     def get_coordcount(self, startframeno=0, endframeno=None):
+        """Get the number of coordinates present per frame.
+
+        Parameters
+        ----------
+        startframeno : int
+            Default is 0.
+        endframeno : int
+            Defaults to None, which is the end of the coordinate array
+
+        Returns
+        -------
+        Numpy Array
+            Sequence of numbers, each with a coordinate count.
+
+        """
         coordgen = self.iter_arrays(startindex=startframeno,
                                          endindex=endframeno)
         return np.array([c.shape[0] for c in coordgen])
 
     def get_coordmean(self, startframeno=0, endframeno=None):
+        """Get the mean of the coordinates per frame.
+
+        Parameters
+        ----------
+        startframeno : int
+            Default is 0.
+        endframeno : int
+            Defaults to None, which is the end of the coordinate array
+
+        Returns
+        -------
+        Numpy Array
+            Sequence of numbers, each with a coordinate mean.
+
+        """
         coordgen = self.iter_arrays(startindex=startframeno,
                                          endindex=endframeno)
         return np.array([c.mean(0) for c in coordgen])
@@ -101,6 +195,21 @@ class CoordinateArrays(RaggedArray):
 
 def create_coordarray(path, framewidth, frameheight, metadata=None,
                       overwrite=True):
+    """Creates an empty Coordinate Arrays object.
+
+    Parameters
+    ----------
+    path
+    framewidth
+    frameheight
+    metadata
+    overwrite
+
+    Returns
+    -------
+    CoordinateArrays
+
+    """
     if metadata is None:
         metadata = {}
     metadata.update({'framewidth': framewidth,
