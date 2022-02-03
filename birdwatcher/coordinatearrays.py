@@ -89,7 +89,8 @@ class CoordinateArrays(RaggedArray):
                               dtype=dtype, value=value)
 
     @frameiterator
-    def iter_frames(self, nchannels=None, dtype='uint8', value=1):
+    def iter_frames(self, startframe=0, endframe=None, stepsize=1, nchannels=None,
+                    dtype='uint8', value=1):
         """Iterate over coordinate array and produce frames.
 
         Parameters
@@ -108,13 +109,14 @@ class CoordinateArrays(RaggedArray):
             Iterator that produces video frames based on the coordinates.
 
         """
-        for coords in self:
+        for coords in self.iter_arrays(startindex=startframe, endindex=endframe, stepsize=stepsize):
             yield _coordstoframe(coords=coords, width=self.framewidth,
                                  height=self.frameheight, nchannels=nchannels,
                                  dtype=dtype, value=value)
 
-    def tovideo(self, filepath, framerate=None, crf=17, format='mp4',
-                 codec='libx264', pixfmt='yuv420p', ffmpegpath='ffmpeg'):
+    def tovideo(self, filepath, startframe=0, endframe=None, stepsize=1,
+                framerate=None, crf=17, format='mp4',
+                codec='libx264', pixfmt='yuv420p', ffmpegpath='ffmpeg'):
         """Writes frames based on coordinate info to a video file.
 
         Parameters
@@ -147,7 +149,9 @@ class CoordinateArrays(RaggedArray):
             except KeyError:
                 raise ValueError('Cannot find a frame rate, you need to '
                                  'provide one with the `framerate` parameter')
-        arraytovideo(self.iter_frames(nchannels=3, value=255, dtype='uint8'),
+        arraytovideo(self.iter_frames(startframe=startframe, endframe=endframe,
+                                      stepsize=stepsize, nchannels=3, value=255,
+                                      dtype='uint8'),
                      filepath, framerate=framerate, crf=crf, format=format,
                      codec=codec, pixfmt=pixfmt, ffmpegpath=ffmpegpath)
 
