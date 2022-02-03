@@ -95,6 +95,14 @@ class CoordinateArrays(RaggedArray):
 
         Parameters
         ----------
+        startframe: int
+            Frame number to start iteration at. Default is 0.
+        endfrom: int or None
+            Frame number to end iteration at. Default is None, which is to
+            the end.
+        stepsize: int
+            Step sizes. Defaults to 1, but if you want to skip frames, you
+            can use this parameter.
         nchannels : int
             The number of color channels in the frame. Default is None which
             leads to no color dimension, just a 2D frame with gray values.
@@ -123,6 +131,14 @@ class CoordinateArrays(RaggedArray):
         ----------
         filename: str
             Name of the videofile that should be written to
+        startframe: int
+            Frame number to start iteration at. Default is 0.
+        endfrom: int or None
+            Frame number to end iteration at. Default is None, which is to
+            the end.
+        stepsize: int
+            Step sizes. Defaults to 1, but if you want to skip frames, you
+            can use this parameter.
         framerate: int
             framerate of video in frames per second
         crf: int
