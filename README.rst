@@ -33,6 +33,7 @@ It is developed by Gabriel Beckers and Carien Mol, at Experimental Psychology,
 Utrecht University. It is open source, freely available under the `New BSD License
 <https://opensource.org/licenses/BSD-3-Clause>`__ terms.
 
+
 Installation Birdwatcher package
 --------------------------------
 
@@ -40,40 +41,19 @@ Birdwatcher depends on Python 3.6 or higher, and a number of libraries. As
 long as there is no official release. It is best to use the github master
 branch. The older (alpha) versions on PyPi are outdated.
 
-Install dependencies::
 
-    $ pip install darr
-    $ pip install opencv-python
-    $ pip install opencv-contrib-python
-
-It is also necessary to install ffmpeg. If you do not have this already, one
-way of getting it is in Anaconda, as follows::
-
-    $ conda install ffmpeg
-
-The package at conda-forge has h264 encoding, which is nice to have.
-
-Then, install the master branch of Birdwatcher from git repo::
-
-    $ pip install git+https://github.com/gbeckers/birdwatcher@master
-
-Or, the development branch::
-
-    $ pip install git+https://github.com/gbeckers/birdwatcher@develop
-
-
-Installation full analysis environment
---------------------------------------
-
-Install requirements::
+**Dependencies**
 
 - numpy
 - matplotlib
 - darr
 - opencv-python
-- opencv-contrib-pytho
+- opencv-contrib-python
 
-1) Install Anaconda from https://www.anaconda.com/ .
+
+**User installation**
+
+1) We recommend using Anaconda for installation. Install Anaconda from https://www.anaconda.com/ .
 
 2) Open Anaconda prompt in terminal.
 
@@ -99,7 +79,6 @@ Install requirements::
    Or, the development branch::
 
     $ pip install git+https://github.com/gbeckers/birdwatcher@develop
-
 
 
 Test
