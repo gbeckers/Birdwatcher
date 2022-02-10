@@ -3,17 +3,11 @@ Birdwatcher
 
 |Github CI Status| |Appveyor Status| |PyPi version| |Docs Status| |Repo Status|
 
-Birdwatcher is a Python computer vision library for the measurement and
-analysis of animal behavior.
-
-It provides base functionality for analysing animal behavior from videos
-in a Python scientific computing environment. It is not intended as a
-specialized final product to analyse specific behaviors, but rather to
-facilitate working efficiently with video data, to apply computer vision
-algorithms, and to save results.
+Birdwatcher is a Python computer vision library for analyzing animal behavior
+in a Python scientific computing environment.
 
 Birdwatcher should help you getting up and running quickly when building
-your own specific analysis code or measurement tools. It provides high-level
+analysis code or tools for specific measurements. It provides high-level
 functionality that is common in video analysis, such as reading and writing
 videos into and from numpy arrays, applying processing algorithms such as
 background subtraction, morphological transformation, resizing, drawing on
@@ -42,16 +36,6 @@ Installation Birdwatcher package
 Birdwatcher depends on Python 3.6 or higher, and a number of libraries. As
 long as there is no official release. It is best to use the github master
 branch. The older (alpha) versions on PyPi are outdated.
-
-
-**Dependencies**
-
-- numpy
-- matplotlib
-- darr
-- opencv-python
-- opencv-contrib-python
-
 
 **User installation**
 
@@ -82,6 +66,23 @@ branch. The older (alpha) versions on PyPi are outdated.
 
     $ pip install git+https://github.com/gbeckers/birdwatcher@develop
 
+**Dependencies**
+
+The following dependencies are automatically taken care of when you
+install Birdwatcher from GitHub using the pip method above:
+
+- numpy
+- matplotlib
+- darr
+- opencv-python
+- opencv-contrib-python
+
+It further depends on:
+
+- ffmpeg (including ffprobe)
+
+If you do not use the conda way above to install it, you need to
+install it yourself (https://www.ffmpeg.org/).
 
 Test
 ----
