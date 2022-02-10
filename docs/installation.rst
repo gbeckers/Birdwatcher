@@ -8,60 +8,52 @@ Installation Birdwatcher package
 --------------------------------
 
 Birdwatcher depends on Python 3.6 or higher, and a number of libraries. As
-long as there is no official release:
+long as there is no official release. It is best to use the github master
+branch. The older (alpha) versions on PyPi are outdated.
 
-Install dependencies::
+**User installation**
 
-    $ pip install darr
-    $ pip install opencv-python
-    $ pip install opencv-contrib-python
-
-It is also necessary to install ffmpeg. If you do not have this already, one
-way of getting it is in Anaconda, as follows::
-
-    $ conda install ffmpeg
-
-The package at conda-forge has h264 encoding, which is nice to have.
-
-Then, install Birdwatcher from git repo::
-
-    $ pip install git+https://github.com/gbeckers/birdwatcher
-
-
-
-Installation full analysis environment
---------------------------------------
-
-1) Install Anaconda from https://www.anaconda.com/ .
+1) We recommend using Anaconda for installation. Install Anaconda from https://www.anaconda.com/ .
 
 2) Open Anaconda prompt in terminal.
 
 3) Create new environment for Birdwatcher (name is up to you, in example
-   here 'mybirdwatcher'). We install Jupter lab and git at the same time::
+   here 'mybirdwatcher'). We install Jupter lab and ffmpeg at the same time::
 
-    $ conda create -n mybirdwatcher python=3.8 jupyterlab git
-
+    $ conda create -n mybirdwatcher python=3.8 jupyterlab ffmpeg
 
 4) Switch to this new environment:
 
-Linux and MacOS::
+   Linux and MacOS::
 
-$ source activate mybirdwatcher
+    $ source activate mybirdwatcher
 
-Windows::
+   Windows::
 
-$ conda activate mybirdwatcher
+    $ conda activate mybirdwatcher
 
-5) Install darr, opencv-python, opencv-contrib-python::
+5) Install Birdwatcher master branch from git repo::
 
-    $ pip install darr
-    $ pip install opencv-python
-    $ pip install opencv-contrib-python
+    $ pip install git+https://github.com/gbeckers/birdwatcher@master
 
-6) Install ffmpeg::
+   Or, the development branch::
 
-    $ conda install ffmpeg
+    $ pip install git+https://github.com/gbeckers/birdwatcher@develop
 
-7) Install Birdwatcher from git repo::
+**Dependencies**
 
-    $ pip install git+https://github.com/gbeckers/birdwatcher
+The following dependencies are automatically taken care of when you
+install Birdwatcher from GitHub using the pip method above:
+
+- numpy
+- matplotlib
+- darr
+- opencv-python
+- opencv-contrib-python
+
+It further depends on:
+
+- ffmpeg (including ffprobe)
+
+If you do not use the conda way above to install it, you need to
+install it yourself (https://www.ffmpeg.org/).
