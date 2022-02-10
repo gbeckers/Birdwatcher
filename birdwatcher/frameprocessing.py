@@ -450,17 +450,23 @@ class Frames:
 
     @frameiterator
     def crop(self, h1, h2, w1, w2):
-        """
+        """Crops frames to a smaller size.
 
         Parameters
         ----------
-        h1
-        h2
-        w1
-        w2
+        h1: int
+            Top pixel rows
+        h2: int
+            Bottom pixel row
+        w1: int
+            Left pixel column
+        w2: int
+            Right pixel colum
 
         Returns
         -------
+        Frames
+            Iterates over sequence of cropped frames.
 
         """
         for frame in self._frames:
