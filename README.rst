@@ -65,6 +65,14 @@ Or, the development branch::
 Installation full analysis environment
 --------------------------------------
 
+Install requirements::
+
+- numpy
+- matplotlib
+- darr
+- opencv-python
+- opencv-contrib-pytho
+
 1) Install Anaconda from https://www.anaconda.com/ .
 
 2) Open Anaconda prompt in terminal.
@@ -73,7 +81,6 @@ Installation full analysis environment
    here 'mybirdwatcher'). We install Jupter lab and ffmpeg at the same time::
 
     $ conda create -n mybirdwatcher python=3.8 jupyterlab ffmpeg
-
 
 4) Switch to this new environment:
 
@@ -85,13 +92,7 @@ Windows::
 
 $ conda activate mybirdwatcher
 
-5) Install darr, opencv-python, opencv-contrib-python::
-
-    $ pip install darr
-    $ pip install opencv-python
-    $ pip install opencv-contrib-python
-
-6) Install Birdwatcher master branch from git repo::
+5) Install Birdwatcher master branch from git repo::
 
     $ pip install git+https://github.com/gbeckers/birdwatcher@master
 
