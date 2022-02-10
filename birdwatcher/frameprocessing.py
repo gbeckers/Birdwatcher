@@ -322,6 +322,32 @@ class Frames:
     def draw_text(self, textiterator, org=(2, 25),
                   fontface=cv.FONT_HERSHEY_SIMPLEX, fontscale=1,
                   color=(200, 200, 200), thickness=2, linetype=cv.LINE_AA):
+        """Draws the frame number on frames.
+
+            Parameters
+            ----------
+            textiterator: iterable
+                Someting that you can iterate over and that produces text
+                for each frame
+            fontface: OpenCV font type
+                Default cv.FONT_HERSHEY_SIMPLEX
+            fontscale: float
+                Font scale factor that is multiplied by the font-specific base
+                size.
+            color: tuple of ints
+                Color of circle (r, g, b). Default (200, 200, 200)
+            thickness: int
+                Line thickness. Default 2.
+            linetype: int
+                OpenCV line type of circle boundary. Default cv2.LINE_AA
+
+            Returns
+            -------
+            iterator
+                Iterator that generates frames with frame numbers
+
+        """
+
         for frame, text in zip(self._frames, textiterator):
             yield cv.putText(frame, str(text), org=org,
                              fontFace=fontface, fontScale=fontscale,
