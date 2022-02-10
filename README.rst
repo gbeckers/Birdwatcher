@@ -84,19 +84,19 @@ Install requirements::
 
 4) Switch to this new environment:
 
-Linux and MacOS::
+   Linux and MacOS::
 
-$ source activate mybirdwatcher
+    $ source activate mybirdwatcher
 
-Windows::
+   Windows::
 
-$ conda activate mybirdwatcher
+    $ conda activate mybirdwatcher
 
 5) Install Birdwatcher master branch from git repo::
 
     $ pip install git+https://github.com/gbeckers/birdwatcher@master
 
-Or, the development branch::
+   Or, the development branch::
 
     $ pip install git+https://github.com/gbeckers/birdwatcher@develop
 
