@@ -58,10 +58,15 @@ def arraytovideo(frames, filename, framerate, scale=None, crf=17,
             '-vcodec','rawvideo',
             '-pix_fmt', ipixfmt,
             '-r', f'{framerate}',
-            '-s', f'{width}x{height}', '-i', 'pipe:',
-            '-vcodec', f'{codec}',
-            '-f', f'{format}', '-crf', f'{crf}',
-            '-pix_fmt', f'{pixfmt}']
+            '-s', f'{width}x{height}', '-i', 'pipe:']
+    if codec is not None:
+        args += ['-vcodec', f'{codec}']
+    if format is not None:
+        args += ['-f', f'{format}']
+    if crf is not None:
+        args += ['-crf', f'{crf}']
+    if pixfmt is not None:
+        args +=['-pix_fmt', f'{pixfmt}']
     if scale is not None:
         width, height = scale
         args.extend(['-vf', f'scale={width}:{height}'])
