@@ -59,6 +59,9 @@ LSBP
    :members:
    :inherited-members:
 
+.. autofunction:: open_archivedcoordinatedata
+
+.. autofunction:: create_coordarray
 
 Movement detection
 ==================
