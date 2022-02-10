@@ -70,9 +70,9 @@ Installation full analysis environment
 2) Open Anaconda prompt in terminal.
 
 3) Create new environment for Birdwatcher (name is up to you, in example
-   here 'mybirdwatcher'). We install Jupter lab and git at the same time::
+   here 'mybirdwatcher'). We install Jupter lab, ffmpeg and git at the same time::
 
-    $ conda create -n mybirdwatcher python=3.8 jupyterlab git
+    $ conda create -n mybirdwatcher python=3.8 jupyterlab ffmpeg git
 
 
 4) Switch to this new environment:
@@ -91,11 +91,7 @@ $ conda activate mybirdwatcher
     $ pip install opencv-python
     $ pip install opencv-contrib-python
 
-6) Install ffmpeg::
-
-    $ conda install ffmpeg
-
-7) Install Birdwatcher master branch from git repo::
+6) Install Birdwatcher master branch from git repo::
 
     $ pip install git+https://github.com/gbeckers/birdwatcher@master
 
