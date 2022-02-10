@@ -3,17 +3,11 @@ Birdwatcher
 
 |Github CI Status| |Appveyor Status| |PyPi version| |Docs Status| |Repo Status|
 
-Birdwatcher is a Python computer vision library for the measurement and
-analysis of animal behavior.
-
-It provides base functionality for analysing animal behavior from videos
-in a Python scientific computing environment. It is not intended as a
-specialized final product to analyse specific behaviors, but rather to
-facilitate working efficiently with video data, to apply computer vision
-algorithms, and to save results.
+Birdwatcher is a Python computer vision library for analyzing animal behavior
+in a Python scientific computing environment.
 
 Birdwatcher should help you getting up and running quickly when building
-your own specific analysis code or measurement tools. It provides high-level
+analysis code or tools for specific measurements. It provides high-level
 functionality that is common in video analysis, such as reading and writing
 videos into and from numpy arrays, applying processing algorithms such as
 background subtraction, morphological transformation, resizing, drawing on
@@ -35,6 +29,7 @@ It is developed by Gabriel Beckers and Carien Mol, at Experimental Psychology,
 Utrecht University. It is open source, freely available under the `New BSD License
 <https://opensource.org/licenses/BSD-3-Clause>`__ terms.
 
+
 Installation Birdwatcher package
 --------------------------------
 
@@ -42,70 +37,52 @@ Birdwatcher depends on Python 3.6 or higher, and a number of libraries. As
 long as there is no official release. It is best to use the github master
 branch. The older (alpha) versions on PyPi are outdated.
 
-Install dependencies::
+**User installation**
 
-    $ pip install darr
-    $ pip install opencv-python
-    $ pip install opencv-contrib-python
-
-It is also necessary to install ffmpeg. If you do not have this already, one
-way of getting it is in Anaconda, as follows::
-
-    $ conda install ffmpeg
-
-The package at conda-forge has h264 encoding, which is nice to have.
-
-Then, install the master branch of Birdwatcher from git repo::
-
-    $ pip install git+https://github.com/gbeckers/birdwatcher@master
-
-Or, the development branch::
-
-    $ pip install git+https://github.com/gbeckers/birdwatcher@develop
-
-
-Installation full analysis environment
---------------------------------------
-
-1) Install Anaconda from https://www.anaconda.com/ .
+1) We recommend using Anaconda for installation. Install Anaconda from https://www.anaconda.com/ .
 
 2) Open Anaconda prompt in terminal.
 
 3) Create new environment for Birdwatcher (name is up to you, in example
-   here 'mybirdwatcher'). We install Jupter lab and git at the same time::
+   here 'mybirdwatcher'). We install Jupter lab and ffmpeg at the same time::
 
-    $ conda create -n mybirdwatcher python=3.8 jupyterlab git
-
+    $ conda create -n mybirdwatcher python=3.8 jupyterlab ffmpeg
 
 4) Switch to this new environment:
 
-Linux and MacOS::
+   Linux and MacOS::
 
-$ source activate mybirdwatcher
+    $ source activate mybirdwatcher
 
-Windows::
+   Windows::
 
-$ conda activate mybirdwatcher
+    $ conda activate mybirdwatcher
 
-5) Install darr, opencv-python, opencv-contrib-python::
-
-    $ pip install darr
-    $ pip install opencv-python
-    $ pip install opencv-contrib-python
-
-6) Install ffmpeg::
-
-    $ conda install ffmpeg
-
-7) Install Birdwatcher master branch from git repo::
+5) Install Birdwatcher master branch from git repo::
 
     $ pip install git+https://github.com/gbeckers/birdwatcher@master
 
-Or, the development branch::
+   Or, the development branch::
 
     $ pip install git+https://github.com/gbeckers/birdwatcher@develop
 
+**Dependencies**
 
+The following dependencies are automatically taken care of when you
+install Birdwatcher from GitHub using the pip method above:
+
+- numpy
+- matplotlib
+- darr
+- opencv-python
+- opencv-contrib-python
+
+It further depends on:
+
+- ffmpeg (including ffprobe)
+
+If you do not use the conda way above to install it, you need to
+install it yourself (https://www.ffmpeg.org/).
 
 Test
 ----

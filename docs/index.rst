@@ -8,27 +8,23 @@ Birdwatcher
 
 |Github CI Status| |Appveyor Status| |PyPi version| |Docs Status| |Repo Status|
 
-Birdwatcher is a Python computer vision library for the measurement and
-analysis of animal behavior.
+Birdwatcher is a Python computer vision library for analyzing animal behavior
+in a Python scientific computing environment.
 
-The purpose of this library is to provide base functionality for analysing
-animal behavior in a Python scientific computing environment. It
-is not intended as a specialized final product to analyse specific behaviors
-of specific animals, but rather to facilitate working efficiently with
-video data in a scientific Python environment and to apply computer vision
-algorithms. Birdwatcher should help you getting up and running quickly when
-building your own specific analysis code or measurement tools. It provides
+Birdwatcher should help you getting up and running quickly when building
+analysis code or tools for specific measurements. It provides high-level
 functionality that is common in video analysis, such as reading and writing
 videos into and from numpy arrays, applying processing algorithms such as
 background subtraction, morphological transformation, resizing, drawing on
 frames etc. Much of the underlying video and image processing is based on
 `FFmpeg <https://www.ffmpeg.org/>`__ and `OpenCV <https://opencv.org/>`__,
-but Birdwatcher is a lot easier to use for many tasks.
+but Birdwatcher is a lot easier to use for many tasks because its
+higher-level implementation of functionality as compared to these tools.
 
 Despite its name, Birdwatcher is not only for birds. We also successfully
-analyze dog behavior, and it could be used on anything that moves. It is
-being used in our lab but not stable enough yet for general use. More info
-will be provided when a first release is appropriate.
+analyzed dog behavior, and it could be used on anything that moves. It is
+being used in our lab but still under heavy development, and should be
+considered alpha software.
 
 Code can be found on GitHub: https://github.com/gbeckers/Birdwatcher .
 

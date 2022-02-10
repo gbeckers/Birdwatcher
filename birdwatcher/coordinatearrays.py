@@ -123,7 +123,7 @@ class CoordinateArrays(RaggedArray):
                                  dtype=dtype, value=value)
 
     def tovideo(self, filepath, startframe=0, endframe=None, stepsize=1,
-                framerate=None, crf=17, format='mp4',
+                framerate=None, scale=None, crf=17, format='mp4',
                 codec='libx264', pixfmt='yuv420p', ffmpegpath='ffmpeg'):
         """Writes frames based on coordinate info to a video file.
 
@@ -168,8 +168,9 @@ class CoordinateArrays(RaggedArray):
         arraytovideo(self.iter_frames(startframe=startframe, endframe=endframe,
                                       stepsize=stepsize, nchannels=3, value=255,
                                       dtype='uint8'),
-                     filepath, framerate=framerate, crf=crf, format=format,
-                     codec=codec, pixfmt=pixfmt, ffmpegpath=ffmpegpath)
+                     filepath, framerate=framerate, scale=scale, crf=crf,
+                     format=format, codec=codec, pixfmt=pixfmt,
+                     ffmpegpath=ffmpegpath)
 
 
     def get_coordcount(self, startframeno=0, endframeno=None):
