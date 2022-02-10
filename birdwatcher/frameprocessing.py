@@ -449,6 +449,24 @@ class Frames:
                               nroi=nroi)
 
     @frameiterator
+    def crop(self, h1, h2, w1, w2):
+        """
+
+        Parameters
+        ----------
+        h1
+        h2
+        w1
+        w2
+
+        Returns
+        -------
+
+        """
+        for frame in self._frames:
+            yield frame[h1:h2, w1:w2]
+
+    @frameiterator
     def absdiff_frame(self, frame):
         """Subtract static image frame from frame iterator.
 
