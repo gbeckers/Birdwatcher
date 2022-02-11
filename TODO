@@ -1,2 +1,3 @@
 - frames and coordinate arrays should have an (optional) frame rate
+- move Frames methods that operate on a frame only to a Frame class object
 - order of methods in Frames
