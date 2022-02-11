@@ -1,5 +1,5 @@
 import unittest
-from birdwatcher.frameprocessing import FramesColor
+from birdwatcher.frames import FramesColor
 
 
 class TestFrameColor(unittest.TestCase):

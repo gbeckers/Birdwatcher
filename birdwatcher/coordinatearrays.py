@@ -21,7 +21,7 @@ from darr import RaggedArray, delete_raggedarray, create_raggedarray
 
 from ._version import get_versions
 from .utils import tempdir
-from .frameprocessing import frameiterator
+from .frames import frameiterator
 
 __all__ = ['CoordinateArrays', 'open_archivedcoordinatedata',
            'create_coordarray']

@@ -6,7 +6,7 @@ except ImportError:
                   "available")
 
 from pathlib import Path
-from .frameprocessing import Frames
+from .frames import Frames
 from .video import VideoFileStream
 from .utils import datetimestring
 

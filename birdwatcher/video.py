@@ -6,9 +6,10 @@ depends on FFmpeg.
 
 import pathlib
 import numpy as np
+import cv2 as cv
 from .ffmpeg import videofileinfo, iterread_videofile, count_frames, \
     get_frame, get_frameat, extract_audio
-from .frameprocessing import frameiterator
+from .frames import frameiterator
 from .utils import progress, walk_paths
 
 __all__ = ['VideoFileStream', 'testvideosmall']
@@ -253,6 +254,30 @@ class VideoFileStream():
         """
         return get_frameat(self.filepath, time=time, color=color,
                            ffmpegpath=ffmpegpath)
+
+    # TODO use Frames method
+    def show(self, startat=None, nframes=None, framerate=None):
+        """Shows frames in a video window.
+
+        Parameters
+        ----------
+        startat
+        nframes
+        framerate
+
+        Returns
+        -------
+
+        """
+        if framerate is None:
+            framerate = self.avgframerate
+        waitkey = int(round(1000 / framerate))
+        for frame in self.iter_frames(startat=startat, nframes=nframes):
+            cv.imshow('frame', frame)
+            if cv.waitKey(waitkey) & 0xFF == ord('q'):
+                break
+        cv.destroyAllWindows()
+
 
 
 def testvideosmall():

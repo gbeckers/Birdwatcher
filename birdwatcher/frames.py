@@ -679,6 +679,27 @@ class Frames:
             dtype = self._dtype
         return meanframe.astype(dtype)
 
+    # TODO Frames should have a frame rate
+    # TODO Exception handling
+    def show(self, framerate=25):
+        """Shows frames in a video window.
+
+        Parameters
+        ----------
+        framerate
+
+        Returns
+        -------
+
+        """
+
+        waitkey = int(round(1000 / framerate))
+        for frame in self._frames:
+            cv.imshow('frame', frame)
+            if cv.waitKey(waitkey) & 0xFF == ord('q'):
+                break
+        cv.destroyAllWindows()
+
 
 class FramesColor(Frames):
     """An iterator that yields color frames.

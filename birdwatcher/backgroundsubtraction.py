@@ -15,7 +15,7 @@ names follow those of OpenCV to avoid confusion.
 
 import cv2 as cv
 import numpy as np
-from .frameprocessing import frameiterator
+from .frames import frameiterator
 from .utils import peek_iterable
 
 

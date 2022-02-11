@@ -3,7 +3,7 @@ from .video import *
 from .movementdetection import *
 from .backgroundsubtraction import *
 from .coordinatearrays import *
-from .frameprocessing import *
+from .frames import *
 from .utils import *
 try:
     import pypylon
