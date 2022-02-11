@@ -329,6 +329,8 @@ class Frames:
             textiterator: iterable
                 Someting that you can iterate over and that produces text
                 for each frame
+            org: 2-tuple of ints
+                Bottom-left corner of the text string in the image.
             fontface: OpenCV font type
                 Default cv.FONT_HERSHEY_SIMPLEX
             fontscale: float
