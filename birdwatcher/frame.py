@@ -1,6 +1,7 @@
 import numpy as np
 
 #TODO decide if gray frame has a 3rd dimension of size 1, or not
+# opencv has 2D for gray, and 3D for color
 class Frame:
     """A video frame
 
@@ -16,10 +17,14 @@ class Frame:
         self._framewidth = self._array.shape[1]
         if len(self._array.shape) == 2:
             self._isgray = True
-            self._nchannels = 1
+            self._nchannels = 0
         else:
             self._isgray = False
             self._nchannels = self._framewidth = self._array.shape[2]
+
+    @property
+    def array(self):
+        return self._array
 
     @property
     def frameheight(self):
