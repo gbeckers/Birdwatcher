@@ -263,8 +263,38 @@ class BackgroundSubtractorLSBP(BaseBackgroundSubtractor):
     """Wraps OpenCV's `BackgroundSubtractorLSBP` class. Parameter names follow
     those in OpenCV.
 
-    """
+    Parameters
+    ----------
+    mc': int
+        Whether to use camera motion compensation. Default: 0
+    nSamples': int
+        Number of samples to maintain at each point of the frame. Default 20
+    LSBPRadius': int
+        LSBP descriptor radius. Default 16
+    Tlower': float
+        Lower bound for T-values. See [103] for details. Default 2.0
+    Tupper': float
+        Upper bound for T-values. See [103] for details. 32.0
+    Tinc': float
+        Increase step for T-values. Default 1.0
+    Tdec': float
+        Decrease step for T-values. Default 0.05
+    Rscale': float
+        Scale coefficient for threshold values. Default 10.0
+    Rincdec': float
+        Increase/Decrease step for threshold values. Default 0.005
+    noiseRemovalThresholdFacBG': float
+        Strength of the noise removal for background points. Default 0.0004
+    noiseRemovalThresholdFacFG': float
+        Strength of the noise removal for foreground points. Default 0.0008
+    LSBPthreshold': int
+        Threshold for LSBP binary string. Default 8
+    minCount': int
+        Minimal number of matches for sample to be considered as foreground.
+        Default 2
 
+
+    """
 
     _initparams = {'mc': 0,
                    'nSamples': 20,
