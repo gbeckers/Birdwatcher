@@ -211,7 +211,8 @@ class CoordinateArrays(RaggedArray):
         """
         coordgen = self.iter_arrays(startindex=startframeno,
                                          endindex=endframeno)
-        return np.array([c.mean(0) for c in coordgen])
+        return np.array([c.mean(0) if c.size>0 else (np.nan, np.nan)
+                         for c in coordgen])
 
 
 def create_coordarray(path, framewidth, frameheight, metadata=None,
