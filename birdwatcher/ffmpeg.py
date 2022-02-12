@@ -127,7 +127,8 @@ def iterread_videofile(filepath, startat=None, nframes=None, color=True,
         args += ['-vframes', str(nframes)]
     args +=['-vcodec', 'rawvideo', '-pix_fmt', pix_fmt,
             '-f', 'rawvideo', 'pipe:1']
-    with subprocess.Popen(args, stdout=subprocess.PIPE, stderr=None) as p:
+    with subprocess.Popen(args, stdout=subprocess.PIPE,
+                          stderr=subprocess.PIPE) as p:
         frameno = 0
         while True:
             data = p.stdout.read(framesize)
