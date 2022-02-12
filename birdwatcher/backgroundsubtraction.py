@@ -260,6 +260,11 @@ class BackgroundSubtractorMOG2(BaseBackgroundSubtractor):
 
 
 class BackgroundSubtractorLSBP(BaseBackgroundSubtractor):
+    """Wraps OpenCV's `BackgroundSubtractorLSBP` class. Parameter names follow
+    those in OpenCV.
+
+    """
+
 
     _initparams = {'mc': 0,
                    'nSamples': 20,
