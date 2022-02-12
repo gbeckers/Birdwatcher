@@ -20,8 +20,7 @@ Frame processing
 ================
 
 `Frames` is a central class in Birdwatcher. It is an iterable that yields
-frames and many of its methods return another Frames object. Processing
-starts when iteration over it, or when calling its `tovideo` method. Since
+frames and many of its methods return another Frames object. Since
 there are quite a few methods, we'll list property and method names first,
 and then provide detailed info below that.
 
