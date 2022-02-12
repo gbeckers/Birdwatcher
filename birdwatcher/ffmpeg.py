@@ -71,13 +71,14 @@ def arraytovideo(frames, filename, framerate, scale=None, crf=17,
         width, height = scale
         args.extend(['-vf', f'scale={width}:{height}'])
     args.extend([filename, '-y'])
-    p = subprocess.Popen(args, stdin=subprocess.PIPE)
+    p = subprocess.Popen(args, stdin=subprocess.PIPE, stderr=subprocess.PIPE,
+                         stdout=subprocess.PIPE)
     for frame in framegen:
         # if frame.ndim == 2:
         #     frame = cv.cvtColor(frame, cv.COLOR_GRAY2BGR)
         p.stdin.write(frame.astype(np.uint8).tobytes())
-    p.stdin.close()
     out, err = p.communicate()
+    p.stdin.close()
     return Path(filename)
 
 
