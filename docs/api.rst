@@ -22,6 +22,27 @@ Frame processing
 .. automodule:: birdwatcher.frameprocessing
 
 .. autoclass:: birdwatcher.Frames
+
+   'absdiff_frame',
+   'add_weighted',
+   'apply_backgroundsegmenter',
+   'blur',
+   'calc_meanframe',
+   'draw_circles',
+   'draw_framenumbers',
+   'draw_rectangles',
+   'draw_text',
+   'find_contours',
+   'find_nonzero',
+   'get_info',
+   'morphologyex',
+   'resize',
+   'resizebyfactor',
+   'threshold',
+   'tocolor',
+   'togray',
+   'tovideo'
+
    :members:
    :inherited-members:
 
