@@ -20,36 +20,37 @@ Frame processing
 ================
 
 Frames is a central object in Birdwatcher. It is iterable and many of its
-methods return another Frames object. Processing starts when iteration over it,
-or calling some methods.
+methods return another Frames object. Processing starts when iteration over
+it when calling its `tovideo` method.
+
 Frames properties
 -----------------
-dtype:
-frameheight:
-framewidth:
-nchannels:
+- dtype
+- frameheight
+- framewidth
+- nchannels
 
 Frames methods
 --------------
-absdiff_frame:
-add_weighted:
-apply_backgroundsegmenter:
-blur:
-calc_meanframe:
-draw_circles:
-draw_framenumbers:
-draw_rectangles:
-draw_text:
-find_contours:
-find_nonzero:
-get_info:
-morphologyex:
-resizes:
-resizebyfactor:
-threshold:
-tocolor:
-togray:
-tovideo:
+- absdiff_frame
+- add_weighted
+- apply_backgroundsegmenter
+- blur
+- calc_meanframe
+- draw_circles
+- draw_framenumbers
+- draw_rectangles
+- draw_text
+- find_contours
+- find_nonzero
+- get_info
+- morphologyex
+- resizes
+- resizebyfactor
+- threshold
+- tocolor
+- togray
+- tovideo
 
 .. automodule:: birdwatcher.frameprocessing
 
