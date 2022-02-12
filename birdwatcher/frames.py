@@ -49,35 +49,6 @@ class Frames:
         This can be anything that is iterable and that produces image frames. A
         numpy array, a VideoFileStream or another Frames object.
 
-    Properties
-    ----------
-    dtype
-    frameheight
-    framewidth
-    nchannels
-
-    Methods
-    -------
-    absdiff_frame
-    add_weighted
-    apply_backgroundsegmenter
-    blur
-    calc_meanframe
-    draw_circles
-    draw_framenumbers
-    draw_rectangles
-    draw_text
-    find_contours
-    find_nonzero
-    get_info
-    morphologyex
-    resizes
-    resizebyfactor
-    threshold
-    tocolor
-    togray
-    tovideo
-
     Examples
     --------
     >>> import birdwatcher as bw
