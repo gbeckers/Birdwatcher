@@ -66,9 +66,6 @@ branch. The older (alpha) versions on PyPi are outdated.
 
     $ pip install git+https://github.com/gbeckers/birdwatcher@master
 
-   Or, the development branch::
-
-    $ pip install git+https://github.com/gbeckers/birdwatcher@develop
 
 **Dependencies**
 
@@ -87,6 +84,7 @@ It further depends on:
 
 If you do not use the conda way above to install it, you need to
 install it yourself (https://www.ffmpeg.org/).
+
 
 Test
 ----
