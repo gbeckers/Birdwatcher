@@ -24,35 +24,6 @@ frames and many of its methods return another Frames object. Since
 there are quite a few methods, we'll list property and method names first,
 and then provide detailed info below that.
 
-Frames properties
------------------
-- dtype
-- frameheight
-- framewidth
-- nchannels
-
-Frames methods
---------------
-- absdiff_frame
-- add_weighted
-- apply_backgroundsegmenter
-- blur
-- calc_meanframe
-- draw_circles
-- draw_framenumbers
-- draw_rectangles
-- draw_text
-- find_contours
-- find_nonzero
-- get_info
-- morphologyex
-- resizes
-- resizebyfactor
-- threshold
-- tocolor
-- togray
-- tovideo
-
 .. automodule:: birdwatcher.frameprocessing
 
 .. autoclass:: birdwatcher.Frames
