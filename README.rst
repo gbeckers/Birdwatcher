@@ -82,7 +82,7 @@ It further depends on:
 
 - ffmpeg (including ffprobe)
 
-If you do not use the conda way above to install it, you need to
+If you do not use the conda way above to install ffmpeg, you need to
 install it yourself (https://www.ffmpeg.org/).
 
 
