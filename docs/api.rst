@@ -2,9 +2,6 @@
 Birdwatcher API Documentation
 #############################
 
-.. contents:: :local:
-   :depth: 2
-
 Video input from file
 =====================
 
@@ -53,7 +50,7 @@ Frames methods
 - togray
 - tovideo
 
-.. automodule:: birdwatcher.frameprocessing
+.. automodule:: birdwatcher.frames
 
 .. autoclass:: birdwatcher.Frames
    :members:
@@ -93,9 +90,6 @@ LSBP
    :members:
    :inherited-members:
 
-.. autofunction:: open_archivedcoordinatedata
-
-.. autofunction:: create_coordarray
 
 Movement detection
 ==================
@@ -126,7 +120,6 @@ Coordinate Arrays
 
 .. autofunction:: create_coordarray
 
-.. autofunction::  open_archivedcoordinatedata
 
 
 Plotting
