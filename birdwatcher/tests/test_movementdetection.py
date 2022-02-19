@@ -16,8 +16,9 @@ class TestBackgroundSubtractorKNN(unittest.TestCase):
         bgs = bw.BackgroundSubtractorKNN(History=10)
         frames = create_frameswithmovingcircle(nframes=5, width=1080,
                                                height=720)
-        for frame in frames:
-            bgs.apply(frame)
+
+        for fg in bgs.iter_apply(frames):
+            pass
 
 
 class TestBackgroundSubtractorMOG2(unittest.TestCase):
@@ -34,8 +35,8 @@ class TestBackgroundSubtractorMOG2(unittest.TestCase):
         bgs = bw.BackgroundSubtractorMOG2(History=10)
         frames = create_frameswithmovingcircle(nframes=5, width=1080,
                                                height=720)
-        for frame in frames:
-            bgs.apply(frame)
+        for fg in bgs.iter_apply(frames):
+            pass
 
 
 
@@ -52,5 +53,5 @@ class TestBackgroundSubtractorLSBP(unittest.TestCase):
         bgs = bw.BackgroundSubtractorLSBP()
         frames = create_frameswithmovingcircle(nframes=5, width=1080,
                                                height=720)
-        for frame in frames:
-            bgs.apply(frame)
+        for fg in bgs.iter_apply(frames):
+            pass
