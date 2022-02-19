@@ -53,6 +53,5 @@ class TestBackgroundSubtractorLSBP(unittest.TestCase):
         bgs = bw.BackgroundSubtractorLSBP()
         frames = create_frameswithmovingcircle(nframes=5, width=1080,
                                                height=720)
-        for fg in bgs.iter_apply(frames, roi=(10, 710, 10, 500),
-                                 nroi=(20, 30, 20, 30)):
+        for fg in bgs.iter_apply(frames):
             pass
