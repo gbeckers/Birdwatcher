@@ -1,0 +1,7 @@
+[run]
+source = birdwatcher
+
+[report]
+omit =
+    */_version.py
+    */tests/*
