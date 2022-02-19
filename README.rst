@@ -124,7 +124,7 @@ detection algorithms.
    :alt: Project Status: Active – The project has reached a stable, usable state and is being actively developed.
    :target: https://www.repostatus.org/#active
 .. |Github CI Status| image:: https://github.com/gbeckers/Birdwatcher/actions/workflows/python_package.yml/badge.svg
-   :target: https://github.com/gbeckers/Darr/actions/workflows/python_package.yml
+   :target: https://github.com/gbeckers/Birdwatcher/actions/workflows/python_package.yml
 .. |Appveyor Status| image:: https://ci.appveyor.com/api/projects/status/github/gbeckers/darr?svg=true
    :target: https://ci.appveyor.com/project/gbeckers/birdwatcher
 .. |PyPi version| image:: https://img.shields.io/badge/pypi-0.2.0-orange.svg
