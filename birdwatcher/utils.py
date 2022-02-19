@@ -29,6 +29,31 @@ def tempdir(dirname='.', keep=False, report=False):
             if report:
                 print('removed temp dir {}'.format(tempdirname))
 
+@contextmanager
+def tempdirfile(dirname=None, keep=False, report=False):
+    """Yields a filename "tempfile" in a temporary directory which is
+    removed when context is closed. Note that the directory is created,
+    but the file "tempfile" not."""
+    tempdirname = None
+    try:
+        tempdirname = tempfile.mkdtemp(dir=dirname)
+        if report:
+            print(f'created temporary directory {tempdirname}')
+        tempfilename = pathlib.Path(tempdirname) / "tempfile"
+        yield tempfilename
+    except:
+        raise
+    finally:
+        if not keep:
+            shutil.rmtree(tempdirname)
+        if report:
+            if keep:
+                verb = 'kept'
+            else:
+                verb = 'removed'
+            print(f'{verb} temporary directory {tempdirname}')
+
+
 def peek_iterable(iterable):
     gen = (i for i in iterable)
     first = next(gen)

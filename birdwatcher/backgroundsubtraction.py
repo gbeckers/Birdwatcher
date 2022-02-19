@@ -258,7 +258,7 @@ class BackgroundSubtractorMOG2(BaseBackgroundSubtractor):
 
     _bgsubtractorcreatefunc = cv.createBackgroundSubtractorMOG2
 
-
+#TODO this bgs does nor work with roi or nroi
 class BackgroundSubtractorLSBP(BaseBackgroundSubtractor):
     """Wraps OpenCV's `BackgroundSubtractorLSBP` class. Parameter names follow
     those in OpenCV.
