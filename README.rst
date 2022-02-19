@@ -2,6 +2,7 @@ Birdwatcher
 ===========
 
 |Github CI Status| |Appveyor Status| |PyPi version| |Docs Status| |Repo Status|
+|Codecov status|
 
 .. image:: docs/images/banner.gif
   :align: center
@@ -130,4 +131,7 @@ detection algorithms.
    :target: https://pypi.org/project/birdwatcher/
 .. |Docs Status| image:: https://readthedocs.org/projects/birdwatcher/badge/?version=latest
    :target: https://birdwatcher.readthedocs.io/en/latest/
+.. |Codecov status| image:: https://codecov.io/gh/gbeckers/Birdwatcher/branch/master/graph/badge.svg?token=829BH0NSVM
+   :target: https://codecov.io/gh/gbeckers/Birdwatcher
+
 
