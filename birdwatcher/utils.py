@@ -20,7 +20,7 @@ def tempdir(dirname='.', keep=False, report=False):
         tempdirname = tempfile.mkdtemp(dir=dirname)
         if report:
             print('created tempdir {}'.format(tempdirname))
-        yield tempdirname
+        yield pathlib.Path(tempdirname)
     except:
         raise
     finally:

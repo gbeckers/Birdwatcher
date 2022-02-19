@@ -18,15 +18,15 @@ class CoordinateArrays(unittest.TestCase):
         _, self.temparchivename = tempfile.mkstemp(suffix='.tar.xz')
         self.ca1 = create_coordarray(path=self.tempdirname1,
                                     framewidth=1080, frameheight=720,
-                                    metadata={'a': 1}, overwrite=True)
+                                    metadata=None, overwrite=True)
         self.ca1.iterappend([((1,2),(3,4)),((5,6),(7,8))])
 
-    def tearDown(self):
-        shutil.rmtree(self.tempdirname1)
-        if Path(self.tempvideoname).exists():
-            Path(self.tempvideoname).unlink()
-        if Path(self.temparchivename).exists():
-            Path(self.temparchivename).unlink()
+    # def tearDown(self):
+    #     shutil.rmtree(self.tempdirname1)
+    #     if Path(self.tempvideoname).exists():
+    #         Path(self.tempvideoname).unlink()
+    #     if Path(self.temparchivename).exists():
+    #         Path(self.temparchivename).unlink()
 
     def test_index(self):
         self.assertEqual(np.sum((self.ca1[1]-np.array(((5,6),(7,8))))**2), 0)
@@ -54,11 +54,10 @@ class CoordinateArrays(unittest.TestCase):
         cm = self.ca1.get_coordmean()
         self.assertTupleEqual(tuple(tuple(c) for c in cm), ((2,3),(6,7)))
 
-    # TODO we should rethink this function
-    # def test_open_archived(self):
-    #     ap = self.ca1.datadir.archive(self.temparchivename, overwrite=True)
-    #     with open_archivedcoordinatedata(ap) as ca:
-    #         self.assertEqual(np.sum((ca[1]-self.ca[1])**2), 0)
+    def test_open_archived(self):
+        ap = self.ca1.datadir.archive(self.temparchivename, overwrite=True)
+        with open_archivedcoordinatedata(ap) as ca:
+            self.assertEqual(np.sum((ca[1]-self.ca1[1])**2), 0)
 
 
 

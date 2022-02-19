@@ -246,7 +246,7 @@ delete_coordinatearray = delete_raggedarray
 
 
 @ contextmanager
-def open_archivedcoordinatedata(path):
+def open_archivedcoordinatedata(path, temppath=None):
     """A context manager that temporarily decompresses coordinate
     data to work with coordinate array.
 
@@ -270,12 +270,12 @@ def open_archivedcoordinatedata(path):
     if not path.suffix == '.xz':
         raise OSError(f'{path} does not seem to be archived coordinate data')
 
-    with tempdir() as dirname:
+    with tempdir(dirname=temppath) as dirname:
         tar = tarfile.open(path)
         tar.extractall(path=dirname)
         tar.close()
-        p = path.parts[-1].split('.tar.xz')[0]
-        yield CoordinateArrays(Path(dirname) / Path(p))
+        capath = list(dirname.glob('*'))[0]
+        yield CoordinateArrays(capath)
 
 
 def move_coordinatearrays(sourcedirpath, targetdirpath):
