@@ -113,7 +113,8 @@ https://birdwatcher.readthedocs.io
 Examples
 --------
 
-See notebook directory.
+See `jupyter notebook directory
+<https://github .com/gbeckers/Birdwatcher/tree/master/notebooks>`__.
 
 Contributions
 -------------
