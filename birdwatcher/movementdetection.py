@@ -1,20 +1,28 @@
 import os
 from pathlib import Path
 import numpy as np
-import cv2 as cv
 import darr
 
 from .video import VideoFileStream
 from .coordinatearrays import create_coordarray
-from .backgroundsubtraction import BackgroundSubtractorMOG2, BackgroundSubtractorKNN, BackgroundSubtractorLSBP
+from .backgroundsubtraction import BackgroundSubtractorMOG2, \
+    BackgroundSubtractorKNN, BackgroundSubtractorLSBP
 from .utils import derive_filepath
 from ._version import get_versions
 
-__all__ = ['detect_movement', 'detect_movementmog2', 'detect_movementknn',
-           'detect_movementlsbp', 'create_movementvideo']
+__all__ = ['batch_detect_movement', 'detect_movement', 'detect_movementmog2',
+           'detect_movementknn', 'detect_movementlsbp', 'create_movementvideo']
 
 
-def batch_detect_movementknn(videofilepaths, nprocesses=6, *args, **kwargs):
+def _f(rar):
+    rar.archive(overwrite=True)
+    darr.delete_raggedarray(rar)
+
+
+def batch_detect_movement(videofilepaths, bgs, nprocesses=6, morphologyex=2,
+                             gray=True, roi=None, nroi=None, analysispath='.',
+                             overwrite=False, ignore_firstnframes=10,
+                             resultvideo=False):
     """The reason for having a special batch function, instead of just
     applying functions in a loop, is that compression of coordinate results
     takes a long time and is single-threaded. We therefore do this in
@@ -22,19 +30,21 @@ def batch_detect_movementknn(videofilepaths, nprocesses=6, *args, **kwargs):
     devoted to this.
 
     """
-    from multiprocessing import Pool
-
-    def f(rar):
-        rar.archive(overwrite=True)
-        darr.delete_raggedarray(rar)
+    from multiprocessing.pool import ThreadPool
 
     tobearchived = []
     for i, videofilepath in enumerate(videofilepaths):
-        cd, cc, cm = detect_movementknn(videofilepath, *args, **kwargs)
+        cd, cc, cm = detect_movement(videofilepath, bgs=bgs,
+                                     morphologyex=morphologyex, gray=gray,
+                                     roi=roi, nroi=nroi,
+                                     analysispath=analysispath,
+                                     overwrite=overwrite,
+                                     ignore_firstnframes=ignore_firstnframes,
+                                     resultvideo=resultvideo)
         tobearchived.append(cd)
         if (len(tobearchived) == nprocesses) or (i == (len(videofilepaths) - 1)):
-            with Pool(processes=nprocesses) as pool:
-                [i for i in pool.imap_unordered(f, tobearchived)]
+            with ThreadPool(processes=nprocesses) as pool:
+                list([i for i in pool.imap_unordered(_f, tobearchived)])
             tobearchived = []
 
 
