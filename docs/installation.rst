@@ -36,9 +36,6 @@ branch. The older (alpha) versions on PyPi are outdated.
 
     $ pip install git+https://github.com/gbeckers/birdwatcher@master
 
-   Or, the development branch::
-
-    $ pip install git+https://github.com/gbeckers/birdwatcher@develop
 
 **Dependencies**
 
