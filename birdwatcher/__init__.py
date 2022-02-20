@@ -1,4 +1,3 @@
-import warnings
 from .video import *
 from .movementdetection import *
 from .backgroundsubtraction import *
