@@ -1,5 +1,9 @@
 import unittest
 import birdwatcher as bw
+import tempfile
+import shutil
+
+from pathlib import Path
 
 
 class TestVideos(unittest.TestCase):
@@ -28,6 +32,19 @@ class TestVideos(unittest.TestCase):
     def test_duration(self):
         vf = bw.testvideosmall()
         self.assertEqual(vf.duration, float(19.880000))
+
+    def test_getframe(self):
+        vf = bw.testvideosmall()
+        frame = vf.get_frame(100)
+        self.assertSequenceEqual(frame.shape, (720,1280,3))
+
+    def test_extractaudio(self):
+        d = Path(tempfile.mkdtemp())
+        p = d / 'even.wav'
+        bw.testvideosmall().extract_audio(outputpath=p)
+        shutil.rmtree(d)
+
+
 
 
 

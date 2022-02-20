@@ -166,7 +166,7 @@ def get_frame(filepath, framenumber, color=True, ffmpegpath='ffmpeg'):
     args +=['-vcodec', 'rawvideo',  '-vf', f"select='eq(n\,{framenumber})'",
             '-vframes', '1', '-pix_fmt', pix_fmt,
             '-f', 'rawvideo', 'pipe:1']
-    with subprocess.Popen(args, stdout=subprocess.PIPE, stderr=None) as p:
+    with subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE) as p:
         return np.frombuffer(p.stdout.read(framesize), dtype=np.uint8).reshape(frameshape)
 
 def get_frameat(filepath, time, color=True,ffmpegpath='ffmpeg'):
@@ -178,6 +178,8 @@ def extract_audio(filepath, outputpath=None, overwrite=False, verbosity=0, ffmpe
     filepath = Path(filepath)
     if outputpath is None:
         outputpath = filepath.with_suffix('.wav')
+    else:
+        outputpath = Path(outputpath)
     if outputpath.exists() and not overwrite:
         raise IOError(f'"{outputpath}" already exists, use overwrite parameter')
     args = [str(ffmpegpath), '-y',
@@ -185,8 +187,9 @@ def extract_audio(filepath, outputpath=None, overwrite=False, verbosity=0, ffmpe
             '-vn',
             '-codec:a', 'pcm_s24le',
             str(outputpath)]
-    p = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    out, err = p.communicate()
+    with subprocess.Popen(args, stdout=subprocess.PIPE,
+                          stderr=subprocess.PIPE) as p:
+        out, err = p.communicate()
     if err:
         return err.decode('utf-8')
 
