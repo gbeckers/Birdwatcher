@@ -1,5 +1,5 @@
 numpy
-darr
+darr >= 0.4.1
 matplotlib
 opencv-python
 opencv-contrib-python

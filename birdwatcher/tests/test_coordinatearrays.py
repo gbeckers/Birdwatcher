@@ -1,3 +1,4 @@
+import os
 import unittest
 import numpy as np
 import shutil
@@ -14,8 +15,10 @@ class TestCoordinateArrays(unittest.TestCase):
 
     def setUp(self):
         self.tempdirname1 = tempfile.mkdtemp()
-        _, self.tempvideoname = tempfile.mkstemp()
-        _, self.temparchivename = tempfile.mkstemp(suffix='.tar.xz')
+        fh, self.tempvideoname = tempfile.mkstemp()
+        os.close(fh)
+        fh, self.temparchivename = tempfile.mkstemp(suffix='.tar.xz')
+        os.close(fh)
         metadata = {'avgframerate': 5}
         self.ca1 = create_coordarray(path=self.tempdirname1,
                                     framewidth=1080, frameheight=720,
