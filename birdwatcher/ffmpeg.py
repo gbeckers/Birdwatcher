@@ -47,7 +47,8 @@ def arraytovideo(frames, filename, framerate, scale=None, crf=17,
     """
     frame, framegen = peek_iterable(frames)
     height, width, *_ = frame.shape
-    filename = str(filename)
+    if not Path(filename).parent.exists(): # TODO change argumentname into 'filepath'?
+        Path(filename).parent.mkdir(parents=True, exist_ok=True)   
     if frame.ndim == 2:
         ipixfmt = 'gray'
     else: # frame.ndim == 3:
@@ -80,6 +81,7 @@ def arraytovideo(frames, filename, framerate, scale=None, crf=17,
         p.stdin.write(frame.astype(np.uint8).tobytes())
     out, err = p.communicate()
     p.stdin.close()
+    
     return Path(filename)
 
 
