@@ -50,8 +50,9 @@ def arraytovideo(frames, filename, framerate, scale=None, crf=17,
     filename = str(filename)
     if frame.ndim == 2:
         ipixfmt = 'gray'
-    elif frame.ndim == 3:
+    else: # frame.ndim == 3:
         ipixfmt = 'bgr24'
+
     args = [str(ffmpegpath),
             #'-hwaccel',
             '-f', 'rawvideo',
@@ -129,7 +130,7 @@ def iterread_videofile(filepath, startat=None, nframes=None, color=True,
     args +=['-vcodec', 'rawvideo', '-pix_fmt', pix_fmt,
             '-f', 'rawvideo', 'pipe:1']
     with subprocess.Popen(args, stdout=subprocess.PIPE,
-                          stderr=subprocess.PIPE) as p:
+                          stderr=None) as p:
         frameno = 0
         while True:
             data = p.stdout.read(framesize)
