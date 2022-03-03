@@ -1,4 +1,3 @@
-import os
 from pathlib import Path
 import numpy as np
 import darr
@@ -96,10 +95,10 @@ def detect_movement(videofilestream, bgs, morphologyex=2, gray=True,
         raise TypeError(f"`videofilestream` parameter not a VideoFileStream "
                         f"object ({type(videofilestream)}).")
     if not Path(analysispath).exists():
-        os.mkdir(analysispath)
+        Path(analysispath).mkdir(parents=True, exist_ok=True)
     movementpath = Path(analysispath) / f'{vf.filepath.stem}_movement'
     if not movementpath.exists():
-        os.makedirs(movementpath)
+        Path(movementpath).mkdir(parents=True, exist_ok=True)
     metadata = {}
     metadata['backgroundsegmentclass'] = str(bgs)
     metadata['backgroundsegmentparams'] = bgs.get_params()

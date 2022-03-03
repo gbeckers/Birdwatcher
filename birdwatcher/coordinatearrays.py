@@ -302,5 +302,5 @@ def move_coordinatearrays(sourcedirpath, targetdirpath):
             if dname.endswith('.darr'):
                 d = Path(dname)
                 newdir = tdir / Path(root).relative_to(sourcedirpath)
-                os.makedirs(newdir, exist_ok=True)
+                Path(newdir).mkdir(parents=True, exist_ok=True)
                 shutil.move(f"{root}/{d}", str(newdir))
