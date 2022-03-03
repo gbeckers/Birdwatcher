@@ -129,8 +129,8 @@ class CoordinateArrays(RaggedArray):
 
         Parameters
         ----------
-        filename: str
-            Name of the videofile that should be written to
+        filepath: str
+            Name of the videofilepath that should be written to.
         startframe: int
             Frame number to start iteration at. Default is 0.
         endfrom: int or None
@@ -140,7 +140,7 @@ class CoordinateArrays(RaggedArray):
             Step sizes. Defaults to 1, but if you want to skip frames, you
             can use this parameter.
         framerate: int
-            framerate of video in frames per second
+            framerate of video in frames per second.
         crf: int
             Value determines quality of video. Default: 23, which is good
             quality. See ffmpeg documentation. Use 17 for high quality.
@@ -232,6 +232,8 @@ def create_coordarray(path, framewidth, frameheight, metadata=None,
     CoordinateArrays
 
     """
+    if not Path(path).parent.exists():
+        Path(path).parent.mkdir(parents=True, exist_ok=True)   
     if metadata is None:
         metadata = {}
     metadata.update({'framewidth': framewidth,
