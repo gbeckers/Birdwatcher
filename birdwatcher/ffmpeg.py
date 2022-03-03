@@ -16,7 +16,7 @@ class FFmpegError(Exception):
         self.stderr = stderr
 
 
-def arraytovideo(frames, filename, framerate, scale=None, crf=17,
+def arraytovideo(frames, filepath, framerate, scale=None, crf=17,
                  format='mp4', codec='libx264', pixfmt='yuv420p',
                  ffmpegpath='ffmpeg'):
     """Writes an iterable of numpy frames as video file using ffmpeg.
@@ -26,11 +26,11 @@ def arraytovideo(frames, filename, framerate, scale=None, crf=17,
     frames: iterable
         Iterable should produce numpy height x width x channel arrays with
         values ranging from 0 to 255. Frames can be color (3-dim) or gray (
-        2-dim)
-    filename: str
-        Name of the videofile that should be written to
+        2-dim).
+    filepath: str
+        Name of the videofilepath that should be written to.
     framerate: int
-        framerate of video in frames per second
+        framerate of video in frames per second.
     crf: int
         Value determines quality of video. Default: 17, which is high
         quality. See ffmpeg documentation.
@@ -47,8 +47,8 @@ def arraytovideo(frames, filename, framerate, scale=None, crf=17,
     """
     frame, framegen = peek_iterable(frames)
     height, width, *_ = frame.shape
-    if not Path(filename).parent.exists(): # TODO change argumentname into 'filepath'?
-        Path(filename).parent.mkdir(parents=True, exist_ok=True)   
+    if not Path(filepath).parent.exists():
+        Path(filepath).parent.mkdir(parents=True, exist_ok=True)   
     if frame.ndim == 2:
         ipixfmt = 'gray'
     else: # frame.ndim == 3:
@@ -72,7 +72,7 @@ def arraytovideo(frames, filename, framerate, scale=None, crf=17,
     if scale is not None:
         width, height = scale
         args.extend(['-vf', f'scale={width}:{height}'])
-    args.extend([filename, '-y'])
+    args.extend([filepath, '-y'])
     p = subprocess.Popen(args, stdin=subprocess.PIPE, stderr=subprocess.PIPE,
                          stdout=subprocess.PIPE)
     for frame in framegen:
@@ -82,7 +82,7 @@ def arraytovideo(frames, filename, framerate, scale=None, crf=17,
     out, err = p.communicate()
     p.stdin.close()
     
-    return Path(filename)
+    return Path(filepath)
 
 
 def videofileinfo(filepath, ffprobepath='ffprobe'):

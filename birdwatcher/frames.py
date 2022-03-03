@@ -106,16 +106,16 @@ class Frames:
                 'frameheight': self.frameheight,
                 'processingdata': self.processingdata}
 
-    def tovideo(self, filename, framerate, crf=23, scale=None, format='mp4',
+    def tovideo(self, filepath, framerate, crf=23, scale=None, format='mp4',
                 codec='libx264', pixfmt='yuv420p', ffmpegpath='ffmpeg'):
         """Writes frames to video file.
 
         Parameters
         ----------
-        filename: str
-            Name of the videofile that should be written to
+        filepath: str
+            Name of the videofilepath that should be written to.
         framerate: int
-            framerate of video in frames per second
+            framerate of video in frames per second.
         crf: int
             Value determines quality of video. Default: 23, which is good
             quality. See ffmpeg documentation. Use 17 for high quality.
@@ -135,7 +135,7 @@ class Frames:
         """
         from .ffmpeg import arraytovideo
         from .video import VideoFileStream
-        filepath = arraytovideo(frames=self, filename=filename,
+        filepath = arraytovideo(frames=self, filepath=filepath,
                                 framerate=framerate, crf=crf, scale=scale,
                                 format=format, codec=codec, pixfmt=pixfmt,
                                 ffmpegpath=ffmpegpath)
