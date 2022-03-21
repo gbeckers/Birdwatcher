@@ -94,11 +94,11 @@ def detect_movement(videofilestream, bgs, morphologyex=2, gray=True,
     else:
         raise TypeError(f"`videofilestream` parameter not a VideoFileStream "
                         f"object ({type(videofilestream)}).")
-    if not Path(analysispath).exists():
-        Path(analysispath).mkdir(parents=True, exist_ok=True)
+    
+    Path(analysispath).mkdir(parents=True, exist_ok=True)
     movementpath = Path(analysispath) / f'{vf.filepath.stem}_movement'
-    if not movementpath.exists():
-        Path(movementpath).mkdir(parents=True, exist_ok=True)
+    Path(movementpath).mkdir(parents=True, exist_ok=True)
+    
     metadata = {}
     metadata['backgroundsegmentclass'] = str(bgs)
     metadata['backgroundsegmentparams'] = bgs.get_params()
