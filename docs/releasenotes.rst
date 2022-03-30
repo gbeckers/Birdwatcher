@@ -3,6 +3,5 @@ Release notes
 
 Master
 ------
-- introduce Frame object
-- show method for Frames and VideoFile Stream
+- `show` method for Frames, VideoFileStream and CoordinateArrays
 
