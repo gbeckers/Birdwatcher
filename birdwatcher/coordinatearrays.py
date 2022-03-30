@@ -172,6 +172,45 @@ class CoordinateArrays(RaggedArray):
                      format=format, codec=codec, pixfmt=pixfmt,
                      ffmpegpath=ffmpegpath)
 
+    def show(self, startframe=0, endframe=None, stepsize=1, framerate=None,
+             draw_framenumbers=True):
+        """Shows coordinates frames in a video window.
+
+        Turns each coordinate array into a frame and then plays video
+
+        Parameters
+        ----------
+        startframe: int
+            Frame number to start iteration at. Default is 0.
+        endfrom: int or None
+            Frame number to end iteration at. Default is None, which is to
+            the end.
+        stepsize: int
+            Step sizes. Defaults to 1, but if you want to skip frames, you
+            can use this parameter.
+        framerate: int or None
+            framerate of video in frames per second. If None, will look for
+            `avgframerate` in metadata.
+        draw_framenumbers: bool
+            Should I draw frame numbers yes or no? Default: True
+
+        Returns
+        -------
+
+        """
+        if framerate is None:
+            try:
+                framerate = self.metadata['avgframerate']
+            except KeyError:
+                raise ValueError('Cannot find a frame rate, you need to '
+                                 'provide one with the `framerate` parameter')
+
+        f = self.iter_frames(startframe=startframe, endframe=endframe,
+                         stepsize=stepsize, nchannels=3, value=255,
+                         dtype='uint8')
+        if draw_framenumbers:
+            f = f.draw_framenumbers()
+        return f.show(framerate=framerate)
 
     def get_coordcount(self, startframeno=0, endframeno=None):
         """Get the number of coordinates present per frame.
