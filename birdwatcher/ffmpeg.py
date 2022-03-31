@@ -47,8 +47,7 @@ def arraytovideo(frames, filepath, framerate, scale=None, crf=17,
     """
     frame, framegen = peek_iterable(frames)
     height, width, *_ = frame.shape
-    if not Path(filepath).parent.exists():
-        Path(filepath).parent.mkdir(parents=True, exist_ok=True)   
+    Path(filepath).parent.mkdir(parents=True, exist_ok=True)   
     if frame.ndim == 2:
         ipixfmt = 'gray'
     else: # frame.ndim == 3:

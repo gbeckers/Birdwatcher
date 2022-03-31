@@ -90,15 +90,15 @@ def detect_movement(videofilestream, bgs, morphologyex=2, gray=True,
 
     """
     if isinstance(videofilestream, VideoFileStream):
-        vf = videofilestream
+        vfs = videofilestream
     else:
         raise TypeError(f"`videofilestream` parameter not a VideoFileStream "
                         f"object ({type(videofilestream)}).")
-    if not Path(analysispath).exists():
-        Path(analysispath).mkdir(parents=True, exist_ok=True)
-    movementpath = Path(analysispath) / f'{vf.filepath.stem}_movement'
-    if not movementpath.exists():
-        Path(movementpath).mkdir(parents=True, exist_ok=True)
+    
+    Path(analysispath).mkdir(parents=True, exist_ok=True)
+    movementpath = Path(analysispath) / f'{vfs.filepath.stem}_movement'
+    Path(movementpath).mkdir(parents=True, exist_ok=True)
+    
     metadata = {}
     metadata['backgroundsegmentclass'] = str(bgs)
     metadata['backgroundsegmentparams'] = bgs.get_params()
@@ -107,15 +107,15 @@ def detect_movement(videofilestream, bgs, morphologyex=2, gray=True,
     metadata['nroi'] = nroi
     metadata['birdwatcherversion'] = get_versions()['version']
     if gray:
-        frames = vf.iter_frames(color=False)
+        frames = vfs.iter_frames(color=False)
     else:
-        frames = vf.iter_frames(color=True)
+        frames = vfs.iter_frames(color=True)
     frames = frames.apply_backgroundsegmenter(bgs, roi=roi, nroi=nroi)
     if morphologyex is not None:
         frames = frames.morphologyex(kernelsize=morphologyex)
     cd = create_coordarray(movementpath / 'coords.darr',
-                               framewidth=vf.framewidth,
-                               frameheight=vf.frameheight, metadata=metadata,
+                               framewidth=vfs.framewidth,
+                               frameheight=vfs.frameheight, metadata=metadata,
                                overwrite=overwrite)
     empty = np.zeros((0,2), dtype=np.uint16)
     coords = (c if i >= ignore_firstnframes else empty for i,c in enumerate(frames.find_nonzero()))
@@ -125,11 +125,11 @@ def detect_movement(videofilestream, bgs, morphologyex=2, gray=True,
     cm = darr.asarray(movementpath / 'coordsmean.darr', cd.get_coordmean(),
                       metadata=metadata, overwrite=True)
     if resultvideo:
-        ovfilepath = Path(movementpath) / f'{ vf.filepath.stem}_movement.mp4'
+        ovfilepath = Path(movementpath) / f'{ vfs.filepath.stem}_movement.mp4'
         cframes = cd.iter_frames(nchannels=3, value=(0, 0, 255))
-        (vf.iter_frames().add_weighted(0.7, cframes, 0.8)
+        (vfs.iter_frames().add_weighted(0.7, cframes, 0.8)
          .draw_framenumbers()
-         .tovideo(ovfilepath, framerate=vf.avgframerate, crf=25))
+         .tovideo(ovfilepath, framerate=vfs.avgframerate, crf=25))
     return cd, cc, cm
 
 
@@ -340,13 +340,13 @@ def create_movementvideo(videofilestream, coordinatearrays, videofilepath=None, 
 
     """
     if isinstance(videofilestream, VideoFileStream):
-        vf = videofilestream
+        vfs = videofilestream
     else:
         raise TypeError(f"`videofilestream` parameter not a VideoFileStream "
                         f"object ({type(videofilestream)}).")
     if videofilepath is None:
-        videofilepath = derive_filepath(vf.filepath, 'results', suffix='.mp4')
-    frames = coordinatearrays.iter_frames(nchannels=3, value=(0, 0, 255)).add_weighted(0.8, vf.iter_frames(), 0.7)
+        videofilepath = derive_filepath(vfs.filepath, 'results', suffix='.mp4')
+    frames = coordinatearrays.iter_frames(nchannels=3, value=(0, 0, 255)).add_weighted(0.8, vfs.iter_frames(), 0.7)
     if draw_framenumbers is not None:
         frames = frames.draw_framenumbers(org=(2, 120))
     if draw_mean:
@@ -356,6 +356,6 @@ def create_movementvideo(videofilestream, coordinatearrays, videofilepath=None, 
         #     [np.convolve(centers[:, 0], np.ones(7) / 7, 'same'),
         #      np.convolve(centers[:, 1], np.ones(7) / 7, 'same')]).T
         # frames = frames.draw_circles(centers=centers_lp, radius=6, color=(100, 255, 0), thickness=2, linetype=16, shift=0)
-    vfs = frames.tovideo(videofilepath, framerate=vf.avgframerate, crf=crf,
+    vfs = frames.tovideo(videofilepath, framerate=vfs.avgframerate, crf=crf,
                    scale=scale)
     return vfs

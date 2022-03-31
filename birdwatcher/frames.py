@@ -56,8 +56,8 @@ class Frames:
     >>> frames = frames.draw_framenumbers()
     >>> frames.tovideo('noisewithframenumbers.mp4', framerate=25)
     >>> # next example based on input from video file
-    >>> vf = bw.VideoFileStream('zebrafinchrecording.mp4')
-    >>> frames = vf.iter_frames() # create Frames object
+    >>> vfs = bw.VideoFileStream('zebrafinchrecording.mp4')
+    >>> frames = vfs.iter_frames() # create Frames object
     >>> # more concise expression
     >>> frames.blur(ksize=(3,3)).togray().tovideo('zf_blurgray.mp4')
 
