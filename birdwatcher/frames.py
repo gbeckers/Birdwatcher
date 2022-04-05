@@ -30,8 +30,6 @@ def frameiterator(func):
             processingdata['methodkwargs'] = dict((str(key),str(item))
                                                   for (key, item)
                                                   in kwargs.items())
-            processingdata['classname'] = self.__class__.__name__
-
         return Frames(func(*args, **kwargs), processingdata=processingdata)
     return wrapper
 
