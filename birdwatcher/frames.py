@@ -22,8 +22,9 @@ def frameiterator(func):
     def wrapper(*args, **kwargs):
         processingdata = {}
         self = args[0]
-        if hasattr(self, 'get_info'):
-            processingdata['processingdata'] = self.get_info()
+        if hasattr(self, 'get_info'): 
+            if 'processingdata' in self.get_info():
+                processingdata['processingdata'] = self.get_info()    
             processingdata['methodname'] = func.__name__
             processingdata['methodargs'] = [str(arg) for arg in args]
             processingdata['methodkwargs'] = dict((str(key),str(item))
@@ -34,7 +35,7 @@ def frameiterator(func):
         return Frames(func(*args, **kwargs), processingdata=processingdata)
     return wrapper
 
-#TODO add some way of easily starting and stopping at artbitrary frame numbers
+#TODO add some way of easily starting and stopping at arbitrary frame numbers
 class Frames:
     """An iterator of video frames with useful methods.
 
