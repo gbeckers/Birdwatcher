@@ -31,8 +31,8 @@ class VideoFileStream():
     Examples
     --------
     >>> import birdwatcher as bw
-    >>> vf = bw.VideoFileStream('zebrafinchrecording.mp4')
-    >>> frames = vf.iter_frames() # create frame iterator
+    >>> vfs = bw.VideoFileStream('zebrafinchrecording.mp4')
+    >>> frames = vfs.iter_frames() # create frame iterator
     >>> frames.togray().tovideo('zebrafinchrecording_gray.mp4')
 
     """
@@ -212,8 +212,8 @@ class VideoFileStream():
         Example
         -------
         >>> import birdwatcher as bw
-        >>> vf = bw.testvideosmall()
-        >>> frame = vf.get_frame(500)
+        >>> vfs = bw.testvideosmall()
+        >>> frame = vfs.get_frame(500)
 
         Returns
         -------
@@ -242,9 +242,9 @@ class VideoFileStream():
         Example
         -------
         >>> import birdwatcher as bw
-        >>> vf = bw.testvideosmall()
-        >>> frame = vf.get_frameat('5.05') # at 5 sec and 50 msec
-        >>> frame = vf.get_frameat('00:00:05.05') # same thing
+        >>> vfs = bw.testvideosmall()
+        >>> frame = vfs.get_frameat('5.05') # at 5 sec and 50 msec
+        >>> frame = vfs.get_frameat('00:00:05.05') # same thing
 
         Returns
         -------

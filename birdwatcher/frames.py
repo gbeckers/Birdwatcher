@@ -22,19 +22,18 @@ def frameiterator(func):
     def wrapper(*args, **kwargs):
         processingdata = {}
         self = args[0]
-        if hasattr(self, 'get_info'):
-            processingdata['processingdata'] = self.get_info()
+        if hasattr(self, 'get_info'): 
+            if 'processingdata' in self.get_info():
+                processingdata['processingdata'] = self.get_info()    
             processingdata['methodname'] = func.__name__
             processingdata['methodargs'] = [str(arg) for arg in args]
             processingdata['methodkwargs'] = dict((str(key),str(item))
                                                   for (key, item)
                                                   in kwargs.items())
-            processingdata['classname'] = self.__class__.__name__
-
         return Frames(func(*args, **kwargs), processingdata=processingdata)
     return wrapper
 
-#TODO add some way of easily starting and stopping at artbitrary frame numbers
+#TODO add some way of easily starting and stopping at arbitrary frame numbers
 class Frames:
     """An iterator of video frames with useful methods.
 
@@ -56,8 +55,8 @@ class Frames:
     >>> frames = frames.draw_framenumbers()
     >>> frames.tovideo('noisewithframenumbers.mp4', framerate=25)
     >>> # next example based on input from video file
-    >>> vf = bw.VideoFileStream('zebrafinchrecording.mp4')
-    >>> frames = vf.iter_frames() # create Frames object
+    >>> vfs = bw.VideoFileStream('zebrafinchrecording.mp4')
+    >>> frames = vfs.iter_frames() # create Frames object
     >>> # more concise expression
     >>> frames.blur(ksize=(3,3)).togray().tovideo('zf_blurgray.mp4')
 

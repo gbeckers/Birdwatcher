@@ -271,8 +271,7 @@ def create_coordarray(path, framewidth, frameheight, metadata=None,
     CoordinateArrays
 
     """
-    if not Path(path).parent.exists():
-        Path(path).parent.mkdir(parents=True, exist_ok=True)   
+    Path(path).parent.mkdir(parents=True, exist_ok=True)   
     if metadata is None:
         metadata = {}
     metadata.update({'framewidth': framewidth,
