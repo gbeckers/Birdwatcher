@@ -32,7 +32,6 @@ def frameiterator(func):
         return Frames(func(*args, **kwargs), processingdata=processingdata)
     return wrapper
 
-#TODO add some way of easily starting and stopping at arbitrary frame numbers
 class Frames:
     """An iterator of video frames with useful methods.
 
