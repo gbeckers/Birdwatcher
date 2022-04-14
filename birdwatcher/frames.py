@@ -20,16 +20,15 @@ __all__ = ['Frames', 'FramesColor', 'FramesGray', 'FramesNoise', 'framecolor',
 def frameiterator(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
-        processingdata = {}
+        processingdata = []
         self = args[0]
-        if hasattr(self, 'get_info'): 
-            if 'processingdata' in self.get_info():
-                processingdata['processingdata'] = self.get_info()    
-            processingdata['methodname'] = func.__name__
-            processingdata['methodargs'] = [str(arg) for arg in args]
-            processingdata['methodkwargs'] = dict((str(key),str(item))
-                                                  for (key, item)
-                                                  in kwargs.items())
+        if hasattr(self, 'get_info'):
+            processingdata = self.get_info().get('processingdata') or []
+        processingdata.append({'methodname': func.__name__,
+                               'methodargs': [str(arg) for arg in args],
+                               'methodkwargs': dict((str(key),str(item))
+                                                    for (key, item)
+                                                    in kwargs.items())})
         return Frames(func(*args, **kwargs), processingdata=processingdata)
     return wrapper
 
