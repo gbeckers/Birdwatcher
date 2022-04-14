@@ -70,10 +70,6 @@ class VideoFileStream():
                 'streammetadata': self.streammetadata}
 
     @property
-    def _frames(self):
-        return self.iter_frames()
-
-    @property
     def avgframerate(self):
         """Average frame rate of video stream, as reported in the metadata
         of the video file."""
