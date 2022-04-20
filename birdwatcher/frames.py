@@ -102,7 +102,18 @@ class Frames:
                 'framewidth': self.framewidth,
                 'frameheight': self.frameheight,
                 'processingdata': self.processingdata}
-
+    
+    def peek_frame(self):
+        """Useful to inspect one frame without exhausting a Frames iterator instance.
+        
+        Returns
+        -------
+        Frame
+            Numpy ndarray of the first frame.
+        """
+        first_frame, self._frames = peek_iterable(self._frames)
+        return first_frame
+        
     def tovideo(self, filepath, framerate, crf=23, scale=None, format='mp4',
                 codec='libx264', pixfmt='yuv420p', ffmpegpath='ffmpeg'):
         """Writes frames to video file.
