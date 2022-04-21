@@ -15,8 +15,6 @@ names follow those of OpenCV to avoid confusion.
 
 import cv2 as cv
 import numpy as np
-from .frames import frameiterator
-from .utils import peek_iterable
 
 
 __all__ = ['BackgroundSubtractorMOG2', 'BackgroundSubtractorKNN',
@@ -90,60 +88,6 @@ class BaseBackgroundSubtractor:
 
         return self._bgs.apply(image=frame, fgmask=fgmask,
                                learningRate=learningRate)
-
-    @frameiterator
-    def iter_apply(self, frames, fgmask=None, learningRate=-1.0, roi=None,
-                   nroi=None):
-        """Compute foreground masks based on input sequence of frames.
-
-        Parameters
-        ----------
-        frames: frames iterable
-            Iterable that produces input frames for the background subtractor
-            to process.
-        fgmask: numpy array image
-            The output foreground mask as an 8-bit binary image.
-        learningRate: float
-            The value between 0 and 1 that indicates how fast the background
-            model is learnt. Negative parameter value makes the algorithm to
-            use some automatically chosen learning rate. 0 means that the
-            background model is not updated at all, 1 means that the background
-            model is completely reinitialized from the last frame.
-        roi: (int, int, int, int) or None
-            Region of interest. Only look at this rectangular region. h1,
-            h2, w1, w2. Default None.
-        nroi: (int, int, int, int) or None
-            Not region of interest. Exclude this rectangular region. h1,
-            h2, w1, w2. Default None.
-
-
-        Returns
-        -------
-        iterable of image frames
-            The output foreground mask as an 8-bit image.
-
-        """
-        if roi is not None:
-            firstframe, frames = peek_iterable(frames)
-
-            completeframe = np.zeros((firstframe.shape[0],
-                                      firstframe.shape[1]), dtype=np.uint8)
-            h1,h2,w1,w2 = roi
-
-
-        for frame in frames:
-            if roi is not None:
-                frame = frame[h1:h2, w1:w2]
-            mask = self.apply(frame=frame, fgmask=fgmask,
-                              learningRate=learningRate)
-            if roi is not None:
-                completeframe[h1:h2, w1:w2] = mask
-                mask = completeframe
-            if nroi is not None:
-                h1, h2, w1, w2 = nroi
-                mask[h1:h2, w1:w2] = 0
-            yield mask
-
 
 
 class BackgroundSubtractorKNN(BaseBackgroundSubtractor):
