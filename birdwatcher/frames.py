@@ -20,20 +20,18 @@ __all__ = ['Frames', 'FramesColor', 'FramesGray', 'FramesNoise', 'framecolor',
 def frameiterator(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
-        processingdata = {}
+        processingdata = []
         self = args[0]
-        if hasattr(self, 'get_info'): 
-            if 'processingdata' in self.get_info():
-                processingdata['processingdata'] = self.get_info()    
-            processingdata['methodname'] = func.__name__
-            processingdata['methodargs'] = [str(arg) for arg in args]
-            processingdata['methodkwargs'] = dict((str(key),str(item))
-                                                  for (key, item)
-                                                  in kwargs.items())
+        if hasattr(self, 'get_info'):
+            processingdata = self.get_info().get('processingdata') or []
+        processingdata.append({'methodname': func.__name__,
+                               'methodargs': [str(arg) for arg in args],
+                               'methodkwargs': dict((str(key),str(item))
+                                                    for (key, item)
+                                                    in kwargs.items())})
         return Frames(func(*args, **kwargs), processingdata=processingdata)
     return wrapper
 
-#TODO add some way of easily starting and stopping at arbitrary frame numbers
 class Frames:
     """An iterator of video frames with useful methods.
 
@@ -104,7 +102,18 @@ class Frames:
                 'framewidth': self.framewidth,
                 'frameheight': self.frameheight,
                 'processingdata': self.processingdata}
-
+    
+    def peek_frame(self):
+        """Useful to inspect one frame without exhausting a Frames iterator instance.
+        
+        Returns
+        -------
+        Frame
+            Numpy ndarray of the first frame.
+        """
+        first_frame, self._frames = peek_iterable(self._frames)
+        return first_frame
+        
     def tovideo(self, filepath, framerate, crf=23, scale=None, format='mp4',
                 codec='libx264', pixfmt='yuv420p', ffmpegpath='ffmpeg'):
         """Writes frames to video file.
@@ -253,10 +262,9 @@ class Frames:
             else:
                 yield frame
 
-    #FIXME check if input is color
     @frameiterator
     def togray(self):
-        """Converts color frames to gray frames
+        """Converts color frames to gray frames.
 
         Returns
         -------
@@ -264,12 +272,14 @@ class Frames:
 
         """
         for frame in self._frames:
-            yield cv.cvtColor(frame, cv.COLOR_BGR2GRAY)
+            if frame.ndim == 3:
+                yield cv.cvtColor(frame, cv.COLOR_BGR2GRAY)
+            else:
+                yield frame
 
-    # FIXME check if input is gray
     @frameiterator
     def tocolor(self):
-        """Converts gray frames to color frames
+        """Converts gray frames to color frames.
 
         Returns
         -------
@@ -277,7 +287,10 @@ class Frames:
 
         """
         for frame in self._frames:
-            yield cv.cvtColor(frame, cv.COLOR_GRAY2BGR)
+            if frame.ndim == 2:
+                yield cv.cvtColor(frame, cv.COLOR_GRAY2BGR)
+            else:
+                yield frame
 
     # FIXME use draw_text
     @frameiterator
