@@ -111,8 +111,8 @@ class Frames:
         Frame
             Numpy ndarray of the first frame.
         """
-        first_frame, self._frames = peek_iterable(self._frames)
-        return first_frame
+        firstframe, self._frames = peek_iterable(self._frames)
+        return firstframe
         
     def tovideo(self, filepath, framerate, crf=23, scale=None, format='mp4',
                 codec='libx264', pixfmt='yuv420p', ffmpegpath='ffmpeg'):
@@ -488,7 +488,7 @@ class Frames:
 
         """
         if roi is not None:
-            firstframe, frames = peek_iterable(self._frames)
+            firstframe = self.peek_frame()
             completeframe = np.zeros((firstframe.shape[0],
                                       firstframe.shape[1]), dtype=np.uint8)
             h1,h2,w1,w2 = roi
