@@ -111,8 +111,8 @@ class Frames:
         Frame
             Numpy ndarray of the first frame.
         """
-        first_frame, self._frames = peek_iterable(self._frames)
-        return first_frame
+        firstframe, self._frames = peek_iterable(self._frames)
+        return firstframe
         
     def tovideo(self, filepath, framerate, crf=23, scale=None, format='mp4',
                 codec='libx264', pixfmt='yuv420p', ffmpegpath='ffmpeg'):
@@ -477,6 +477,9 @@ class Frames:
         roi: (int, int, int, int) or None
             Region of interest. Only look at this rectangular region. h1,
             h2, w1, w2. Default None.
+        nroi: (int, int, int, int) or None
+            Not region of interest. Exclude this rectangular region. h1,
+            h2, w1, w2. Default None.
 
         Returns
         -------
@@ -484,9 +487,23 @@ class Frames:
             Iterates over sequence of foreground masks.
 
         """
-        return bgs.iter_apply(self._frames, fgmask=fgmask,
-                              learningRate=learningRate, roi=roi,
-                              nroi=nroi)
+        if roi is not None:
+            firstframe = self.peek_frame()
+            completeframe = np.zeros((firstframe.shape[0],
+                                      firstframe.shape[1]), dtype=np.uint8)
+            h1,h2,w1,w2 = roi
+
+        for frame in self._frames:
+            if roi is not None:
+                frame = frame[h1:h2, w1:w2]
+            mask = bgs.apply(frame=frame, fgmask=fgmask,learningRate=learningRate)
+            if roi is not None:
+                completeframe[h1:h2, w1:w2] = mask
+                mask = completeframe
+            if nroi is not None:
+                h1,h2,w1,w2 = nroi
+                mask[h1:h2, w1:w2] = 0
+            yield mask
 
     @frameiterator
     def crop(self, h1, h2, w1, w2):

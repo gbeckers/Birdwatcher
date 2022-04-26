@@ -20,8 +20,8 @@ class TestBackgroundSubtractorKNN(unittest.TestCase):
         bgs = bw.BackgroundSubtractorKNN(History=10)
         frames = create_frameswithmovingcircle(nframes=5, width=1080,
                                                height=720)
-        for fg in bgs.iter_apply(frames, roi=(10, 710, 10, 500),
-                                 nroi=(20,30,20,30)):
+        for fg in frames.apply_backgroundsegmenter(bgs,  roi=(10, 710, 10, 500),
+                                                   nroi=(20,30,20,30)):
             pass
 
 
@@ -39,8 +39,8 @@ class TestBackgroundSubtractorMOG2(unittest.TestCase):
         bgs = bw.BackgroundSubtractorMOG2(History=10)
         frames = create_frameswithmovingcircle(nframes=5, width=1080,
                                                height=720)
-        for fg in bgs.iter_apply(frames, roi=(10, 710, 10, 500),
-                                 nroi=(20, 30, 20, 30)):
+        for fg in frames.apply_backgroundsegmenter(bgs,  roi=(10, 710, 10, 500),
+                                                   nroi=(20, 30, 20, 30)):
             pass
 
 
@@ -57,8 +57,9 @@ class TestBackgroundSubtractorLSBP(unittest.TestCase):
         bgs = bw.BackgroundSubtractorLSBP()
         frames = create_frameswithmovingcircle(nframes=5, width=1080,
                                                height=720)
-        for fg in bgs.iter_apply(frames):
+        for fg in frames.apply_backgroundsegmenter(bgs):
             pass
+
 
 class TestDetectMovement(unittest.TestCase):
 
