@@ -104,7 +104,7 @@ class Frames:
                 'processingdata': self.processingdata}
     
     def peek_frame(self):
-        """Useful to inspect one frame without exhausting a Frames iterator instance.
+        """Returns first frame without removing it.
         
         Returns
         -------
