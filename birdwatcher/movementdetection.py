@@ -19,7 +19,7 @@ def _f(rar):
 
 
 def batch_detect_movement(videofilepaths, bgs, nprocesses=6, morphologyex=2,
-                             gray=True, roi=None, nroi=None, analysispath='.',
+                             color=False, roi=None, nroi=None, analysispath='.',
                              overwrite=False, ignore_firstnframes=10,
                              resultvideo=False):
     """The reason for having a special batch function, instead of just
@@ -34,7 +34,7 @@ def batch_detect_movement(videofilepaths, bgs, nprocesses=6, morphologyex=2,
     tobearchived = []
     for i, videofilepath in enumerate(videofilepaths):
         cd, cc, cm = detect_movement(videofilepath, bgs=bgs,
-                                     morphologyex=morphologyex, gray=gray,
+                                     morphologyex=morphologyex, color=color,
                                      roi=roi, nroi=nroi,
                                      analysispath=analysispath,
                                      overwrite=overwrite,
@@ -47,7 +47,7 @@ def batch_detect_movement(videofilepaths, bgs, nprocesses=6, morphologyex=2,
             tobearchived = []
 
 
-def detect_movement(videofilestream, bgs, morphologyex=2, gray=True,
+def detect_movement(videofilestream, bgs, morphologyex=2, color=False,
                     roi=None, nroi=None, analysispath='.', overwrite=False,
                     ignore_firstnframes=10, resultvideo=False):
     """Detects movement based on a background subtraction algorithm.
@@ -64,8 +64,8 @@ def detect_movement(videofilestream, bgs, morphologyex=2, gray=True,
         BackgroundSubtractorKNN, BackgroundSubtractorLSBP.
     morphologyex: int
         Kernel size of MorphologeEx open processing. Default: 2.
-    gray: bool
-        Should detection be done on gray frames or not.
+    color: bool
+        Should detection be done on color frames (True) or on gray frames (False). Default: False.
     roi: (int, int, int, int) or None
         Region of interest. Only look at this rectangular region. h1,
         h2, w1, w2. Default None.
@@ -106,11 +106,9 @@ def detect_movement(videofilestream, bgs, morphologyex=2, gray=True,
     metadata['roi'] = roi
     metadata['nroi'] = nroi
     metadata['birdwatcherversion'] = get_versions()['version']
-    if gray:
-        frames = vfs.iter_frames(color=False)
-    else:
-        frames = vfs.iter_frames(color=True)
-    frames = frames.apply_backgroundsegmenter(bgs, roi=roi, nroi=nroi)
+    
+    frames = (vfs.iter_frames(color=color)
+              .apply_backgroundsegmenter(bgs, roi=roi, nroi=nroi))
     if morphologyex is not None:
         frames = frames.morphologyex(kernelsize=morphologyex)
     cd = create_coordarray(movementpath / 'coords.darr',
@@ -133,7 +131,7 @@ def detect_movement(videofilestream, bgs, morphologyex=2, gray=True,
     return cd, cc, cm
 
 
-def detect_movementknn(videofilestream, morphologyex=2, gray=True,
+def detect_movementknn(videofilestream, morphologyex=2, color=False,
                         roi=None, nroi=None, analysispath='.',
                         ignore_firstnframes=10, overwrite=False,
                         **kwargs):
@@ -150,8 +148,8 @@ def detect_movementknn(videofilestream, morphologyex=2, gray=True,
         A Birdwatcher VideoFileStream object
     morphologyex: int
         Kernel size of MorphologeEx open processing. Default: 2.
-    gray: bool
-        Should detection be done on gray frames or not.
+    color: bool
+        Should detection be done on color frames (True) or on gray frames (False). Default: False.
     roi: (int, int, int, int) or None
         Region of interest. Only look at this rectangular region. h1,
         h2, w1, w2. Default None.
@@ -181,7 +179,7 @@ def detect_movementknn(videofilestream, morphologyex=2, gray=True,
     cd, cc, cm = detect_movement(videofilestream=videofilestream,
                                  bgs=bgs,
                                  morphologyex=morphologyex,
-                                 gray=gray,
+                                 color=color,
                                  roi=roi,
                                  nroi=nroi,
                                  analysispath=analysispath,
@@ -190,7 +188,7 @@ def detect_movementknn(videofilestream, morphologyex=2, gray=True,
     return cd, cc, cm
 
 
-def detect_movementmog2(videofilestream, morphologyex=2, gray=True,
+def detect_movementmog2(videofilestream, morphologyex=2, color=False,
                         roi=None, nroi=None, analysispath='.',
                         ignore_firstnframes=10, overwrite=False,
                         **kwargs):
@@ -208,8 +206,8 @@ def detect_movementmog2(videofilestream, morphologyex=2, gray=True,
         A Birdwatcher VideoFileStream object
     morphologyex: int
         Kernel size of MorphologeEx open processing. Default: 2.
-    gray: bool
-        Should detection be done on gray frames or not.
+    color: bool
+        Should detection be done on color frames (True) or on gray frames (False). Default: False.
     roi: (int, int, int, int) or None
         Region of interest. Only look at this rectangular region. h1,
         h2, w1, w2. Default None.
@@ -239,7 +237,7 @@ def detect_movementmog2(videofilestream, morphologyex=2, gray=True,
     cd, cc, cm = detect_movement(videofilestream=videofilestream,
                                  bgs=bgs,
                                  morphologyex=morphologyex,
-                                 gray=gray,
+                                 color=color,
                                  roi=roi,
                                  nroi=nroi,
                                  analysispath=analysispath,
@@ -247,7 +245,7 @@ def detect_movementmog2(videofilestream, morphologyex=2, gray=True,
                                  overwrite=overwrite)
     return cd, cc, cm
 
-def detect_movementlsbp(videofilestream, morphologyex=2, gray=True,
+def detect_movementlsbp(videofilestream, morphologyex=2, color=False,
                         roi=None, nroi=None, analysispath='.',
                         ignore_firstnframes=10, overwrite=False,
                         **kwargs):
@@ -265,8 +263,8 @@ def detect_movementlsbp(videofilestream, morphologyex=2, gray=True,
         A Birdwatcher VideoFileStream object
     morphologyex: int
         Kernel size of MorphologeEx open processing. Default: 2.
-    gray: bool
-        Should detection be done on gray frames or not.
+    color: bool
+        Should detection be done on color frames (True) or on gray frames (False). Default: False.
     roi: (int, int, int, int) or None
         Region of interest. Only look at this rectangular region. h1,
         h2, w1, w2. Default None.
@@ -299,7 +297,7 @@ def detect_movementlsbp(videofilestream, morphologyex=2, gray=True,
     cd, cc, cm = detect_movement(videofilestream=videofilestream,
                                  bgs=bgs,
                                  morphologyex=morphologyex,
-                                 gray=gray,
+                                 color=color,
                                  roi=roi,
                                  nroi=nroi,
                                  analysispath=analysispath,
