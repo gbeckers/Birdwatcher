@@ -18,7 +18,7 @@ class FFmpegError(Exception):
 
 def arraytovideo(frames, filepath, framerate, scale=None, crf=17,
                  format='mp4', codec='libx264', pixfmt='yuv420p',
-                 ffmpegpath='ffmpeg'):
+                 ffmpegpath='ffmpeg', loglevel='quiet'):
     """Writes an iterable of numpy frames as video file using ffmpeg.
 
     Parameters
@@ -43,8 +43,14 @@ def arraytovideo(frames, filepath, framerate, scale=None, crf=17,
     ffmpegpath: str or pathlib.Path
         Path to ffmpeg executable. Default is `ffmpeg`, which means it
         should be in the system path.
+    loglevel: str
+        Level of info that ffmpeg should print to terminal. Options are 'quiet',
+        'panic', 'fatal', 'error', 'warning', 'info', 'verbose', 'debug' ,
+        'trace'. Default is quiet.
+
 
     """
+    _check_loglevelarg(loglevel)
     frame, framegen = peek_iterable(frames)
     height, width, *_ = frame.shape
     Path(filepath).parent.mkdir(parents=True, exist_ok=True)   
@@ -55,6 +61,7 @@ def arraytovideo(frames, filepath, framerate, scale=None, crf=17,
 
     args = [str(ffmpegpath),
             #'-hwaccel',
+            '-loglevel' , loglevel,
             '-f', 'rawvideo',
             '-vcodec','rawvideo',
             '-pix_fmt', ipixfmt,
@@ -92,7 +99,7 @@ def videofileinfo(filepath, ffprobepath='ffprobe'):
 
 ## FIXME inform before raising StopIteration that file has no frames
 def iterread_videofile(filepath, startat=None, nframes=None, color=True,
-                       ffmpegpath='ffmpeg'):
+                       ffmpegpath='ffmpeg', loglevel= 'quiet'):
     """
     Parameters
     ----------
@@ -120,12 +127,14 @@ def iterread_videofile(filepath, startat=None, nframes=None, color=True,
     Generates numpy arrays of video frames.
 
     """
+    _check_loglevelarg(loglevel)
     frameshape, framesize, frameheight, framewidth, pix_fmt = \
         _get_frameproperties(filepath=filepath, color=color)
+    args = [str(ffmpegpath), '-loglevel' , loglevel]
     if startat is not None:
-        args = [str(ffmpegpath), '-ss', startat, '-i', str(filepath)]
+        args.extend(['-ss', startat, '-i', str(filepath)])
     else:
-        args = [str(ffmpegpath), '-i', str(filepath)]
+        args.extend(['-i', str(filepath)])
     if nframes is not None:
         args += ['-vframes', str(nframes)]
     args +=['-vcodec', 'rawvideo', '-pix_fmt', pix_fmt,
@@ -161,22 +170,24 @@ def count_frames(filepath, threads=8, ffprobepath='ffprobe'):
 #     return frame
 
 
-def get_frame(filepath, framenumber, color=True, ffmpegpath='ffmpeg'):
+def get_frame(filepath, framenumber, color=True, ffmpegpath='ffmpeg', loglevel= 'quiet'):
+    _check_loglevelarg(loglevel)
     frameshape, framesize, frameheight, framewidth, pix_fmt = \
         _get_frameproperties(filepath=filepath, color=color)
-    args = [str(ffmpegpath), '-i', str(filepath)]
+    args = [str(ffmpegpath), '-loglevel' , loglevel, '-i', str(filepath)]
     args +=['-vcodec', 'rawvideo',  '-vf', f"select='eq(n\,{framenumber})'",
             '-vframes', '1', '-pix_fmt', pix_fmt,
             '-f', 'rawvideo', 'pipe:1']
     with subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE) as p:
         return np.frombuffer(p.stdout.read(framesize), dtype=np.uint8).reshape(frameshape)
 
-def get_frameat(filepath, time, color=True,ffmpegpath='ffmpeg'):
+def get_frameat(filepath, time, color=True, ffmpegpath='ffmpeg', loglevel= 'quiet'):
     return next(iterread_videofile(filepath, startat=time, nframes=1, \
-                                   color=color, ffmpegpath=ffmpegpath))
+                                   color=color, ffmpegpath=ffmpegpath), loglevel=loglevel)
 
 # FIXME do not assume things on audio (i.e. number of channels) and make more versatile
-def extract_audio(filepath, outputpath=None, overwrite=False, verbosity=0, ffmpegpath='ffmpeg'):
+def extract_audio(filepath, outputpath=None, overwrite=False, verbosity=0, ffmpegpath='ffmpeg',
+                  loglevel= 'quiet'):
     filepath = Path(filepath)
     if outputpath is None:
         outputpath = filepath.with_suffix('.wav')
@@ -184,7 +195,8 @@ def extract_audio(filepath, outputpath=None, overwrite=False, verbosity=0, ffmpe
         outputpath = Path(outputpath)
     if outputpath.exists() and not overwrite:
         raise IOError(f'"{outputpath}" already exists, use overwrite parameter')
-    args = [str(ffmpegpath), '-y',
+    _check_loglevelarg(loglevel)
+    args = [str(ffmpegpath), '-loglevel' , loglevel, '-y',
             '-i', str(filepath),
             '-vn',
             '-codec:a', 'pcm_s24le',
@@ -211,3 +223,10 @@ def _get_frameproperties(filepath, color):
         framesize = frameheight * framewidth
         pix_fmt = 'gray'
     return frameshape, framesize, frameheight, framewidth, pix_fmt
+
+def _check_loglevelarg(loglevelarg):
+    levels = ('quiet', 'panic', 'fatal', 'error', 'warning', 'info',
+              'verbose', 'debug', 'trace')
+    if loglevelarg not in levels:
+        raise ValueError(f"`loglevel` argument ('f{loglevelarg}') "
+                         f"should be one of: {levels}")
