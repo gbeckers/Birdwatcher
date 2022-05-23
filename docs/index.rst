@@ -50,6 +50,7 @@ Utrecht University. It is open source, freely available under the `New BSD Licen
    troubleshooting
    api
    releasenotes
+   development
    testing
 
 Examples
