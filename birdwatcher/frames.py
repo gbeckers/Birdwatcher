@@ -725,12 +725,16 @@ class Frames:
     def show(self, framerate=25):
         """Shows frames in a video window.
 
+        Iterates through Frames and displaying each frame in a seperate
+        window. Press 'q' to quit the video before the end.
+
         Parameters
         ----------
-        framerate
+        framerate : int, default=25
 
-        Returns
-        -------
+        Notes
+        -----
+        Frames iterator is (partly) empty after using 'show'.
 
         """
 

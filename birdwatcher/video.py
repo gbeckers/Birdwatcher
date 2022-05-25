@@ -262,14 +262,20 @@ class VideoFileStream():
     def show(self, startat=None, nframes=None, framerate=None):
         """Shows frames in a video window.
 
+        The frames of a VideoFileStream are displayed in a seperate window.
+        Press 'q' to quit the video before the end.
+
         Parameters
         ----------
-        startat
-        nframes
-        framerate
-
-        Returns
-        -------
+         startat : str, optional
+            If specified, start at this time point in the video file. You
+            can use two different time unit formats: sexagesimal
+            (HOURS:MM:SS.MILLISECONDS, as in 01:23:45.678), or in seconds.
+        nframes  : int, optional
+            Read a specified number of frames.
+        framerate : int, optional
+            The default framerate is None, which means that the average frame
+            rate of video stream, as reported in the metadata, is used.
 
         """
         if framerate is None:
