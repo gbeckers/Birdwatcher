@@ -309,17 +309,19 @@ class Frames:
 
         Parameters
         ----------
-            Bottom-left corner of the text string in the image.
         startat : int, optional
             The number to start counting at.
-        org : 2-tuple of ints, optional
+        org : (int, int), optional
+            A tuple of ints (horizontal coordinate value, vertical coordinate
+            value) indicates where to draw the framenumbers. The default (2,
+            25) draws numbers in the top left corner of the image.
         fontface : OpenCV font type, default=cv.FONT_HERSHEY_SIMPLEX
         fontscale : float, optional
             Font scale factor that is multiplied by the font-specific base
             size.
-        color : tuple of ints, optional
-            Color of circle (r, g, b). The default (255, 100, 0) color is
-            orange.
+        color : (int, int, int), optional
+            Color of circle (BGR). The default (200, 200, 200) color is
+            grey.
         thickness : int, default=2
             Line thickness.
         linetype : int, default=cv2.LINE_AA
@@ -341,22 +343,25 @@ class Frames:
     def draw_text(self, textiterator, org=(2, 25),
                   fontface=cv.FONT_HERSHEY_SIMPLEX, fontscale=1,
                   color=(200, 200, 200), thickness=2, linetype=cv.LINE_AA):
-        """Draws the frame number on frames.
+        """Draws text on frames.
 
             Parameters
             ----------
             textiterator : iterable
-                Someting that you can iterate over and that produces text
+                Something that you can iterate over and that produces text
                 for each frame.
-            org : 2-tuple of ints, optional
-                Bottom-left corner of the text string in the image.
+            org : (int, int), optional
+                A tuple of ints (horizontal coordinate value, vertical
+                coordinate value) indicates where to draw the text. The
+                default (2, 25) draws text in the top left corner of the
+                image.
             fontface : OpenCV font type, default=cv.FONT_HERSHEY_SIMPLEX
             fontscale : float, optional
                 Font scale factor that is multiplied by the font-specific base
                 size.
-            color : tuple of ints, optional
-                Color of circle (r, g, b). The default color (200, 200, 200)
-                is grey.
+            color : (int, int, int), optional
+                Color of circle (BGR). The default color (200, 200, 200) is
+                grey.
             thickness : int, default=2
                 Line thickness.
             linetype : int, default=cv2.LINE_AA
@@ -365,7 +370,7 @@ class Frames:
             Yields
             ------
             Frames
-                Iterator that generates frames with frame numbers.
+                Iterator that generates frames with text.
 
         """
 
