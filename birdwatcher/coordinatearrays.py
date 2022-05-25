@@ -266,11 +266,16 @@ def create_coordarray(path, framewidth, frameheight, metadata=None,
 
     Parameters
     ----------
-    path
-    framewidth
-    frameheight
-    metadata
-    overwrite
+    path : str
+        Path to disk-based coordinate array directory that should be written
+        to.
+    framewidth : int
+        Width in pixels.
+    frameheight : int
+        Height in pixels.
+    metadata : dict, optional
+    overwrite : bool, default=True
+        Overwrite existing CoordinateArrays or not.
 
     Returns
     -------
