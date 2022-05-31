@@ -269,7 +269,7 @@ class Frames:
 
     @frameiterator
     def togray(self):
-        """Converts color frames to gray frames.
+        """Converts color frames to gray frames using OpenCV.
 
         Yields
         ------
@@ -285,7 +285,7 @@ class Frames:
 
     @frameiterator
     def tocolor(self):
-        """Converts gray frames to color frames.
+        """Converts gray frames to color frames using OpenCV.
 
         Yields
         ------

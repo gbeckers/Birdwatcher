@@ -171,7 +171,7 @@ class VideoFileStream():
             Read a specified number of frames.
         color : bool, default=True
             Read as a color frame (3 dimensional) or as a gray frame (2
-            dimensional).
+            dimensional). Color conversions occur through ffmpeg.
         ffmpegpath : str or pathlib.Path, optional
             Path to ffmpeg executable. Default is `ffmpeg`, which means it
             should be in the system path.
