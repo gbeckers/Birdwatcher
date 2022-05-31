@@ -299,7 +299,6 @@ class Frames:
             else:
                 yield frame
 
-    # FIXME use draw_text
     @frameiterator
     def draw_framenumbers(self, startat=0, org=(2, 25),
                           fontface=cv.FONT_HERSHEY_SIMPLEX,
@@ -373,7 +372,6 @@ class Frames:
                 Iterator that generates frames with text.
 
         """
-
         for frame, text in zip(self._frames, textiterator):
             yield cv.putText(frame, str(text), org=org,
                              fontFace=fontface, fontScale=fontscale,
