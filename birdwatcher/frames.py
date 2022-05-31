@@ -391,6 +391,8 @@ class Frames:
 
         """
         for frame in self._frames:
+            if frame.ndim == 3:
+                frame = (frame!=0).sum(axis=2, dtype=frame.dtype)
             idx = cv.findNonZero(frame)
             if idx is None:
                 idx = np.zeros((0,2), dtype=np.uint16)
