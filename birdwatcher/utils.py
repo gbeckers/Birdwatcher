@@ -13,9 +13,11 @@ import time
 def datetimestring():
     return time.strftime('%Y%m%d%H%M%S')
 
+
 @contextmanager
 def tempdir(dirname='.', keep=False, report=False):
-    """Yields a temporary directory which is removed when context is closed."""
+    """Yields a temporary directory which is removed when context is
+    closed."""
     try:
         tempdirname = tempfile.mkdtemp(dir=dirname)
         if report:
@@ -29,6 +31,7 @@ def tempdir(dirname='.', keep=False, report=False):
             if report:
                 print('removed temp dir {}'.format(tempdirname))
 
+
 def peek_iterable(iterable):
     gen = (i for i in iterable)
     first = next(gen)
@@ -41,14 +44,14 @@ def derive_filepath(filepath, append_string='', suffix=None, path=None):
 
     Parameters
     ----------
-    filepath: str of pathlib.Path
-            Path to file.
-    append_string: str
-        String to append to file name stem. Default: ''.
-    suffix: str or None
+    filepath : str of pathlib.Path
+        Path to file.
+    append_string : str, optional
+        String to append to file name stem.
+    suffix : str, optional
         File extension to use. If None, the same as video file.
-    path: str or pathlib.Path or None
-        Path to use. If None use same path as video file.
+    path : str or pathlib.Path, optional
+        Path to use. If None, use same path as video file.
 
     Returns
     -------
@@ -65,8 +68,6 @@ def derive_filepath(filepath, append_string='', suffix=None, path=None):
     else:
         dpath = pathlib.Path(path) / filename
     return dpath
-
-
 
 
 def progress(count, total, status=''):
@@ -106,7 +107,7 @@ def print_dirstructure(dirpath):
 
     Parameters
     ----------
-    dirpath: str or Path
+    dirpath : str or Path
         The top-level directory to start at.
 
     """
@@ -126,10 +127,10 @@ def walk_paths(dirpath, extension='.*'):
 
     Parameters
     ----------
-    dirpath: str or Path
+    dirpath : str or Path
         The top-level directory to start at.
-    extension: str
-        Filter on this extension. Default: '.*'
+    extension : str, optional
+        Filter on this extension. The default includes all extensions.
 
     """
     dirpath = pathlib.Path(dirpath)

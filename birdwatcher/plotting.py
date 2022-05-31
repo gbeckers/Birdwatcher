@@ -17,24 +17,24 @@ def imshow_frame(frame, fig=None, ax=None, figsize=None, cmap=None,
 
     Parameters
     ----------
-    frame: numpy array image
+    frame : numpy array image
         Video frame.
-    fig: matplotlib Figure object, optional, default: None
+    fig : matplotlib Figure object, optional
         Provide if you already have a figure in which the frame should be
-        plotted. Default: None.
-    ax: matplotlib Axes object, optional, default: None
+        plotted.
+    ax : matplotlib Axes object, optional
         Provide if you already have an axes in which the frame should be
         plotted.
-    figsize: (float, float), optional, default: None
-        width, height in inches. If not provided, defaults to
+    figsize : (float, float), optional
+        Width, height in inches. If not provided, defaults to
         rcParams["figure.figsize"] = [6.4, 4.8].
-    draw_rectangle: (int, int, int, int), optional, default: None
+    draw_rectangle : (int, int, int, int), optional
         Draw a rectangle on image. h1, h2, w1, w2. Origin is left top.
 
     Returns
     -------
-    matplotlib.figure.Figure, matplotlib.axes.Axes
-        fig, ax: The matplotlib Figure and Axes objects
+    fig, ax : matplotlib.figure.Figure, matplotlib.axes.Axes
+        The matplotlib Figure and Axes objects.
 
     """
     if fig is None:

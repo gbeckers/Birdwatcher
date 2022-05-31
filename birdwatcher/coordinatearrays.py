@@ -39,7 +39,8 @@ def _coordstoframe(coords, width, height, nchannels=None, dtype='uint8',
 
 # fixme, should we allow for 3 values: (x, y, val)?
 class CoordinateArrays(RaggedArray):
-    """A disk-based data type to store frame coordinates of consecutive frames.
+    """A disk-based data type to store frame coordinates of consecutive
+    frames.
 
     Maximum for frame width and height is 65535.
 
@@ -52,7 +53,6 @@ class CoordinateArrays(RaggedArray):
        read-write. `w` does not exist. To create new coordinate arrays,
        potentially overwriting an other one, use the `create_coordarray`
        functions.
-
 
     """
 
@@ -68,56 +68,55 @@ class CoordinateArrays(RaggedArray):
         Parameters
         ----------
         frameno : int
-            The sequence number of the frame to get
-        nchannels : int
-            The number of color channels in the frame. Default is None which
-            leads to no color dimension, just a 2D frame with gray values.
-        dtype :
-            Numpy dtype of the returned frame. Defaults to unit8
-        value:
-            The value to set the present coordinates with. Default is 1.
+            The sequence number of the frame to get.
+        nchannels : int, optional
+            The number of color channels in the frame. Default None leads
+            to no color dimension, just a 2D frame with gray values.
+        dtype : numpy dtype, default='uint8'
+            Dtype of the returned frame.
+        value : int, default=1
+            The value to set the present coordinates with.
 
         Returns
         -------
         Numpy array
 
-
         """
-
         return _coordstoframe(coords=self[frameno], width=self.framewidth,
                               height=self.frameheight, nchannels=nchannels,
                               dtype=dtype, value=value)
 
     @frameiterator
-    def iter_frames(self, startframe=0, endframe=None, stepsize=1, nchannels=None,
-                    dtype='uint8', value=1):
+    def iter_frames(self, startframe=0, endframe=None, stepsize=1,
+                    nchannels=None, dtype='uint8', value=1):
         """Iterate over coordinate array and produce frames.
 
         Parameters
         ----------
-        startframe: int
-            Frame number to start iteration at. Default is 0.
-        endfrom: int or None
+        startframe : int, optional
+            If specified, start iteration at this frame number.
+        endfrom : int, optional
             Frame number to end iteration at. Default is None, which is to
             the end.
-        stepsize: int
+        stepsize : int, optional
             Step sizes. Defaults to 1, but if you want to skip frames, you
             can use this parameter.
-        nchannels : int
+        nchannels : int, optional
             The number of color channels in the frame. Default is None which
             leads to no color dimension, just a 2D frame with gray values.
-        dtype :
-            Numpy dtype of the returned frame. Defaults to unit8
-        value:
-            The value to set the present coordinates with. Default is 1.
+        dtype : numpy dtype, default='uint8'
+            Dtype of the returned frame.
+        value : int, default=1
+            The value to set the present coordinates with.
 
-        Returns
-        -------
+        Yields
+        ------
         Frames
             Iterator that produces video frames based on the coordinates.
 
         """
-        for coords in self.iter_arrays(startindex=startframe, endindex=endframe, stepsize=stepsize):
+        for coords in self.iter_arrays(startindex=startframe,
+                                       endindex=endframe, stepsize=stepsize):
             yield _coordstoframe(coords=coords, width=self.framewidth,
                                  height=self.frameheight, nchannels=nchannels,
                                  dtype=dtype, value=value)
@@ -129,33 +128,38 @@ class CoordinateArrays(RaggedArray):
 
         Parameters
         ----------
-        filepath: str
+        filepath : str
             Name of the videofilepath that should be written to.
-        startframe: int
-            Frame number to start iteration at. Default is 0.
-        endfrom: int or None
+        startframe: int, optional
+            If specified, start iteration at this frame number.
+        endfrom : int, optional
             Frame number to end iteration at. Default is None, which is to
             the end.
-        stepsize: int
+        stepsize : int, optional
             Step sizes. Defaults to 1, but if you want to skip frames, you
             can use this parameter.
-        framerate: int
-            framerate of video in frames per second.
-        crf: int
-            Value determines quality of video. Default: 23, which is good
-            quality. See ffmpeg documentation. Use 17 for high quality.
-        scale: tuple or None
-            (width, height). If None, do not change width and height.
-            Default: None.
-        format: str
-            ffmpeg video format. Default is 'mp4'. See ffmpeg documentation.
-        codec: str
-            ffmpeg video codec. Default is 'libx264'. See ffmpeg documentation.
-        pixfmt: str
-            ffmpeg pixel format. Default is 'yuv420p'. See ffmpeg documentation.
-        ffmpegpath: str or pathlib.Path
+        framerate : int, optional
+            framerate of video in frames per second. If None, will look for
+            `avgframerate` in metadata.
+        scale : tuple, optional
+            (width, height). The default (None) does not change width and
+            height.
+        crf : int, default=17
+            Value determines quality of video. The default 17 is high quality.
+            Use 23 for good quality.
+        format : str, default='mp4'
+            ffmpeg video format.
+        codec : str, default='libx264'
+            ffmpeg video codec.
+        pixfmt : str, default='yuv420p'
+            ffmpeg pixel format.
+        ffmpegpath : str or pathlib.Path, optional
             Path to ffmpeg executable. Default is `ffmpeg`, which means it
             should be in the system path.
+
+        Notes
+        -----
+        See ffmpeg documentation for more information.
 
         """
         from .ffmpeg import arraytovideo
@@ -165,8 +169,10 @@ class CoordinateArrays(RaggedArray):
             except KeyError:
                 raise ValueError('Cannot find a frame rate, you need to '
                                  'provide one with the `framerate` parameter')
-        arraytovideo(self.iter_frames(startframe=startframe, endframe=endframe,
-                                      stepsize=stepsize, nchannels=3, value=255,
+        arraytovideo(self.iter_frames(startframe=startframe,
+                                      endframe=endframe,
+                                      stepsize=stepsize, nchannels=3,
+                                      value=255,
                                       dtype='uint8'),
                      filepath, framerate=framerate, scale=scale, crf=crf,
                      format=format, codec=codec, pixfmt=pixfmt,
@@ -176,23 +182,23 @@ class CoordinateArrays(RaggedArray):
              draw_framenumbers=True):
         """Shows coordinates frames in a video window.
 
-        Turns each coordinate array into a frame and then plays video
+        Turns each coordinate array into a frame and then plays video.
 
         Parameters
         ----------
-        startframe: int
-            Frame number to start iteration at. Default is 0.
-        endfrom: int or None
+        startframe: int, optional
+            If specified, start iteration at this frame number.
+        endfrom : int, optional
             Frame number to end iteration at. Default is None, which is to
             the end.
-        stepsize: int
+        stepsize : int, optional
             Step sizes. Defaults to 1, but if you want to skip frames, you
             can use this parameter.
-        framerate: int or None
+        framerate : int, optional
             framerate of video in frames per second. If None, will look for
             `avgframerate` in metadata.
-        draw_framenumbers: bool
-            Should I draw frame numbers yes or no? Default: True
+        draw_framenumbers : bool, default=True
+            Should I draw frame numbers yes or no?
 
         Returns
         -------
@@ -217,10 +223,10 @@ class CoordinateArrays(RaggedArray):
 
         Parameters
         ----------
-        startframeno : int
-            Default is 0.
-        endframeno : int
-            Defaults to None, which is the end of the coordinate array
+        startframeno : int, optional
+            Defaults to the beginning of the coordinate array.
+        endframeno : int, optional
+            Defaults to the end of the coordinate array.
 
         Returns
         -------
@@ -237,10 +243,10 @@ class CoordinateArrays(RaggedArray):
 
         Parameters
         ----------
-        startframeno : int
-            Default is 0.
-        endframeno : int
-            Defaults to None, which is the end of the coordinate array
+        startframeno : int, optional
+            Defaults to the beginning of the coordinate array.
+        endframeno : int, optional
+            Defaults to the end of the coordinate array.
 
         Returns
         -------
@@ -260,11 +266,16 @@ def create_coordarray(path, framewidth, frameheight, metadata=None,
 
     Parameters
     ----------
-    path
-    framewidth
-    frameheight
-    metadata
-    overwrite
+    path : str
+        Path to disk-based coordinate array directory that should be written
+        to.
+    framewidth : int
+        Width in pixels.
+    frameheight : int
+        Height in pixels.
+    metadata : dict, optional
+    overwrite : bool, default=True
+        Overwrite existing CoordinateArrays or not.
 
     Returns
     -------
@@ -292,11 +303,11 @@ def open_archivedcoordinatedata(path, temppath=None):
 
     Parameters
     ----------
-    path: str
+    path : str
         Path to the archive.
 
-    Returns
-    -------
+    Yields
+    ------
     Context manager to work with temporarily uncompressed coordinate
     array.
 
@@ -322,14 +333,13 @@ def move_coordinatearrays(sourcedirpath, targetdirpath):
     """Move coordinate / darr data hierarchically out of a source dir and
     move it to a target dir, keeping the hierarchy intact.
 
-    The is handy when you created a zillion coordinate / darr inside some
+    This is handy when you created a zillion coordinate / darr inside some
     directory hierarchy of input data, and you want to separate things.
 
     Parameters
     ----------
-    sourcedirpath: str or Path
-
-    targetdirpath: str or Path
+    sourcedirpath : str or Path
+    targetdirpath : str or Path
         The top-level directory to which everything is moved. If it doesn't
         exist it will be created.
 

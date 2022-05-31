@@ -35,6 +35,7 @@ Frames methods
 - apply_backgroundsegmenter
 - blur
 - calc_meanframe
+- crop
 - draw_circles
 - draw_framenumbers
 - draw_rectangles
@@ -43,8 +44,10 @@ Frames methods
 - find_nonzero
 - get_info
 - morphologyex
-- resizes
+- peek_frame
+- resize
 - resizebyfactor
+- show
 - threshold
 - tocolor
 - togray

@@ -23,31 +23,36 @@ def arraytovideo(frames, filepath, framerate, scale=None, crf=17,
 
     Parameters
     ----------
-    frames: iterable
+    frames : iterable
         Iterable should produce numpy height x width x channel arrays with
-        values ranging from 0 to 255. Frames can be color (3-dim) or gray (
-        2-dim).
-    filepath: str
+        values ranging from 0 to 255. Frames can be color (3-dim) or gray
+        (2-dim).
+    filepath : str
         Name of the videofilepath that should be written to.
-    framerate: int
-        framerate of video in frames per second.
-    crf: int
-        Value determines quality of video. Default: 17, which is high
-        quality. See ffmpeg documentation.
-    format: str
-        ffmpeg video format. Default is 'mp4'. See ffmpeg documentation.
-    codec: str
-        ffmpeg video codec. Default is 'libx264'. See ffmpeg documentation.
-    pixfmt: str
-        ffmpeg pixel format. Default is 'yuv420p'. See ffmpeg documentation.
-    ffmpegpath: str or pathlib.Path
+    framerate : int
+        Framerate of video in frames per second.
+    scale : tuple, optional
+        (width, height). The default (None) does not change width and height.
+    crf : int, default=17
+        Value determines quality of video. The default 17 is high quality.
+        Use 23 for good quality.
+    format : str, default='mp4'
+        ffmpeg video format.
+    codec : str, default='libx264'
+        ffmpeg video codec.
+    pixfmt : str, default='yuv420p'
+        ffmpeg pixel format.
+    ffmpegpath : str or pathlib.Path, optional
         Path to ffmpeg executable. Default is `ffmpeg`, which means it
         should be in the system path.
-    loglevel: str
-        Level of info that ffmpeg should print to terminal. Options are 'quiet',
-        'panic', 'fatal', 'error', 'warning', 'info', 'verbose', 'debug' ,
-        'trace'. Default is quiet.
+    loglevel : {'quiet', 'panic', 'fatal', 'error', 'warning', 'info',
+               'verbose', 'debug' ,'trace'}, optional
+        Level of info that ffmpeg should print to terminal. Default is
+        'quiet'.
 
+    Notes
+    -----
+    See ffmpeg documentation for more information.
 
     """
     _check_loglevelarg(loglevel)
@@ -103,8 +108,9 @@ def iterread_videofile(filepath, startat=None, nframes=None, color=True,
     """
     Parameters
     ----------
-    filepath
-    startat: str
+    filepath : str
+        Name of the videofilepath.
+    startat : str
       There are two accepted syntaxes for expressing time duration.
       [-][HH:]MM:SS[.m...], where HH expresses the number of hours,
       MM the number of minutes for a maximum of 2 digits, and SS
@@ -118,13 +124,20 @@ def iterread_videofile(filepath, startat=None, nframes=None, color=True,
       ‘0.2’ means 0.2 seconds, ‘200ms’ means 200 milliseconds,
       ‘200000us’ means 200000 microseconds, ‘12:03:45’ means 12 hours,
       03 minutes and 45 seconds, ‘23.189’ means 23.189 seconds.
-    nframes: int
-    color: bool
-    ffmpegpath:
+    nframes : int
+    color : bool, default=True
+    ffmpegpath : str or pathlib.Path, optional
+        Path to ffmpeg executable. Default is `ffmpeg`, which means it
+        should be in the system path.
+    loglevel : {'quiet', 'panic', 'fatal', 'error', 'warning', 'info',
+               'verbose', 'debug' , 'trace'}, optional
+        Level of info that ffmpeg should print to terminal. Default is
+        'quiet'.
 
-    Returns
+    Yields
     -------
-    Generates numpy arrays of video frames.
+    numpy ndarray
+        Generates numpy arrays of video frames.
 
     """
     _check_loglevelarg(loglevel)
@@ -145,7 +158,8 @@ def iterread_videofile(filepath, startat=None, nframes=None, color=True,
         while True:
             data = p.stdout.read(framesize)
             ar = np.frombuffer(data, dtype=np.uint8)
-            if (ar.size == framesize) and ((nframes is None) or (frameno < nframes)):
+            if (ar.size == framesize) and ((nframes is None) or (frameno <
+                                                                 nframes)):
                 yield ar.reshape(frameshape)
                 frameno += 1
             else:
@@ -170,7 +184,8 @@ def count_frames(filepath, threads=8, ffprobepath='ffprobe'):
 #     return frame
 
 
-def get_frame(filepath, framenumber, color=True, ffmpegpath='ffmpeg', loglevel= 'quiet'):
+def get_frame(filepath, framenumber, color=True, ffmpegpath='ffmpeg',
+              loglevel= 'quiet'):
     _check_loglevelarg(loglevel)
     frameshape, framesize, frameheight, framewidth, pix_fmt = \
         _get_frameproperties(filepath=filepath, color=color)
@@ -178,16 +193,22 @@ def get_frame(filepath, framenumber, color=True, ffmpegpath='ffmpeg', loglevel= 
     args +=['-vcodec', 'rawvideo',  '-vf', f"select='eq(n\,{framenumber})'",
             '-vframes', '1', '-pix_fmt', pix_fmt,
             '-f', 'rawvideo', 'pipe:1']
-    with subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE) as p:
-        return np.frombuffer(p.stdout.read(framesize), dtype=np.uint8).reshape(frameshape)
+    with subprocess.Popen(args, stdout=subprocess.PIPE,
+                          stderr=subprocess.PIPE) as p:
+        return np.frombuffer(p.stdout.read(framesize),
+                             dtype=np.uint8).reshape(frameshape)
 
-def get_frameat(filepath, time, color=True, ffmpegpath='ffmpeg', loglevel= 'quiet'):
+
+def get_frameat(filepath, time, color=True, ffmpegpath='ffmpeg', loglevel=
+                'quiet'):
     return next(iterread_videofile(filepath, startat=time, nframes=1, \
-                                   color=color, ffmpegpath=ffmpegpath), loglevel=loglevel)
+                                   color=color, ffmpegpath=ffmpegpath),
+                loglevel=loglevel)
+
 
 # FIXME do not assume things on audio (i.e. number of channels) and make more versatile
-def extract_audio(filepath, outputpath=None, overwrite=False, verbosity=0, ffmpegpath='ffmpeg',
-                  loglevel= 'quiet'):
+def extract_audio(filepath, outputpath=None, overwrite=False, verbosity=0,
+                  ffmpegpath='ffmpeg', loglevel= 'quiet'):
     filepath = Path(filepath)
     if outputpath is None:
         outputpath = filepath.with_suffix('.wav')
@@ -207,10 +228,11 @@ def extract_audio(filepath, outputpath=None, overwrite=False, verbosity=0, ffmpe
     if err:
         return err.decode('utf-8')
 
+
 def _get_frameproperties(filepath, color):
     """Convenience function that produces frame characteristics for a given
     video. Handy if you want to know the format of a frame that is returned
-    by ffmpeg from a pipe. """
+    by ffmpeg from a pipe."""
     vfi = videofileinfo(filepath)
     frameheight = vfi['streams'][0]['height']
     framewidth = vfi['streams'][0]['width']
@@ -223,6 +245,7 @@ def _get_frameproperties(filepath, color):
         framesize = frameheight * framewidth
         pix_fmt = 'gray'
     return frameshape, framesize, frameheight, framewidth, pix_fmt
+
 
 def _check_loglevelarg(loglevelarg):
     levels = ('quiet', 'panic', 'fatal', 'error', 'warning', 'info',
