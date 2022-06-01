@@ -66,11 +66,11 @@ class Frames:
 
         framewidth, frameheight, *nchannels = first.shape
         if nchannels == []:
-            nchannels = 1
+            nchannels = [1]
         self._frames = frames
         self._frameheight = frameheight
         self._framewidth = framewidth
-        self._nchannels = nchannels
+        self._nchannels = nchannels[0]
         self._index = 0
         self._dtype = first.dtype.name
         self.processingdata = processingdata
