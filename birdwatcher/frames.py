@@ -201,8 +201,7 @@ class Frames:
         radius : int, default=6
             Radius of circle.
         color : tuple of ints, optional
-            Color of circle (r, g, b). The default (255, 100, 0) color is
-            orange.
+            Color of circle (BGR). The default (255, 100, 0) color is blue.
         thickness : int, default=2
             Line thickness.
         linetype : int, default=cv2.LINE_AA
@@ -217,7 +216,6 @@ class Frames:
             Iterator that generates frames with circles.
 
         """
-
         for frame, center in zip(self._frames, centers):
             center = np.asanyarray(center)
             if not np.isnan(center).any():
@@ -232,9 +230,9 @@ class Frames:
     @frameiterator
     def draw_rectangles(self, points, color=(255, 100, 0),
                      thickness=2, linetype=cv.LINE_AA, shift=0):
-        """Draws circles on frames.
+        """Draws rectangles on frames.
 
-        Centers should be an iterable that has a length that corresponds to
+        Points should be an iterable that has a length that corresponds to
         the number of frames.
 
         Parameters
@@ -243,8 +241,7 @@ class Frames:
             Iterable that generates sequences of rectangle corners ((x1, y1),
             (x2, y2)) per frame.
         color : tuple of ints, optional
-            Color of rectangle (r, g, b). The default (255, 100, 0) color is
-            orange.
+            Color of rectangle (BGR). The default (255, 100, 0) color is blue.
         thickness : int, default=2
             Line thickness.
         linetype : int, default=cv2.LINE_AA
@@ -258,14 +255,11 @@ class Frames:
             Iterator that generates frames with rectangles.
 
         """
-
         for frame, framepoints in zip(self._frames, points):
             for (pt1, pt2) in framepoints:
                 yield cv.rectangle(frame, pt1=pt1, pt2=pt2, color=color,
                                 thickness=thickness, lineType=linetype,
                                 shift=shift)
-            else:
-                yield frame
 
     @frameiterator
     def togray(self):
