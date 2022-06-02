@@ -66,11 +66,11 @@ class Frames:
 
         framewidth, frameheight, *nchannels = first.shape
         if nchannels == []:
-            nchannels = 1
+            nchannels = [1]
         self._frames = frames
         self._frameheight = frameheight
         self._framewidth = framewidth
-        self._nchannels = nchannels
+        self._nchannels = nchannels[0]
         self._index = 0
         self._dtype = first.dtype.name
         self.processingdata = processingdata
@@ -201,8 +201,7 @@ class Frames:
         radius : int, default=6
             Radius of circle.
         color : tuple of ints, optional
-            Color of circle (r, g, b). The default (255, 100, 0) color is
-            orange.
+            Color of circle (BGR). The default (255, 100, 0) color is blue.
         thickness : int, default=2
             Line thickness.
         linetype : int, default=cv2.LINE_AA
@@ -217,7 +216,6 @@ class Frames:
             Iterator that generates frames with circles.
 
         """
-
         for frame, center in zip(self._frames, centers):
             center = np.asanyarray(center)
             if not np.isnan(center).any():
@@ -232,9 +230,9 @@ class Frames:
     @frameiterator
     def draw_rectangles(self, points, color=(255, 100, 0),
                      thickness=2, linetype=cv.LINE_AA, shift=0):
-        """Draws circles on frames.
+        """Draws rectangles on frames.
 
-        Centers should be an iterable that has a length that corresponds to
+        Points should be an iterable that has a length that corresponds to
         the number of frames.
 
         Parameters
@@ -243,8 +241,7 @@ class Frames:
             Iterable that generates sequences of rectangle corners ((x1, y1),
             (x2, y2)) per frame.
         color : tuple of ints, optional
-            Color of rectangle (r, g, b). The default (255, 100, 0) color is
-            orange.
+            Color of rectangle (BGR). The default (255, 100, 0) color is blue.
         thickness : int, default=2
             Line thickness.
         linetype : int, default=cv2.LINE_AA
@@ -258,18 +255,15 @@ class Frames:
             Iterator that generates frames with rectangles.
 
         """
-
         for frame, framepoints in zip(self._frames, points):
             for (pt1, pt2) in framepoints:
                 yield cv.rectangle(frame, pt1=pt1, pt2=pt2, color=color,
                                 thickness=thickness, lineType=linetype,
                                 shift=shift)
-            else:
-                yield frame
 
     @frameiterator
     def togray(self):
-        """Converts color frames to gray frames.
+        """Converts color frames to gray frames using OpenCV.
 
         Yields
         ------
@@ -285,7 +279,7 @@ class Frames:
 
     @frameiterator
     def tocolor(self):
-        """Converts gray frames to color frames.
+        """Converts gray frames to color frames using OpenCV.
 
         Yields
         ------
@@ -391,6 +385,8 @@ class Frames:
 
         """
         for frame in self._frames:
+            if frame.ndim == 3:
+                frame = (frame!=0).sum(axis=2, dtype=frame.dtype)
             idx = cv.findNonZero(frame)
             if idx is None:
                 idx = np.zeros((0,2), dtype=np.uint16)
