@@ -377,6 +377,9 @@ class Frames:
     def find_nonzero(self):
         """Yields the locations of non-zero pixels.
 
+        If the frame is a color frame, non-zero means that a pixel
+        is does not have the value (0,0,0).
+
         Yields
         ------
         Frames
