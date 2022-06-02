@@ -372,8 +372,6 @@ class Frames:
                              color=color, thickness=thickness,
                              lineType=linetype)
 
-    # FIXME should this be a coordinate iterator?
-    @frameiterator
     def find_nonzero(self):
         """Yields the locations of non-zero pixels.
 
@@ -382,8 +380,7 @@ class Frames:
 
         Yields
         ------
-        Frames
-            Iterator that generates shape (N, 2) arrays, where N is the number
+        Iterator that generates shape (N, 2) arrays, where N is the number
             of non-zero pixels.
 
         """
@@ -674,7 +671,6 @@ class Frames:
             yield cv.resize(src=frame, dsize=(0,0), fx=fx, fy=fy,
                             interpolation=interpolation)
 
-    # FIXME should this be a coordinate iterator?
     def find_contours(self, retrmode='tree', apprmethod='simple',
                       offset=(0, 0)):
         """Finds contours in frames.
