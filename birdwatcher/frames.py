@@ -185,6 +185,30 @@ class Frames:
             yield cv.blur(frame, ksize=ksize, anchor=anchor,
                           borderType=borderType)
 
+    @frameiterator
+    def edge_detection(self, minval=80, maxval=150):
+        """Finds edges (boundaries) in frames.
+
+        Only works on gray frames! Blur frames before applying edge detection
+        for optimal results. Edges are defined by sudden changes in pixel
+        intensity.
+
+        Parameters
+        ----------
+        minval : str, optional
+            Lower threshold for finding smaller edges.
+        maxval : str, optional
+            Higher threshold to determine segments of strong edges.
+
+        Yields
+        ------
+        Frames
+            Iterator that generates frames with edges.
+
+        """
+        for frame in self._frames:
+            yield cv.Canny(frame, minval, maxval)
+
     # FIXME multiple circles per frame?
     @frameiterator
     def draw_circles(self, centers, radius=6, color=(255, 100, 0),
