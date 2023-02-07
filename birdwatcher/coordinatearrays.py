@@ -235,7 +235,7 @@ class CoordinateArrays(RaggedArray):
 
         """
         coordgen = self.iter_arrays(startindex=startframeno,
-                                         endindex=endframeno)
+                                    endindex=endframeno)
         return np.array([c.shape[0] for c in coordgen])
 
     def get_coordmean(self, startframeno=0, endframeno=None):
@@ -255,8 +255,29 @@ class CoordinateArrays(RaggedArray):
 
         """
         coordgen = self.iter_arrays(startindex=startframeno,
-                                         endindex=endframeno)
+                                    endindex=endframeno)
         return np.array([c.mean(0) if c.size>0 else (np.nan, np.nan)
+                         for c in coordgen])
+
+    def get_coordmedian(self, startframeno=0, endframeno=None):
+        """Get the median of the coordinates per frame.
+
+        Parameters
+        ----------
+        startframeno : int, optional
+            Defaults to the beginning of the coordinate array.
+        endframeno : int, optional
+            Defaults to the end of the coordinate array.
+
+        Returns
+        -------
+        Numpy Array
+            Sequence of numbers, each with a coordinate median.
+
+        """
+        coordgen = self.iter_arrays(startindex=startframeno,
+                                    endindex=endframeno)
+        return np.array([np.median(c,0) if c.size>0 else (np.nan, np.nan)
                          for c in coordgen])
 
 
