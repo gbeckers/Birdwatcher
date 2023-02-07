@@ -121,8 +121,7 @@ class BackgroundSubtractorKNN(BaseBackgroundSubtractor):
         Value 0 in the mask always means background, 255 means foreground.
 
     """
-
-    _initparams = {}
+    
     _setparams = {'History': 5,
                   'kNNSamples': 10,
                   'NSamples': 6,
@@ -186,7 +185,7 @@ class BackgroundSubtractorMOG2(BaseBackgroundSubtractor):
         Value 0 in the mask always means background, 255 means foreground.
 
     """
-
+    
     _setparams = {'History': 5,
                   'ComplexityReductionThreshold': 0.05,
                   'BackgroundRatio': 0.1,
