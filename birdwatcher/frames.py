@@ -64,7 +64,7 @@ class Frames:
 
         first, frames = peek_iterable(frames)
 
-        framewidth, frameheight, *nchannels = first.shape
+        frameheight, framewidth, *nchannels = first.shape
         if nchannels == []:
             nchannels = [1]
         self._frames = frames
