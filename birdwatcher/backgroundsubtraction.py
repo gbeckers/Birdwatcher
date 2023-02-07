@@ -7,8 +7,8 @@ can be used for example in movement detection. Note that OpenCV's API to
 parameters of these algorithms is inconsistent. Sometimes parameters can be
 provided at instantiation, sometimes you can change them with a method. In
 Birdwatcher you can only provide parameters to background subtractor objects
-at instantiation. The parameter names follow that of OpenCV. The parameter
-names follow those of OpenCV to avoid confusion.
+at instantiation. The parameter names follow those of OpenCV to avoid
+confusion.
 
 """
 # TODO: incorporate the use of https://github.com/andrewssobral/bgslibrary
@@ -92,7 +92,6 @@ class BaseBackgroundSubtractor:
 
 
 class BackgroundSubtractorKNN(BaseBackgroundSubtractor):
-
     """Wraps OpenCV's `BackgroundSubtractorKNN` class. Parameter names follow
     those in OpenCV.
 
@@ -155,7 +154,7 @@ class BackgroundSubtractorMOG2(BaseBackgroundSubtractor):
         parameter in the paper.
     NMixtures : int, default=7
         The number of gaussian components in the background model.
-    VarInit : int, default=15.
+    VarInit : int, default=15
         The initial variance of each gaussian component.
     VarMin : int, default=4
         The minimum variance of each gaussian component.
@@ -163,8 +162,7 @@ class BackgroundSubtractorMOG2(BaseBackgroundSubtractor):
         The maximum variance of each gaussian component.
     VarThreshold : int, default=10
         The variance threshold for the pixel-model match. The main threshold
-        on
-        the squared Mahalanobis distance to decide if the sample is well
+        on the squared Mahalanobis distance to decide if the sample is well
         described by the background model or not. Related to Cthr from the
         paper.
     VarThresholdGen : int, default=9

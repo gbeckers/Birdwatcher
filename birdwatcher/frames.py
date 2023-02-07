@@ -239,7 +239,8 @@ class Frames:
         ----------
         points : iterable
             Iterable that generates sequences of rectangle corners ((x1, y1),
-            (x2, y2)) per frame.
+            (x2, y2)) per frame, where the coordinates specify opposite
+            corners (e.g. top-left and bottom-right).
         color : tuple of ints, optional
             Color of rectangle (BGR). The default (255, 100, 0) color is blue.
         thickness : int, default=2
@@ -313,12 +314,11 @@ class Frames:
             Font scale factor that is multiplied by the font-specific base
             size.
         color : (int, int, int), optional
-            Color of circle (BGR). The default (200, 200, 200) color is
-            grey.
+            Font color (BGR). The default (200, 200, 200) color is grey.
         thickness : int, default=2
             Line thickness.
         linetype : int, default=cv2.LINE_AA
-            OpenCV line type of circle boundary.
+            OpenCV line type.
 
         Yields
         ------
@@ -353,12 +353,11 @@ class Frames:
                 Font scale factor that is multiplied by the font-specific base
                 size.
             color : (int, int, int), optional
-                Color of circle (BGR). The default color (200, 200, 200) is
-                grey.
+                Font color (BGR). The default color (200, 200, 200) is grey.
             thickness : int, default=2
                 Line thickness.
             linetype : int, default=cv2.LINE_AA
-                OpenCV line type of circle boundary.
+                OpenCV line type.
 
             Yields
             ------
@@ -376,7 +375,7 @@ class Frames:
         """Yields the locations of non-zero pixels.
 
         If the frame is a color frame, non-zero means that a pixel
-        is does not have the value (0,0,0).
+        does not have the value (0,0,0).
 
         Yields
         ------
@@ -408,7 +407,8 @@ class Frames:
         ----------
         morphtype : {'open', 'erode', 'dilate, 'close', 'gradient', 'tophat',
         'blackhat'}
-            Type of transformation. Default is 'open'.
+            Type of transformation. Default is 'open', which is an erosion
+            followed by a dilation.
         kernelsize : int, default=2
             Size of kernel in 1 dimension.
         iterations : int, default=1

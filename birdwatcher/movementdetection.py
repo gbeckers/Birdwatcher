@@ -48,7 +48,8 @@ def batch_detect_movement(videofilepaths, bgs, nprocesses=6, morphologyex=2,
 
 
 def detect_movement(videofilestream, bgs, morphologyex=2, color=False,
-                    roi=None, nroi=None, analysispath='.', ignore_firstnframes=10,
+                    roi=None, nroi=None, analysispath='.',
+                    ignore_firstnframes=10,
                     overwrite=False, resultvideo=False):
     """Detects movement based on a background subtraction algorithm.
 
