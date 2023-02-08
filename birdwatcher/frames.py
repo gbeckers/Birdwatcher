@@ -11,6 +11,7 @@ to understand the parameters in more depth.
 import numpy as np
 import cv2 as cv
 from functools import wraps
+from pathlib import Path
 
 from .utils import peek_iterable
 
@@ -152,7 +153,6 @@ class Frames:
                                 format=format, codec=codec, pixfmt=pixfmt,
                                 ffmpegpath=ffmpegpath)
         return VideoFileStream(filepath)
-
 
     @frameiterator
     def blur(self, ksize, anchor=(-1,-1), borderType=cv.BORDER_DEFAULT):
@@ -370,6 +370,38 @@ class Frames:
                              fontFace=fontface, fontScale=fontscale,
                              color=color, thickness=thickness,
                              lineType=linetype)
+        
+    def save_nonzero(self, filepath, metadata, overwrite=True):
+        """Save nonzero pixel coordinates (i.e. foreground) as Coordinate 
+        Arrays object.
+
+        Parameters
+        ----------
+        filepath : str
+            Name of the filepath that should be written to.
+        metadata : dict, optional
+        overwrite : bool, default=True
+             Overwrite existing CoordinateArrays or not.
+        
+        Returns
+        -------
+        CoordinateArrays  
+        
+        """  
+        from .coordinatearrays import create_coordarray
+        
+        if Path(filepath).suffix != '.darr':
+            filepath = filepath + '.darr'
+        Path(filepath).parent.mkdir(parents=True, exist_ok=True)
+        coordsarray = create_coordarray(filepath,
+                                        framewidth=self._framewidth,
+                                        frameheight=self._frameheight,
+                                        metadata=metadata,
+                                        overwrite=overwrite)
+        for coords in self.find_nonzero():
+            coordsarray.append(coords)
+            
+        return coordsarray
 
     def find_nonzero(self):
         """Yields the locations of non-zero pixels.
