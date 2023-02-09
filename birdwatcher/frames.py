@@ -371,7 +371,8 @@ class Frames:
                              color=color, thickness=thickness,
                              lineType=linetype)
         
-    def save_nonzero(self, filepath, metadata, overwrite=True):
+    def save_nonzero(self, filepath, metadata, ignore_firstnframes=10, 
+                     overwrite=True):
         """Save nonzero pixel coordinates (i.e. foreground) as Coordinate 
         Arrays object.
 
@@ -380,6 +381,9 @@ class Frames:
         filepath : str
             Name of the filepath that should be written to.
         metadata : dict, optional
+        ignore_firstnframes : int, default=10
+            Do not provide coordinates for the first n frames. These often 
+            have a lot of false positives.
         overwrite : bool, default=True
              Overwrite existing CoordinateArrays or not.
         
@@ -387,20 +391,24 @@ class Frames:
         -------
         CoordinateArrays  
         
-        """  
+        """
         from .coordinatearrays import create_coordarray
         
         if Path(filepath).suffix != '.darr':
             filepath = filepath + '.darr'
         Path(filepath).parent.mkdir(parents=True, exist_ok=True)
+        
         coordsarray = create_coordarray(filepath,
                                         framewidth=self._framewidth,
                                         frameheight=self._frameheight,
                                         metadata=metadata,
                                         overwrite=overwrite)
-        for coords in self.find_nonzero():
-            coordsarray.append(coords)
-            
+        
+        empty = np.zeros((0,2), dtype=np.uint16)
+        coords = (c if i >= ignore_firstnframes else empty for i,c in
+                  enumerate(self.find_nonzero()))
+        coordsarray.iterappend(coords)
+        
         return coordsarray
 
     def find_nonzero(self):

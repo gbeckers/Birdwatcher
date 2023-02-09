@@ -10,7 +10,8 @@ from .utils import derive_filepath
 from ._version import get_versions
 
 __all__ = ['batch_detect_movement', 'detect_movement', 'detect_movementmog2',
-           'detect_movementknn', 'detect_movementlsbp', 'create_movementvideo']
+           'detect_movementknn', 'detect_movementlsbp', 
+           'create_movementvideo']
 
 
 def _f(rar):
@@ -113,18 +114,16 @@ def detect_movement(videofilestream, bgs, morphologyex=2, color=False,
               .apply_backgroundsegmenter(bgs, roi=roi, nroi=nroi))
     if morphologyex is not None:
         frames = frames.morphologyex(kernelsize=morphologyex)
-    cd = create_coordarray(movementpath / 'coords.darr',
-                               framewidth=vfs.framewidth,
-                               frameheight=vfs.frameheight, metadata=metadata,
-                               overwrite=overwrite)
-    empty = np.zeros((0,2), dtype=np.uint16)
-    coords = (c if i >= ignore_firstnframes else empty for i,c in
-              enumerate(frames.find_nonzero()))
-    cd.iterappend(coords)
+    
+    cd = frames.save_nonzero(movementpath / 'coords.darr',
+                             metadata = metadata,
+                             ignore_firstnframes = ignore_firstnframes,
+                             overwrite = overwrite)    
     cc = darr.asarray(movementpath / 'coordscount.darr', cd.get_coordcount(),
                       metadata=metadata, overwrite=True)
     cm = darr.asarray(movementpath / 'coordsmean.darr', cd.get_coordmean(),
                       metadata=metadata, overwrite=True)
+    
     if resultvideo:
         ovfilepath = Path(movementpath) / f'{ vfs.filepath.stem}_movement.mp4'
         cframes = cd.iter_frames(nchannels=3, value=(0, 0, 255))
