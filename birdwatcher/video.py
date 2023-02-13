@@ -258,7 +258,6 @@ class VideoFileStream():
         return get_frameat(self.filepath, time=time, color=color,
                            ffmpegpath=ffmpegpath)
 
-    # TODO use Frames method
     def show(self, startat=None, nframes=None, framerate=None):
         """Shows frames in a video window.
 
@@ -280,12 +279,8 @@ class VideoFileStream():
         """
         if framerate is None:
             framerate = self.avgframerate
-        waitkey = int(round(1000 / framerate))
-        for frame in self.iter_frames(startat=startat, nframes=nframes):
-            cv.imshow('frame', frame)
-            if cv.waitKey(waitkey) & 0xFF == ord('q'):
-                break
-        cv.destroyAllWindows()
+        f = self.iter_frames(startat=startat, nframes=nframes)
+        return f.show(framerate=framerate)
 
 
 def testvideosmall():
