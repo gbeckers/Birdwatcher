@@ -122,7 +122,7 @@ class CoordinateArrays(RaggedArray):
                                  dtype=dtype, value=value)
 
     def tovideo(self, filepath, startframe=0, endframe=None, stepsize=1,
-                framerate=None, scale=None, crf=17, format='mp4',
+                framerate=None, crf=17, scale=None, format='mp4',
                 codec='libx264', pixfmt='yuv420p', ffmpegpath='ffmpeg'):
         """Writes frames based on coordinate info to a video file.
 
@@ -141,12 +141,12 @@ class CoordinateArrays(RaggedArray):
         framerate : int, optional
             framerate of video in frames per second. If None, will look for
             `avgframerate` in metadata.
-        scale : tuple, optional
-            (width, height). The default (None) does not change width and
-            height.
         crf : int, default=17
             Value determines quality of video. The default 17 is high quality.
             Use 23 for good quality.
+        scale : tuple, optional
+            (width, height). The default (None) does not change width and
+            height.
         format : str, default='mp4'
             ffmpeg video format.
         codec : str, default='libx264'

@@ -129,7 +129,7 @@ class Frames:
             Value determines quality of video. The default 23 is good quality.
             Use 17 for high quality.
         scale : tuple, optional
-            (width, height). The default (None) does not change width and
+            (width, height). The default (None) does not change width and    
             height.
         format : str, default='mp4'
             ffmpeg video format.
@@ -775,7 +775,6 @@ class Frames:
         Frames iterator is (partly) empty after using 'show'.
 
         """
-
         waitkey = int(round(1000 / framerate))
         for frame in self._frames:
             cv.imshow('frame', frame)
