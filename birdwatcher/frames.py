@@ -314,7 +314,7 @@ class Frames:
             Font scale factor that is multiplied by the font-specific base
             size.
         color : (int, int, int), optional
-            Font color (BGR). The default (200, 200, 200) color is grey.
+            Font color (BGR). The default (200, 200, 200) color is gray.
         thickness : int, default=2
             Line thickness.
         linetype : int, default=cv2.LINE_AA
@@ -353,7 +353,7 @@ class Frames:
                 Font scale factor that is multiplied by the font-specific base
                 size.
             color : (int, int, int), optional
-                Font color (BGR). The default color (200, 200, 200) is grey.
+                Font color (BGR). The default color (200, 200, 200) is gray.
             thickness : int, default=2
                 Line thickness.
             linetype : int, default=cv2.LINE_AA
@@ -715,6 +715,9 @@ class Frames:
                       offset=(0, 0)):
         """Finds contours in frames.
 
+        Contours can only be performed on gray frames. Use threshold or edge
+        detection before applying contours for optimal results.
+
         Parameters
         ----------
         retrmode : str, optional
@@ -724,25 +727,23 @@ class Frames:
         Yields
         ------
         Generator
-            Iterates over contours.
+            Iterator that generates tuples (contours, hierarchy), with
+            contours as a tuple of arrays, and hierarchy as an array denoting
+            the parent-child relationship between contours.
 
         """
-        retrmode = {
-            'tree': cv.RETR_TREE,
-            'external': cv.RETR_EXTERNAL,
-            'list': cv.RETR_LIST,
-            'ccomp': cv.RETR_CCOMP,
-            'floodfill': cv.RETR_FLOODFILL
-        }[retrmode]
-        apprmethod ={
-            'none': cv.CHAIN_APPROX_NONE,
-            'simple': cv.CHAIN_APPROX_SIMPLE,
-            'tc89_l1': cv.CHAIN_APPROX_TC89_L1,
-            'tc89_kcos': cv.CHAIN_APPROX_TC89_KCOS
-        }[apprmethod]
+        retrmode = {'tree': cv.RETR_TREE,
+                    'external': cv.RETR_EXTERNAL,
+                    'list': cv.RETR_LIST,
+                    'ccomp': cv.RETR_CCOMP,
+                    'floodfill': cv.RETR_FLOODFILL}[retrmode]
+        apprmethod = {'none': cv.CHAIN_APPROX_NONE,
+                      'simple': cv.CHAIN_APPROX_SIMPLE,
+                      'tc89_l1': cv.CHAIN_APPROX_TC89_L1,
+                      'tc89_kcos': cv.CHAIN_APPROX_TC89_KCOS}[apprmethod]
         for frame in self._frames:
-            yield cv.findContours(frame, mode=retrmode,
-                                  method=apprmethod, offset=offset)
+            yield cv.findContours(frame, mode=retrmode, method=apprmethod, 
+                                  offset=offset)
 
     def calc_meanframe(self, dtype=None):
         if self.nchannels == 1:
