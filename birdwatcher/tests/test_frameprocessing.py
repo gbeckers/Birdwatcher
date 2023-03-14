@@ -4,6 +4,14 @@ from numpy.testing import assert_array_equal
 from birdwatcher.frames import Frames, FramesColor, framecolor, framegray
 
 
+colorlist = [framecolor(width=640, height=480, color=(0,0,0)),
+             framecolor(width=640, height=480, color=(1,1,1))]
+
+graylist = [framegray(width=640, height=480, value=0),
+            framegray(width=640, height=480, value=1)]
+
+
+
 class TestFrameColor(unittest.TestCase):
 
     def test_color(self):
@@ -11,28 +19,15 @@ class TestFrameColor(unittest.TestCase):
             self.assertEqual(frame.sum(), 0)
 
 
-class TestFrameIterator(unittest.TestCase):
-
-    def setUp(self):
-        self.colorframes = FramesColor(5, height=480, width=640, color=(0,0,0))
-
-    def test_drawframenumber(self):
-        for frame in self.colorframes.draw_framenumbers():
-            self.assertGreater(frame.sum(), 0)
-
 class TestPeekFrame(unittest.TestCase):
 
-    def setUp(self):
-        self.frame0 = framecolor(width=640, height=480, color=(0,0,0))
-        self.frame1 = framecolor(width=640, height=480, color=(1,1,1))
-
     def test_peekframe(self):
-        frames = Frames([self.frame0, self.frame1])
+        frames = Frames(colorlist)
         frame0 = frames.peek_frame()
-        self.assertEqual(frame0.sum(), self.frame0.sum())
-        framelist = [frame for frame in frames]
-        self.assertEqual(len(framelist), 2) # is the first frame still available?
-        self.assertEqual(framelist[1].sum(), self.frame1.sum())
+        self.assertEqual(frame0.sum(), colorlist[0].sum())
+        outputframes = [frame for frame in frames]
+        self.assertEqual(len(outputframes), 2) # is the first frame still available?
+        self.assertEqual(outputframes[1].sum(), colorlist[1].sum())
 
 
 class TestFindNonZero(unittest.TestCase):
@@ -52,3 +47,17 @@ class TestFindNonZero(unittest.TestCase):
         assert_array_equal(next(Frames([f]).find_nonzero()),
                            np.array([[1, 1], [2, 1], [3, 1]], dtype='int32'))
 
+
+class TestFrameIterator(unittest.TestCase):
+
+    def test_drawframenumber(self):
+        frames = FramesColor(5, height=480, width=640, color=(0,0,0))
+        for frame in frames.draw_framenumbers():
+            self.assertGreater(frame.sum(), 0)
+
+    def test_edgedetection(self):
+        frames = Frames(graylist).edge_detection()
+        self.assertIsInstance(frames, Frames)
+        outputframes = [frame for frame in frames]
+        self.assertEqual(len(outputframes), 2)
+        self.assertTupleEqual(graylist[0].shape, outputframes[0].shape)
