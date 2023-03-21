@@ -1,14 +1,14 @@
 import os
 import unittest
-import numpy as np
-import shutil
 import tempfile
-
+import shutil
 from pathlib import Path
+
+import numpy as np
+from numpy.testing import assert_array_equal
 
 from birdwatcher.coordinatearrays import create_coordarray, \
     open_archivedcoordinatedata, move_coordinatearrays, CoordinateArrays
-
 
 
 class TestCoordinateArrays(unittest.TestCase):
@@ -60,6 +60,11 @@ class TestCoordinateArrays(unittest.TestCase):
     def test_coordmean(self):
         cm = self.ca1.get_coordmean()
         self.assertTupleEqual(tuple(tuple(c) for c in cm), ((2,3),(6,7)))
+
+    def test_coordmedian(self):
+        self.ca1.iterappend([((1,2),(3,4),(8,9))])
+        cmd = self.ca1.get_coordmedian()
+        assert_array_equal(cmd, np.array([[2,3],[6,7],[3,4]]))
 
     def test_open_archived(self):
         ap = self.ca1.datadir.archive(self.temparchivename, overwrite=True)
