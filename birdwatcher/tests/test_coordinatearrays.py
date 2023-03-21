@@ -33,7 +33,7 @@ class TestCoordinateArrays(unittest.TestCase):
             Path(self.temparchivename).unlink()
 
     def test_index(self):
-        self.assertEqual(np.sum((self.ca1[1]-np.array(((5,6),(7,8))))**2), 0)
+        assert_array_equal(self.ca1[1], np.array([[5,6],[7,8]]))
 
     def test_get_frame(self):
         frame = self.ca1.get_frame(1)
@@ -55,11 +55,11 @@ class TestCoordinateArrays(unittest.TestCase):
 
     def test_coordcount(self):
         cc = self.ca1.get_coordcount()
-        self.assertEqual(sum((cc-(2,2))**2), 0)
+        assert_array_equal(cc, np.array([2,2]))
 
     def test_coordmean(self):
         cm = self.ca1.get_coordmean()
-        self.assertTupleEqual(tuple(tuple(c) for c in cm), ((2,3),(6,7)))
+        assert_array_equal(cm, np.array([[2,3],[6,7]]))
 
     def test_coordmedian(self):
         self.ca1.iterappend([((1,2),(3,4),(8,9))])
@@ -69,7 +69,7 @@ class TestCoordinateArrays(unittest.TestCase):
     def test_open_archived(self):
         ap = self.ca1.datadir.archive(self.temparchivename, overwrite=True)
         with open_archivedcoordinatedata(ap) as ca:
-            self.assertEqual(np.sum((ca[1]-self.ca1[1])**2), 0)
+            assert_array_equal(ca[1], self.ca1[1])
 
 
 class TestMoveCoordinateArrays(unittest.TestCase):
