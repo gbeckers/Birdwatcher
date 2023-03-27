@@ -3,8 +3,8 @@ from distutils.core import setup
 import versioneer
 import setuptools
 
-if sys.version_info < (3,6):
-    print("Birdwatcher requires Python 3.6 or higher please upgrade")
+if sys.version_info < (3,8):
+    print("Birdwatcher requires Python 3.8 or higher please upgrade")
     sys.exit(1)
 
 long_description = \
