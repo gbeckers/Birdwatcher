@@ -122,7 +122,7 @@ class CoordinateArrays(RaggedArray):
                                  dtype=dtype, value=value)
 
     def tovideo(self, filepath, startframe=0, endframe=None, stepsize=1,
-                framerate=None, scale=None, crf=17, format='mp4',
+                framerate=None, crf=17, scale=None, format='mp4',
                 codec='libx264', pixfmt='yuv420p', ffmpegpath='ffmpeg'):
         """Writes frames based on coordinate info to a video file.
 
@@ -141,12 +141,12 @@ class CoordinateArrays(RaggedArray):
         framerate : int, optional
             framerate of video in frames per second. If None, will look for
             `avgframerate` in metadata.
-        scale : tuple, optional
-            (width, height). The default (None) does not change width and
-            height.
         crf : int, default=17
             Value determines quality of video. The default 17 is high quality.
             Use 23 for good quality.
+        scale : tuple, optional
+            (width, height). The default (None) does not change width and
+            height.
         format : str, default='mp4'
             ffmpeg video format.
         codec : str, default='libx264'
@@ -235,7 +235,7 @@ class CoordinateArrays(RaggedArray):
 
         """
         coordgen = self.iter_arrays(startindex=startframeno,
-                                         endindex=endframeno)
+                                    endindex=endframeno)
         return np.array([c.shape[0] for c in coordgen])
 
     def get_coordmean(self, startframeno=0, endframeno=None):
@@ -255,8 +255,29 @@ class CoordinateArrays(RaggedArray):
 
         """
         coordgen = self.iter_arrays(startindex=startframeno,
-                                         endindex=endframeno)
+                                    endindex=endframeno)
         return np.array([c.mean(0) if c.size>0 else (np.nan, np.nan)
+                         for c in coordgen])
+
+    def get_coordmedian(self, startframeno=0, endframeno=None):
+        """Get the median of the coordinates per frame.
+
+        Parameters
+        ----------
+        startframeno : int, optional
+            Defaults to the beginning of the coordinate array.
+        endframeno : int, optional
+            Defaults to the end of the coordinate array.
+
+        Returns
+        -------
+        Numpy Array
+            Sequence of numbers, each with a coordinate median.
+
+        """
+        coordgen = self.iter_arrays(startindex=startframeno,
+                                    endindex=endframeno)
+        return np.array([np.median(c,0) if c.size>0 else (np.nan, np.nan)
                          for c in coordgen])
 
 

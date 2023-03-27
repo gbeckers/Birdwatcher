@@ -11,6 +11,7 @@ to understand the parameters in more depth.
 import numpy as np
 import cv2 as cv
 from functools import wraps
+from pathlib import Path
 
 from .utils import peek_iterable
 
@@ -64,7 +65,7 @@ class Frames:
 
         first, frames = peek_iterable(frames)
 
-        framewidth, frameheight, *nchannels = first.shape
+        frameheight, framewidth, *nchannels = first.shape
         if nchannels == []:
             nchannels = [1]
         self._frames = frames
@@ -128,7 +129,7 @@ class Frames:
             Value determines quality of video. The default 23 is good quality.
             Use 17 for high quality.
         scale : tuple, optional
-            (width, height). The default (None) does not change width and
+            (width, height). The default (None) does not change width and    
             height.
         format : str, default='mp4'
             ffmpeg video format.
@@ -152,7 +153,6 @@ class Frames:
                                 format=format, codec=codec, pixfmt=pixfmt,
                                 ffmpegpath=ffmpegpath)
         return VideoFileStream(filepath)
-
 
     @frameiterator
     def blur(self, ksize, anchor=(-1,-1), borderType=cv.BORDER_DEFAULT):
@@ -184,6 +184,30 @@ class Frames:
         for frame in self._frames:
             yield cv.blur(frame, ksize=ksize, anchor=anchor,
                           borderType=borderType)
+
+    @frameiterator
+    def edge_detection(self, minval=80, maxval=150):
+        """Finds edges (boundaries) in frames.
+
+        Only works on gray frames! Blur frames before applying edge detection
+        for optimal results. Edges are defined by sudden changes in pixel
+        intensity.
+
+        Parameters
+        ----------
+        minval : str, optional
+            Lower threshold for finding smaller edges.
+        maxval : str, optional
+            Higher threshold to determine segments of strong edges.
+
+        Yields
+        ------
+        Frames
+            Iterator that generates frames with edges.
+
+        """
+        for frame in self._frames:
+            yield cv.Canny(frame, minval, maxval)
 
     # FIXME multiple circles per frame?
     @frameiterator
@@ -239,7 +263,8 @@ class Frames:
         ----------
         points : iterable
             Iterable that generates sequences of rectangle corners ((x1, y1),
-            (x2, y2)) per frame.
+            (x2, y2)) per frame, where the coordinates specify opposite
+            corners (e.g. top-left and bottom-right).
         color : tuple of ints, optional
             Color of rectangle (BGR). The default (255, 100, 0) color is blue.
         thickness : int, default=2
@@ -313,12 +338,11 @@ class Frames:
             Font scale factor that is multiplied by the font-specific base
             size.
         color : (int, int, int), optional
-            Color of circle (BGR). The default (200, 200, 200) color is
-            grey.
+            Font color (BGR). The default (200, 200, 200) color is gray.
         thickness : int, default=2
             Line thickness.
         linetype : int, default=cv2.LINE_AA
-            OpenCV line type of circle boundary.
+            OpenCV line type.
 
         Yields
         ------
@@ -353,12 +377,11 @@ class Frames:
                 Font scale factor that is multiplied by the font-specific base
                 size.
             color : (int, int, int), optional
-                Color of circle (BGR). The default color (200, 200, 200) is
-                grey.
+                Font color (BGR). The default color (200, 200, 200) is gray.
             thickness : int, default=2
                 Line thickness.
             linetype : int, default=cv2.LINE_AA
-                OpenCV line type of circle boundary.
+                OpenCV line type.
 
             Yields
             ------
@@ -371,12 +394,52 @@ class Frames:
                              fontFace=fontface, fontScale=fontscale,
                              color=color, thickness=thickness,
                              lineType=linetype)
+        
+    def save_nonzero(self, filepath, metadata, ignore_firstnframes=10, 
+                     overwrite=True):
+        """Save nonzero pixel coordinates (i.e. foreground) as Coordinate 
+        Arrays object.
+
+        Parameters
+        ----------
+        filepath : str
+            Name of the filepath that should be written to.
+        metadata : dict, optional
+        ignore_firstnframes : int, default=10
+            Do not provide coordinates for the first n frames. These often 
+            have a lot of false positives.
+        overwrite : bool, default=True
+             Overwrite existing CoordinateArrays or not.
+        
+        Returns
+        -------
+        CoordinateArrays  
+        
+        """
+        from .coordinatearrays import create_coordarray
+        
+        if Path(filepath).suffix != '.darr':
+            filepath = filepath + '.darr'
+        Path(filepath).parent.mkdir(parents=True, exist_ok=True)
+        
+        coordsarray = create_coordarray(filepath,
+                                        framewidth=self._framewidth,
+                                        frameheight=self._frameheight,
+                                        metadata=metadata,
+                                        overwrite=overwrite)
+        
+        empty = np.zeros((0,2), dtype=np.uint16)
+        coords = (c if i >= ignore_firstnframes else empty for i,c in
+                  enumerate(self.find_nonzero()))
+        coordsarray.iterappend(coords)
+        
+        return coordsarray
 
     def find_nonzero(self):
         """Yields the locations of non-zero pixels.
 
         If the frame is a color frame, non-zero means that a pixel
-        is does not have the value (0,0,0).
+        does not have the value (0,0,0).
 
         Yields
         ------
@@ -408,7 +471,8 @@ class Frames:
         ----------
         morphtype : {'open', 'erode', 'dilate, 'close', 'gradient', 'tophat',
         'blackhat'}
-            Type of transformation. Default is 'open'.
+            Type of transformation. Default is 'open', which is an erosion
+            followed by a dilation.
         kernelsize : int, default=2
             Size of kernel in 1 dimension.
         iterations : int, default=1
@@ -675,6 +739,9 @@ class Frames:
                       offset=(0, 0)):
         """Finds contours in frames.
 
+        Contours can only be performed on gray frames. Use threshold or edge
+        detection before applying contours for optimal results.
+
         Parameters
         ----------
         retrmode : str, optional
@@ -684,25 +751,23 @@ class Frames:
         Yields
         ------
         Generator
-            Iterates over contours.
+            Iterator that generates tuples (contours, hierarchy), with
+            contours as a tuple of arrays, and hierarchy as an array denoting
+            the parent-child relationship between contours.
 
         """
-        retrmode = {
-            'tree': cv.RETR_TREE,
-            'external': cv.RETR_EXTERNAL,
-            'list': cv.RETR_LIST,
-            'ccomp': cv.RETR_CCOMP,
-            'floodfill': cv.RETR_FLOODFILL
-        }[retrmode]
-        apprmethod ={
-            'none': cv.CHAIN_APPROX_NONE,
-            'simple': cv.CHAIN_APPROX_SIMPLE,
-            'tc89_l1': cv.CHAIN_APPROX_TC89_L1,
-            'tc89_kcos': cv.CHAIN_APPROX_TC89_KCOS
-        }[apprmethod]
+        retrmode = {'tree': cv.RETR_TREE,
+                    'external': cv.RETR_EXTERNAL,
+                    'list': cv.RETR_LIST,
+                    'ccomp': cv.RETR_CCOMP,
+                    'floodfill': cv.RETR_FLOODFILL}[retrmode]
+        apprmethod = {'none': cv.CHAIN_APPROX_NONE,
+                      'simple': cv.CHAIN_APPROX_SIMPLE,
+                      'tc89_l1': cv.CHAIN_APPROX_TC89_L1,
+                      'tc89_kcos': cv.CHAIN_APPROX_TC89_KCOS}[apprmethod]
         for frame in self._frames:
-            yield cv.findContours(frame, mode=retrmode,
-                                  method=apprmethod, offset=offset)
+            yield cv.findContours(frame, mode=retrmode, method=apprmethod, 
+                                  offset=offset)
 
     def calc_meanframe(self, dtype=None):
         if self.nchannels == 1:
@@ -735,7 +800,6 @@ class Frames:
         Frames iterator is (partly) empty after using 'show'.
 
         """
-
         waitkey = int(round(1000 / framerate))
         for frame in self._frames:
             cv.imshow('frame', frame)
