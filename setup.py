@@ -46,7 +46,7 @@ setup(
     include_package_data=True,
     url='https://github.com/gbeckers/birdwatcher',
     license='BSD-3',
-    author='Gabriel J.L. Beckers',
+    author='Gabriel J.L. Beckers, Carien Mol',
     author_email='gabriel@gbeckers.nl',
     description='A Python computer vision library for animal behavior',
     long_description=long_description,
