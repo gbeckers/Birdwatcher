@@ -7,9 +7,8 @@ Installation
 Installation Birdwatcher package
 --------------------------------
 
-Birdwatcher depends on Python 3.6 or higher, and a number of libraries. As
-long as there is no official release. It is best to use the github master
-branch. The older (alpha) versions on PyPi are outdated.
+Birdwatcher officially supports Python 3.9 or higher, but older
+Python 3 versions may also work.
 
 **User installation**
 
@@ -20,7 +19,7 @@ branch. The older (alpha) versions on PyPi are outdated.
 3) Create new environment for Birdwatcher (name is up to you, in example
    here 'mybirdwatcher'). We install Jupter lab and ffmpeg at the same time::
 
-    $ conda create -n mybirdwatcher python=3.8 jupyterlab ffmpeg
+    $ conda create -n mybirdwatcher python=3.9 jupyterlab ffmpeg
 
 4) Switch to this new environment:
 

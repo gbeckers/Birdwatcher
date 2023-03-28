@@ -1,8 +1,8 @@
 Release notes
 =============
 
-Master
-------
+Version 0.3
+-----------
 
 Commits by Carien Mol and Gabriel Beckers.
 
