@@ -6,7 +6,7 @@
 Birdwatcher
 ===========
 
-|Github CI Status| |Appveyor Status| |PyPi version| |Docs Status| |Repo Status|
+|Github CI Status| |PyPi version| |Docs Status| |Repo Status|
 |Codecov status|
 
 .. image:: images/banner.gif
@@ -73,8 +73,6 @@ Indices and tables
    :target: https://www.repostatus.org/#active
 .. |Github CI Status| image:: https://github.com/gbeckers/Birdwatcher/actions/workflows/python_package.yml/badge.svg
    :target: https://github.com/gbeckers/Darr/actions/workflows/python_package.yml
-.. |Appveyor Status| image:: https://ci.appveyor.com/api/projects/status/github/gbeckers/darr?svg=true
-   :target: https://ci.appveyor.com/project/gbeckers/birdwatcher
 .. |PyPi version| image:: https://img.shields.io/badge/pypi-0.2.0-orange.svg
    :target: https://pypi.org/project/birdwatcher/
 .. |Docs Status| image:: https://readthedocs.org/projects/birdwatcher/badge/?version=latest
