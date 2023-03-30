@@ -1,12 +1,14 @@
 """This module provides objects and functions for coordinate data.
-Coordinates are pixel positions (x,y). This is a convenient way of storing
-output from image algorithms that determine whether or not a pixel is
-categorized as something (e.g. crossing some threshold). Since the number of
-pixels per frame may be different, we use disk-based ragged arrays from the
-python library Darr to store them. This is not the most disk-space efficient
-way of doing this, but it is fast and the data can easily be read in any
-computing platform. Coordinate files can be archived in compressed form
-(lzma) when data is large.
+Coordinates are pixel positions (x,y) in a Frame. Coordinate Arrays are a
+convenient way of storing output from image algorithms that determine if a
+pixel is categorized as something (e.g. crossing some threshold).
+Information is memory-mapped from disk, because data can easily become very
+large and will not fit in RAM memory. Since the number of pixels per frame may
+be variable, we use Ragged Arrays from the python library Darr to store them.
+This is not the most disk-space efficient way of doing this (no compression),
+but it is fast and the data can easily be read in any scientific computing
+environement (Python, Matlab, R, Mathematica, etc.) Coordinate files can be
+archived in compressed form (lzma) to save disk space.
 
 """
 
