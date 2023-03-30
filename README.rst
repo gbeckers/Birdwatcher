@@ -1,7 +1,7 @@
 Birdwatcher
 ===========
 
-|Github CI Status| |Appveyor Status| |PyPi version| |Docs Status| |Repo Status|
+|Github CI Status| |PyPi version| |Docs Status| |Repo Status|
 |Codecov status|
 
 .. image:: docs/images/banner.gif
@@ -38,9 +38,8 @@ Utrecht University. It is open source, freely available under the `New BSD Licen
 Installation Birdwatcher package
 --------------------------------
 
-Birdwatcher depends on Python 3.6 or higher, and a number of libraries. As
-long as there is no official release. It is best to use the github master
-branch. The older (alpha) versions on PyPi are outdated.
+Birdwatcher officially supports Python 3.9 or higher, but older
+Python 3 versions may also work.
 
 **User installation**
 
@@ -51,7 +50,7 @@ branch. The older (alpha) versions on PyPi are outdated.
 3) Create new environment for Birdwatcher (name is up to you, in example
    here 'mybirdwatcher'). We install Jupter lab and ffmpeg at the same time::
 
-    $ conda create -n mybirdwatcher python=3.8 jupyterlab ffmpeg
+    $ conda create -n mybirdwatcher python=3.9 jupyterlab ffmpeg
 
 4) Switch to this new environment:
 
@@ -96,9 +95,9 @@ To run the test suite:
 
     >>>import birdwatcher as bw
     >>>bw.test()
-    ..................................
+    ........................................
     ----------------------------------------------------------------------
-    Ran 33 tests in 12.788s
+    Ran 40 tests in 21.621s
 
     OK
 
@@ -126,9 +125,7 @@ detection algorithms.
    :target: https://www.repostatus.org/#active
 .. |Github CI Status| image:: https://github.com/gbeckers/Birdwatcher/actions/workflows/python_package.yml/badge.svg
    :target: https://github.com/gbeckers/Birdwatcher/actions/workflows/python_package.yml
-.. |Appveyor Status| image:: https://ci.appveyor.com/api/projects/status/github/gbeckers/darr?svg=true
-   :target: https://ci.appveyor.com/project/gbeckers/birdwatcher
-.. |PyPi version| image:: https://img.shields.io/badge/pypi-0.2.0-orange.svg
+.. |PyPi version| image:: https://img.shields.io/badge/pypi-0.3.0-orange.svg
    :target: https://pypi.org/project/birdwatcher/
 .. |Docs Status| image:: https://readthedocs.org/projects/birdwatcher/badge/?version=latest
    :target: https://birdwatcher.readthedocs.io/en/latest/

@@ -2,7 +2,7 @@
 processing functionality such as measurement, drawing of labels/text and
 saving as video files.
 
-Many methods mirror functions from OpenCV. Doc strings are provided but
+Many methods mirror functions from OpenCV. Docstrings are provided but
 it is a good idea to look at OpenCV's documentation and examples if you want
 to understand the parameters in more depth.
 
@@ -11,6 +11,7 @@ to understand the parameters in more depth.
 import numpy as np
 import cv2 as cv
 from functools import wraps
+from pathlib import Path
 
 from .utils import peek_iterable
 
@@ -20,20 +21,18 @@ __all__ = ['Frames', 'FramesColor', 'FramesGray', 'FramesNoise', 'framecolor',
 def frameiterator(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
-        processingdata = {}
+        processingdata = []
         self = args[0]
-        if hasattr(self, 'get_info'): 
-            if 'processingdata' in self.get_info():
-                processingdata['processingdata'] = self.get_info()    
-            processingdata['methodname'] = func.__name__
-            processingdata['methodargs'] = [str(arg) for arg in args]
-            processingdata['methodkwargs'] = dict((str(key),str(item))
-                                                  for (key, item)
-                                                  in kwargs.items())
+        if hasattr(self, 'get_info'):
+            processingdata = self.get_info().get('processingdata') or []
+        processingdata.append({'methodname': func.__name__,
+                               'methodargs': [str(arg) for arg in args],
+                               'methodkwargs': dict((str(key),str(item))
+                                                    for (key, item)
+                                                    in kwargs.items())})
         return Frames(func(*args, **kwargs), processingdata=processingdata)
     return wrapper
 
-#TODO add some way of easily starting and stopping at arbitrary frame numbers
 class Frames:
     """An iterator of video frames with useful methods.
 
@@ -44,9 +43,9 @@ class Frames:
 
     Parameters
     ----------
-    frames: iterable
-        This can be anything that is iterable and that produces image frames. A
-        numpy array, a VideoFileStream or another Frames object.
+    frames : iterable
+        This can be anything that is iterable and that produces image frames.
+        A numpy array, a VideoFileStream or another Frames object.
 
     Examples
     --------
@@ -66,13 +65,13 @@ class Frames:
 
         first, frames = peek_iterable(frames)
 
-        framewidth, frameheight, *nchannels = first.shape
+        frameheight, framewidth, *nchannels = first.shape
         if nchannels == []:
-            nchannels = 1
+            nchannels = [1]
         self._frames = frames
         self._frameheight = frameheight
         self._framewidth = framewidth
-        self._nchannels = nchannels
+        self._nchannels = nchannels[0]
         self._index = 0
         self._dtype = first.dtype.name
         self.processingdata = processingdata
@@ -104,32 +103,47 @@ class Frames:
                 'framewidth': self.framewidth,
                 'frameheight': self.frameheight,
                 'processingdata': self.processingdata}
-
+    
+    def peek_frame(self):
+        """Returns first frame without removing it.
+        
+        Returns
+        -------
+        numpy ndarray
+            The first frame.
+        """
+        firstframe, self._frames = peek_iterable(self._frames)
+        return firstframe
+        
     def tovideo(self, filepath, framerate, crf=23, scale=None, format='mp4',
                 codec='libx264', pixfmt='yuv420p', ffmpegpath='ffmpeg'):
         """Writes frames to video file.
 
         Parameters
         ----------
-        filepath: str
+        filepath : str
             Name of the videofilepath that should be written to.
-        framerate: int
+        framerate : int
             framerate of video in frames per second.
-        crf: int
-            Value determines quality of video. Default: 23, which is good
-            quality. See ffmpeg documentation. Use 17 for high quality.
-        scale: tuple or None
-            (width, height). If None, do not change width and height.
-            Default: None.
-        format: str
-            ffmpeg video format. Default is 'mp4'. See ffmpeg documentation.
-        codec: str
-            ffmpeg video codec. Default is 'libx264'. See ffmpeg documentation.
-        pixfmt: str
-            ffmpeg pixel format. Default is 'yuv420p'. See ffmpeg documentation.
-        ffmpegpath: str or pathlib.Path
+        crf : int, default=23
+            Value determines quality of video. The default 23 is good quality.
+            Use 17 for high quality.
+        scale : tuple, optional
+            (width, height). The default (None) does not change width and    
+            height.
+        format : str, default='mp4'
+            ffmpeg video format.
+        codec : str, default='libx264'
+            ffmpeg video codec.
+        pixfmt : str, default='yuv420p'
+            ffmpeg pixel format.
+        ffmpegpath : str or pathlib.Path, optional
             Path to ffmpeg executable. Default is `ffmpeg`, which means it
             should be in the system path.
+
+        Notes
+        -----
+        See ffmpeg documentation for more information.
 
         """
         from .ffmpeg import arraytovideo
@@ -140,24 +154,22 @@ class Frames:
                                 ffmpegpath=ffmpegpath)
         return VideoFileStream(filepath)
 
-
     @frameiterator
     def blur(self, ksize, anchor=(-1,-1), borderType=cv.BORDER_DEFAULT):
         """Blurs frames using the normalized box filter.
 
         Parameters
         ----------
-        ksize: (int, int)
-            Kernel size. Tuple of ints.
-        anchor: (int, int)
+        ksize : (int, int)
+            Kernel size. Tuple of integers.
+        anchor : (int, int), optional
             Anchor point. Default value (-1,-1) means that the anchor is at
             the kernel center.
-        borderType: int
+        borderType : int, default=cv.BORDER_DEFAULT
             Border mode used to extrapolate pixels outside of the image.
-            Default: 4.
 
-        Returns
-        -------
+        Yields
+        ------
         Frames
             Iterator that generates blurred frames.
 
@@ -173,6 +185,30 @@ class Frames:
             yield cv.blur(frame, ksize=ksize, anchor=anchor,
                           borderType=borderType)
 
+    @frameiterator
+    def edge_detection(self, minval=80, maxval=150):
+        """Finds edges (boundaries) in frames.
+
+        Only works on gray frames! Blur frames before applying edge detection
+        for optimal results. Edges are defined by sudden changes in pixel
+        intensity.
+
+        Parameters
+        ----------
+        minval : str, optional
+            Lower threshold for finding smaller edges.
+        maxval : str, optional
+            Higher threshold to determine segments of strong edges.
+
+        Yields
+        ------
+        Frames
+            Iterator that generates frames with edges.
+
+        """
+        for frame in self._frames:
+            yield cv.Canny(frame, minval, maxval)
+
     # FIXME multiple circles per frame?
     @frameiterator
     def draw_circles(self, centers, radius=6, color=(255, 100, 0),
@@ -184,27 +220,26 @@ class Frames:
 
         Parameters
         ----------
-        centers: iterable
+        centers : iterable
             Iterable that generate center coordinates (x, y) of the circles
-        radius: int
-            Radius of circle. Default 4.
-        color: tuple of ints
-            Color of circle (r, g, b). Default (255, 100, 0)
-        thickness: int
-            Line thickness. Default 2.
-        linetype: int
-            OpenCV line type of circle boundary. Default cv2.LINE_AA
-        shift: int
+        radius : int, default=6
+            Radius of circle.
+        color : tuple of ints, optional
+            Color of circle (BGR). The default (255, 100, 0) color is blue.
+        thickness : int, default=2
+            Line thickness.
+        linetype : int, default=cv2.LINE_AA
+            OpenCV line type of circle boundary.
+        shift : int, default=0
             Number of fractional bits in the coordinates of the center and in
-            the radius value. Default 0.
+            the radius value.
 
-        Returns
-        -------
+        Yields
+        ------
         Frames
-            Iterator that generates frames with circles
+            Iterator that generates frames with circles.
 
         """
-
         for frame, center in zip(self._frames, centers):
             center = np.asanyarray(center)
             if not np.isnan(center).any():
@@ -219,67 +254,70 @@ class Frames:
     @frameiterator
     def draw_rectangles(self, points, color=(255, 100, 0),
                      thickness=2, linetype=cv.LINE_AA, shift=0):
-        """Draws circles on frames.
+        """Draws rectangles on frames.
 
-        Centers should be an iterable that has a length that corresponds to
+        Points should be an iterable that has a length that corresponds to
         the number of frames.
 
         Parameters
         ----------
-        points: iterable
+        points : iterable
             Iterable that generates sequences of rectangle corners ((x1, y1),
-            (x2, y2)) per frame.
-        color: tuple of ints
-            Color of rectangle (r, g, b). Default (255, 100, 0)
-        thickness: int
-            Line thickness. Default 2.
-        linetype: int
-            OpenCV line type of rectangle boundary. Default cv2.LINE_AA
-        shift: int
-            Number of fractional bits in the  point coordinates. Default 0.
+            (x2, y2)) per frame, where the coordinates specify opposite
+            corners (e.g. top-left and bottom-right).
+        color : tuple of ints, optional
+            Color of rectangle (BGR). The default (255, 100, 0) color is blue.
+        thickness : int, default=2
+            Line thickness.
+        linetype : int, default=cv2.LINE_AA
+            OpenCV line type of rectangle boundary.
+        shift : int, default=0
+            Number of fractional bits in the  point coordinates.
 
-        Returns
-        -------
+        Yields
+        ------
         Frames
-            Iterator that generates frames with rectangles
+            Iterator that generates frames with rectangles.
 
         """
-
         for frame, framepoints in zip(self._frames, points):
             for (pt1, pt2) in framepoints:
                 yield cv.rectangle(frame, pt1=pt1, pt2=pt2, color=color,
                                 thickness=thickness, lineType=linetype,
                                 shift=shift)
+
+    @frameiterator
+    def togray(self):
+        """Converts color frames to gray frames using OpenCV.
+
+        Yields
+        ------
+        Frames
+            Iterator that generates gray frames.
+
+        """
+        for frame in self._frames:
+            if frame.ndim == 3:
+                yield cv.cvtColor(frame, cv.COLOR_BGR2GRAY)
             else:
                 yield frame
 
-    #FIXME check if input is color
-    @frameiterator
-    def togray(self):
-        """Converts color frames to gray frames
-
-        Returns
-        -------
-        Frames
-
-        """
-        for frame in self._frames:
-            yield cv.cvtColor(frame, cv.COLOR_BGR2GRAY)
-
-    # FIXME check if input is gray
     @frameiterator
     def tocolor(self):
-        """Converts gray frames to color frames
+        """Converts gray frames to color frames using OpenCV.
 
-        Returns
-        -------
+        Yields
+        ------
         Frames
+            Iterator that generates color frames.
 
         """
         for frame in self._frames:
-            yield cv.cvtColor(frame, cv.COLOR_GRAY2BGR)
+            if frame.ndim == 2:
+                yield cv.cvtColor(frame, cv.COLOR_GRAY2BGR)
+            else:
+                yield frame
 
-    # FIXME use draw_text
     @frameiterator
     def draw_framenumbers(self, startat=0, org=(2, 25),
                           fontface=cv.FONT_HERSHEY_SIMPLEX,
@@ -289,26 +327,27 @@ class Frames:
 
         Parameters
         ----------
-        startat: int
-            The number to start counting at. Default 0
-        org: 2-tuple of ints
-            Bottom-left corner of the text string in the image.
-        fontface: OpenCV font type
-            Default cv.FONT_HERSHEY_SIMPLEX
-        fontscale: float
+        startat : int, optional
+            The number to start counting at.
+        org : (int, int), optional
+            A tuple of ints (horizontal coordinate value, vertical coordinate
+            value) indicates where to draw the framenumbers. The default (2,
+            25) draws numbers in the top left corner of the image.
+        fontface : OpenCV font type, default=cv.FONT_HERSHEY_SIMPLEX
+        fontscale : float, optional
             Font scale factor that is multiplied by the font-specific base
             size.
-        color: tuple of ints
-            Color of circle (r, g, b). Default (255, 100, 0)
-        thickness: int
-            Line thickness. Default 2.
-        linetype: int
-            OpenCV line type of circle boundary. Default cv2.LINE_AA
+        color : (int, int, int), optional
+            Font color (BGR). The default (200, 200, 200) color is gray.
+        thickness : int, default=2
+            Line thickness.
+        linetype : int, default=cv2.LINE_AA
+            OpenCV line type.
 
-        Returns
-        -------
-        iterator
-            Iterator that generates frames with frame numbers
+        Yields
+        ------
+        Frames
+            Iterator that generates frames with frame numbers.
 
         """
         for frameno, frame in enumerate(self._frames):
@@ -321,53 +360,96 @@ class Frames:
     def draw_text(self, textiterator, org=(2, 25),
                   fontface=cv.FONT_HERSHEY_SIMPLEX, fontscale=1,
                   color=(200, 200, 200), thickness=2, linetype=cv.LINE_AA):
-        """Draws the frame number on frames.
+        """Draws text on frames.
 
             Parameters
             ----------
-            textiterator: iterable
-                Someting that you can iterate over and that produces text
-                for each frame
-            org: 2-tuple of ints
-                Bottom-left corner of the text string in the image.
-            fontface: OpenCV font type
-                Default cv.FONT_HERSHEY_SIMPLEX
-            fontscale: float
+            textiterator : iterable
+                Something that you can iterate over and that produces text
+                for each frame.
+            org : (int, int), optional
+                A tuple of ints (horizontal coordinate value, vertical
+                coordinate value) indicates where to draw the text. The
+                default (2, 25) draws text in the top left corner of the
+                image.
+            fontface : OpenCV font type, default=cv.FONT_HERSHEY_SIMPLEX
+            fontscale : float, optional
                 Font scale factor that is multiplied by the font-specific base
                 size.
-            color: tuple of ints
-                Color of circle (r, g, b). Default (200, 200, 200)
-            thickness: int
-                Line thickness. Default 2.
-            linetype: int
-                OpenCV line type of circle boundary. Default cv2.LINE_AA
+            color : (int, int, int), optional
+                Font color (BGR). The default color (200, 200, 200) is gray.
+            thickness : int, default=2
+                Line thickness.
+            linetype : int, default=cv2.LINE_AA
+                OpenCV line type.
 
-            Returns
-            -------
-            iterator
-                Iterator that generates frames with frame numbers
+            Yields
+            ------
+            Frames
+                Iterator that generates frames with text.
 
         """
-
         for frame, text in zip(self._frames, textiterator):
             yield cv.putText(frame, str(text), org=org,
                              fontFace=fontface, fontScale=fontscale,
                              color=color, thickness=thickness,
                              lineType=linetype)
+        
+    def save_nonzero(self, filepath, metadata, ignore_firstnframes=10, 
+                     overwrite=True):
+        """Save nonzero pixel coordinates (i.e. foreground) as Coordinate 
+        Arrays object.
 
-    # FIXME should this be a coordinate iterator?
-    @frameiterator
+        Parameters
+        ----------
+        filepath : str
+            Name of the filepath that should be written to.
+        metadata : dict, optional
+        ignore_firstnframes : int, default=10
+            Do not provide coordinates for the first n frames. These often 
+            have a lot of false positives.
+        overwrite : bool, default=True
+             Overwrite existing CoordinateArrays or not.
+        
+        Returns
+        -------
+        CoordinateArrays  
+        
+        """
+        from .coordinatearrays import create_coordarray
+        
+        if Path(filepath).suffix != '.darr':
+            filepath = filepath + '.darr'
+        Path(filepath).parent.mkdir(parents=True, exist_ok=True)
+        
+        coordsarray = create_coordarray(filepath,
+                                        framewidth=self._framewidth,
+                                        frameheight=self._frameheight,
+                                        metadata=metadata,
+                                        overwrite=overwrite)
+        
+        empty = np.zeros((0,2), dtype=np.uint16)
+        coords = (c if i >= ignore_firstnframes else empty for i,c in
+                  enumerate(self.find_nonzero()))
+        coordsarray.iterappend(coords)
+        
+        return coordsarray
+
     def find_nonzero(self):
         """Yields the locations of non-zero pixels.
 
-        Returns
-        -------
-        Iterator
-            Iterates over a sequence of shape (N, 2) arrays, where N is the
-            number of frames.
+        If the frame is a color frame, non-zero means that a pixel
+        does not have the value (0,0,0).
+
+        Yields
+        ------
+        Iterator that generates shape (N, 2) arrays, where N is the number
+            of non-zero pixels.
 
         """
         for frame in self._frames:
+            if frame.ndim == 3:
+                frame = (frame!=0).sum(axis=2, dtype=frame.dtype)
             idx = cv.findNonZero(frame)
             if idx is None:
                 idx = np.zeros((0,2), dtype=np.uint16)
@@ -387,18 +469,19 @@ class Frames:
 
         Parameters
         ----------
-        morphtype: str
-            Type of transformation. Choose from 'erode', 'dilate', 'open',
-            'close', 'gradient', 'tophat', 'blackhat'. Default: 'open'.
-        kernelsize: int
-            Size of kernel in 1 dimension. Default 2.
-        iterations: int
+        morphtype : {'open', 'erode', 'dilate, 'close', 'gradient', 'tophat',
+        'blackhat'}
+            Type of transformation. Default is 'open', which is an erosion
+            followed by a dilation.
+        kernelsize : int, default=2
+            Size of kernel in 1 dimension.
+        iterations : int, default=1
             Number of times erosion and dilation are applied.
 
-        Returns
-        -------
+        Yields
+        ------
         Frames
-            Iterates over sequence of transformed image frames.
+            Iterator that generates transformed image frames.
 
         """
         morphtypes={'erode': cv.MORPH_ERODE,
@@ -423,20 +506,20 @@ class Frames:
 
         Parameters
         ----------
-        alpha: float
+        alpha : float
             Weight of the frames of self.
-        frames: frame iterator
+        frames : frame iterator
             The other source of input frames.
-        beta: float
+        beta : float
             Weight of the frames of the other frame iterator, specified by
             the `frames` parameter.
-        gamma: float
+        gamma : float, optional
             Scalar added to each sum.
 
-        Returns
-        -------
+        Yields
+        ------
         Frames
-            Iterates over sequence of summed image frames.
+            Iterator that generates summed image frames.
 
         """
         for frame1, frame2 in zip(self._frames, frames):
@@ -450,30 +533,49 @@ class Frames:
 
         Parameters
         ----------
-        bgs: Subclass of BaseBackgroundSubtractor
+        bgs : Subclass of BaseBackgroundSubtractor
             Instance of one of Birdwatcher's BackgroundSubtractor classes,
             such as BackgroundSubtractorMOG2.
-        fgmask: numpy array image
+        fgmask : numpy array image, optional
             The output foreground mask as an 8-bit binary image.
-        learningRate: float
+        learningRate : float, optional
             The value between 0 and 1 that indicates how fast the background
-            model is learnt. Negative parameter value makes the algorithm to
-            use some automatically chosen learning rate. 0 means that the
-            background model is not updated at all, 1 means that the background
-            model is completely reinitialized from the last frame.
-        roi: (int, int, int, int) or None
+            model is learnt. The default negative parameter value (-1.0) makes
+            the algorithm to use some automatically chosen learning rate. 0
+            means that the background model is not updated at all, 1 means
+            that the background model is completely reinitialized from the
+            last frame.
+        roi : (int, int, int, int), optional
             Region of interest. Only look at this rectangular region. h1,
-            h2, w1, w2. Default None.
+            h2, w1, w2.
+        nroi : (int, int, int, int), optional
+            Not region of interest. Exclude this rectangular region. h1,
+            h2, w1, w2.
 
-        Returns
-        -------
+        Yields
+        ------
         Frames
-            Iterates over sequence of foreground masks.
+            Iterator that generates foreground masks.
 
         """
-        return bgs.iter_apply(self._frames, fgmask=fgmask,
-                              learningRate=learningRate, roi=roi,
-                              nroi=nroi)
+        if roi is not None:
+            firstframe = self.peek_frame()
+            completeframe = np.zeros((firstframe.shape[0],
+                                      firstframe.shape[1]), dtype=np.uint8)
+            h1,h2,w1,w2 = roi
+
+        for frame in self._frames:
+            if roi is not None:
+                frame = frame[h1:h2, w1:w2]
+            mask = bgs.apply(frame=frame, fgmask=fgmask,
+                             learningRate=learningRate)
+            if roi is not None:
+                completeframe[h1:h2, w1:w2] = mask
+                mask = completeframe
+            if nroi is not None:
+                h1,h2,w1,w2 = nroi
+                mask[h1:h2, w1:w2] = 0
+            yield mask
 
     @frameiterator
     def crop(self, h1, h2, w1, w2):
@@ -481,19 +583,19 @@ class Frames:
 
         Parameters
         ----------
-        h1: int
-            Top pixel rows
-        h2: int
-            Bottom pixel row
-        w1: int
-            Left pixel column
-        w2: int
-            Right pixel colum
+        h1 : int
+            Top pixel rows.
+        h2 : int
+            Bottom pixel row.
+        w1 : int
+            Left pixel column.
+        w2 : int
+            Right pixel colum.
 
-        Returns
-        -------
+        Yields
+        ------
         Frames
-            Iterates over sequence of cropped frames.
+            Iterator that generates cropped frames.
 
         """
         for frame in self._frames:
@@ -505,14 +607,14 @@ class Frames:
 
         Parameters
         ----------
-        frame: ndarray frame
+        frame : ndarray frame
             Fixed image frame that will be subtracted from each frame of the
             frame iterator.
 
-        Returns
-        -------
+        Yields
+        ------
         Frames
-            Iterates over sequence of absolute difference frames.
+            Iterator that generates absolute difference frames.
 
         """
         for frame_self in self._frames:
@@ -524,21 +626,20 @@ class Frames:
 
         Parameters
         ----------
-        thresh: int
-        	threshold value.
-        maxval: int
+        thresh : int
+            Threshold value.
+        maxval : int, default=255
         	Maximum value to use with the THRESH_BINARY and THRESH_BINARY_INV
-        	thresholding types. Default 255
-        threshtype: int
-        	Thresholding type. Choose from 'binary', 'binary_inv', 'trunc',
-            'tozero', 'tozero_inv', 'mask', 'otsu', 'triangle'. Default:
-            'tozero', which means that everything below `thresh` will be set
-            to zero. See doc OpenCV.
+            thresholding types.
+        threshtype : {'tozero', 'tozero_inv', 'binary', 'binary_inv', 'trunc',
+                     'mask', 'otsu', 'triangle'}, optional
+            Thresholding type. The default is 'tozero', which means that
+            everything below `thresh` will be set to zero. See doc OpenCV.
 
-        Returns
-        -------
+        Yields
+        ------
         Frames
-            Iterates over sequence of thresholded frames.
+            Iterator that generates thresholded frames.
 
         """
         threshtypes = {
@@ -562,23 +663,24 @@ class Frames:
 
         Parameters
         ----------
-        dsize: tuple
+        dsize : tuple
             Destination size (width, height).
-        interpolation: str
-            interpolation method:
-            nearest - a nearest-neighbor interpolation
-            linear - a bilinear interpolation (used by default)
+        interpolation : {'linear', 'nearest', 'area', 'cubic', 'lanczos4'},
+                        optional
+            Interpolation method:
+            linear - a bilinear interpolation (used by default).
+            nearest - a nearest-neighbor interpolation.
             area - resampling using pixel area relation. It may be a preferred
             method for image decimation, as it gives moire-free
             results. But when the image is zoomed, it is similar to
             the nearest method.
-            cubic - a bicubic interpolation over 4x4 pixel neighborhood
-            lanczos4 - a Lanczos interpolation over 8x8 pixel neighborhood
+            cubic - a bicubic interpolation over 4x4 pixel neighborhood.
+            lanczos4 - a Lanczos interpolation over 8x8 pixel neighborhood.
 
-        Returns
-        -------
+        Yields
+        ------
         Frames
-            Iterates over sequence of thresholded frames.
+            Iterator that generates resized frames.
 
         """
         interptypes = {
@@ -599,25 +701,26 @@ class Frames:
 
         Parameters
         ----------
-        fx: float
+        fx : float
             Scale factor along the horizontal axis.
-        fy: float
+        fy : float
             Scale factor along the vertical axis.
-        interpolation: str
-            interpolation method:
-            nearest - a nearest-neighbor interpolation
-            linear - a bilinear interpolation (used by default)
+        interpolation : {'linear', 'nearest', 'area', 'cubic', 'lanczos4'},
+                        optional
+            Interpolation method:
+            linear - a bilinear interpolation (used by default).
+            nearest - a nearest-neighbor interpolation.
             area - resampling using pixel area relation. It may be a preferred
-            method for image decimation, as it gives moire’-free
+            method for image decimation, as it gives moire-free
             results. But when the image is zoomed, it is similar to
             the nearest method.
-            cubic - a bicubic interpolation over 4x4 pixel neighborhood
-            lanczos4 - a Lanczos interpolation over 8x8 pixel neighborhood
+            cubic - a bicubic interpolation over 4x4 pixel neighborhood.
+            lanczos4 - a Lanczos interpolation over 8x8 pixel neighborhood.
 
-        Returns
-        -------
+        Yields
+        ------
         Frames
-            Iterates over sequence of thresholded frames.
+            Iterator that generates resized frames.
 
         """
         interptypes = {
@@ -632,47 +735,47 @@ class Frames:
             yield cv.resize(src=frame, dsize=(0,0), fx=fx, fy=fy,
                             interpolation=interpolation)
 
-    # FIXME should this be a coordinate iterator?
     def find_contours(self, retrmode='tree', apprmethod='simple',
                       offset=(0, 0)):
-        """Finds contrours in frames.
+        """Finds contours in frames.
+
+        Contours can only be performed on gray frames. Use threshold or edge
+        detection before applying contours for optimal results.
 
         Parameters
         ----------
-        retrmode:  str
+        retrmode : str, optional
+        apprmethod : str, optional
+        offset : (int, int), optional
 
-        apprmethod: str
-
-        offset: (int, int)
-
-        Returns
-        -------
-        Iterator
-            Iterates over contours.
+        Yields
+        ------
+        Generator
+            Iterator that generates tuples (contours, hierarchy), with
+            contours as a tuple of arrays, and hierarchy as an array denoting
+            the parent-child relationship between contours.
 
         """
-        retrmode = {
-            'tree': cv.RETR_TREE,
-            'external': cv.RETR_EXTERNAL,
-            'list': cv.RETR_LIST,
-            'ccomp': cv.RETR_CCOMP,
-            'floodfill': cv.RETR_FLOODFILL
-        }[retrmode]
-        apprmethod ={
-            'none': cv.CHAIN_APPROX_NONE,
-            'simple': cv.CHAIN_APPROX_SIMPLE,
-            'tc89_l1': cv.CHAIN_APPROX_TC89_L1,
-            'tc89_kcos': cv.CHAIN_APPROX_TC89_KCOS
-        }[apprmethod]
+        retrmode = {'tree': cv.RETR_TREE,
+                    'external': cv.RETR_EXTERNAL,
+                    'list': cv.RETR_LIST,
+                    'ccomp': cv.RETR_CCOMP,
+                    'floodfill': cv.RETR_FLOODFILL}[retrmode]
+        apprmethod = {'none': cv.CHAIN_APPROX_NONE,
+                      'simple': cv.CHAIN_APPROX_SIMPLE,
+                      'tc89_l1': cv.CHAIN_APPROX_TC89_L1,
+                      'tc89_kcos': cv.CHAIN_APPROX_TC89_KCOS}[apprmethod]
         for frame in self._frames:
-            yield cv.findContours(frame, mode=retrmode,
-                                  method=apprmethod, offset=offset)
+            yield cv.findContours(frame, mode=retrmode, method=apprmethod, 
+                                  offset=offset)
 
     def calc_meanframe(self, dtype=None):
         if self.nchannels == 1:
-            meanframe = framegray(self.frameheight, self.framewidth, value=0, dtype='float64')
+            meanframe = framegray(self.frameheight, self.framewidth, value=0,
+                                  dtype='float64')
         else:
-            meanframe = framecolor(self.frameheight, self.framewidth, color=(0, 0, 0), dtype='float64')
+            meanframe = framecolor(self.frameheight, self.framewidth, color=
+                                   (0, 0, 0), dtype='float64')
         for i, frame in enumerate(self._frames):
             meanframe += frame
         meanframe /= i
@@ -685,15 +788,18 @@ class Frames:
     def show(self, framerate=25):
         """Shows frames in a video window.
 
+        Iterates through Frames and displaying each frame in a seperate
+        window. Press 'q' to quit the video before the end.
+
         Parameters
         ----------
-        framerate
+        framerate : int, default=25
 
-        Returns
-        -------
+        Notes
+        -----
+        Frames iterator is (partly) empty after using 'show'.
 
         """
-
         waitkey = int(round(1000 / framerate))
         for frame in self._frames:
             cv.imshow('frame', frame)
@@ -714,16 +820,17 @@ class FramesColor(Frames):
 
         Parameters
         ----------
-        nframes: int
+        nframes : int
             Number of frames to be produced.
-        width: int
+        width : int
             Width of frame.
-        height: int
+        height : int
             Height of frame.
-        color:
-            Fill value of frame. Default (0, 0, 0) (black).
-        dtype: numpy dtype
-            Dtype of frame. Default `uint8'
+        color : tuple of ints, optional
+            Fill value of frame (r, g, b). The default (0, 0, 0) color is
+            black.
+        dtype : numpy dtype, default='uint8'
+            Dtype of frame.
 
         Returns
         -------
@@ -748,16 +855,16 @@ class FramesGray(Frames):
 
         Parameters
         ----------
-        nframes: int
+        nframes : int
             Number of frames to be produced.
-        width: int
+        width : int
             Width of frame.
-        height: int
+        height : int
             Height of frame.
-        value:
-            Fill value of frame. Default 0 (black).
-        dtype: numpy dtype
-            Dtype of frame. Default `uint8'
+        value : int, optional
+            Fill value of frame. The default (0) is black.
+        dtype : numpy dtype, default='uint8'
+            Dtype of frame.
 
         Returns
         -------
@@ -784,14 +891,14 @@ class FramesNoise(Frames):
 
         Parameters
         ----------
-        nframes: int
+        nframes : int
             Number of frames to be produced.
-        width: int
+        width : int
             Width of frame.
-        height: int
+        height : int
             Height of frame.
-        dtype: numpy dtype
-            Dtype of frame. Default `uint8'
+        dtype : numpy dtype, default='uint8'
+            Dtype of frame.
 
         Returns
         -------
@@ -809,14 +916,14 @@ def framegray(width, height, value=0, dtype='uint8'):
 
     Parameters
     ----------
-    width: int
+    width : int
         Width of frame.
-    height: int
+    height : int
         Height of frame.
-    value:
-        Fill value of frame. Default 0 (black).
-    dtype: numpy dtype
-        Dtype of frame. Default `uint8'
+    value : int, optional
+        Fill value of frame. The default (0) is black.
+    dtype : numpy dtype, default='uint8'
+        Dtype of frame.
 
     Returns
     -------
@@ -831,14 +938,14 @@ def framecolor(width, height, color=(0, 0, 0), dtype='uint8'):
 
     Parameters
     ----------
-    width: int
+    width : int
         Width of frame.
-    height: int
+    height : int
         Height of frame.
-    color:
-        Fill value of frame. Default (0, 0, 0) (black).
-    dtype: numpy dtype
-        Dtype of frame. Default `uint8'
+    color : tuple of ints, optional
+        Fill value of frame (r, g, b). The default (0, 0, 0) color is black.
+    dtype : numpy dtype, default='uint8'
+        Dtype of frame.
 
     Returns
     -------
@@ -854,25 +961,26 @@ def framenoise(width, height, dtype='uint8'):
 
     Parameters
     ----------
-    width: int
+    width : int
         Width of frame.
-    height: int
+    height : int
         Height of frame.
-    dtype: numpy dtype
-        Dtype of frame. Default `uint8'
+    dtype : numpy dtype, default='uint8'
+        Dtype of frame.
 
     Returns
     -------
     numpy ndarray
 
     """
-
     return np.random.randint(0, 255, (height, width, 3), dtype=dtype)
 
 
-def create_frameswithmovingcircle(nframes, width, height, framecolor=(0, 0, 0),
+def create_frameswithmovingcircle(nframes, width, height,
+                                  framecolor=(0, 0, 0),
                                   circlecolor=(255, 100, 0), radius=6,
                                   thickness=2, linetype=8, dtype='uint8'):
+
     frames = FramesColor(nframes=nframes,  width=width, height=height,
                          color=framecolor, dtype=dtype)
     centers = zip(np.linspace(0, width, nframes),

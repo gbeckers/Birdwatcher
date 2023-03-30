@@ -21,12 +21,13 @@ class VideoFileStream():
 
     Parameters
     ----------
-    filepath: str of pathlib.Path
+    filepath : str of pathlib.Path
         Path to videofile.
-    streamnumber: int
+    streamnumber : int, optional
         Video stream number to use as input. Often there is just
-        one video stream present in a video file, but if there are more you
-        can use this parameter to specify which one you want. Default 0.
+        one video stream present in a video file (default=0), but
+        if there are more you can use this parameter to specify
+        which one you want.
 
     Examples
     --------
@@ -56,7 +57,6 @@ class VideoFileStream():
 
         Much of it is provided by ffprobe.
 
-
         Returns
         -------
             Dictionary with info.
@@ -68,10 +68,6 @@ class VideoFileStream():
                 'frameheight': self.frameheight,
                 'formatmetadata': self.formatmetadata,
                 'streammetadata': self.streammetadata}
-
-    @property
-    def _frames(self):
-        return self.iter_frames()
 
     @property
     def avgframerate(self):
@@ -98,7 +94,7 @@ class VideoFileStream():
 
     @property
     def framewidth(self):
-        """width in pixels of frames in video stream."""
+        """Width in pixels of frames in video stream."""
         return self._streammetadata['width']
 
     @property
@@ -111,7 +107,6 @@ class VideoFileStream():
         """tuple (frame width, frame height) in pixels in video stream."""
         return (self.framewidth, self.frameheight)
 
-
     @property
     def nframes(self):
         """Number of frames in video stream as reported in the metadata
@@ -123,23 +118,22 @@ class VideoFileStream():
     def count_frames(self, threads=8, ffprobepath='ffprobe'):
         """Count the number of frames in video file stream.
 
-        This can be necessary as the number of frames reported in th
-        evideo file metadata may not be accurate. This method requires
+        This can be necessary as the number of frames reported in the
+        video file metadata may not be accurate. This method requires
         decoding the whole video stream and may take a lot of time. Use the
         `nframes` property if you trust the video file metadata and want
         fast results.
 
         Parameters
         ----------
-        threads: int
+        threads : int, default=8
             The number of threads you want to devote to decoding.
-
-        ffprobepath: str or Path
+        ffprobepath : str or Path, default='ffprobe'
 
         Returns
         -------
         int
-            The number of frames in video file
+            The number of frames in video file.
 
         """
         return count_frames(self.filepath, threads=threads,
@@ -150,11 +144,12 @@ class VideoFileStream():
 
         Parameters
         ----------
-        outputpath: str | pathlib.Path | None
-            Filename and path to write audio to. Default is None, which
-            means same name as video file, but then with '.wav' extension.
-        overwrite: bool
-            Overwrite if audio file exists or not. Default is False.
+        outputpath : str or pathlib.Path, optional
+            Filename and path to write audio to. The default is None, which
+            means the same name as the video file is used, but then with
+            '.wav' extension.
+        overwrite : bool, default=False
+            Overwrite if audio file exists or not.
 
         """
         filepath = self.filepath
@@ -168,21 +163,25 @@ class VideoFileStream():
 
         Parameters
         ----------
-        startat: str or None
+        startat : str, optional
             If specified, start at this time point in the video file. You
             can use two different time unit formats: sexagesimal
             (HOURS:MM:SS.MILLISECONDS, as in 01:23:45.678), or in seconds.
-            Default is None.
-        nframes: int
+        nframes  : int, optional
             Read a specified number of frames.
-        color: bool
+        color : bool, default=True
             Read as a color frame (3 dimensional) or as a gray frame (2
-            dimensional). Default True.
+            dimensional). Color conversions occur through ffmpeg.
+        ffmpegpath : str or pathlib.Path, optional
+            Path to ffmpeg executable. Default is `ffmpeg`, which means it
+            should be in the system path.
+        reportprogress : bool, default=False
 
-        Returns
-        -------
-        Iterator
-            Generates numpy array frames (Height x width x color channel).
+        Yields
+        ------
+        Frames
+            Iterator that generates numpy array frames (height x width x color
+            channel).
 
         """
         for i,frame in enumerate(iterread_videofile(self.filepath,
@@ -203,11 +202,19 @@ class VideoFileStream():
 
         Parameters
         ----------
-        framenumber: int
+        framenumber : int
             Get the frame `framenumber` from the video stream.
-        color: bool
+        color : bool, default=True
             Read as a color frame (3 dimensional) or as a gray frame (2
-            dimensional). Default True.
+            dimensional).
+        ffmpegpath : str or pathlib.Path, optional
+            Path to ffmpeg executable. Default is `ffmpeg`, which means it
+            should be in the system path.
+
+        Returns
+        -------
+        numpy ndarray
+            The frame at the specified framenumber.
 
         Example
         -------
@@ -215,13 +222,7 @@ class VideoFileStream():
         >>> vfs = bw.testvideosmall()
         >>> frame = vfs.get_frame(500)
 
-        Returns
-        -------
-        numpy ndarray
-            A frame
-
         """
-
         return get_frame(self.filepath, framenumber=framenumber,
                          color=color, ffmpegpath=ffmpegpath)
 
@@ -230,14 +231,21 @@ class VideoFileStream():
 
         Parameters
         ----------
-        time: str
+        time : str
             Get frame at a time point in the video file. You
             can use two different time unit formats: sexagesimal
             (HOURS:MM:SS.MILLISECONDS, as in 01:23:45.678), or in seconds.
-            Default is None.
-        color: bool
+        color : bool, default=True
             Read as a color frame (2 dimensional) or as a gray frame (3
-            dimensional). Default True.
+            dimensional).
+        ffmpegpath : str or pathlib.Path, optional
+            Path to ffmpeg executable. Default is `ffmpeg`, which means it
+            should be in the system path.
+
+        Returns
+        -------
+        numpy ndarray
+            The frame at the specified time.
 
         Example
         -------
@@ -246,38 +254,33 @@ class VideoFileStream():
         >>> frame = vfs.get_frameat('5.05') # at 5 sec and 50 msec
         >>> frame = vfs.get_frameat('00:00:05.05') # same thing
 
-        Returns
-        -------
-        numpy ndarray
-            The frame at the specified time.
-
         """
         return get_frameat(self.filepath, time=time, color=color,
                            ffmpegpath=ffmpegpath)
 
-    # TODO use Frames method
     def show(self, startat=None, nframes=None, framerate=None):
         """Shows frames in a video window.
 
+        The frames of a VideoFileStream are displayed in a seperate window.
+        Press 'q' to quit the video before the end.
+
         Parameters
         ----------
-        startat
-        nframes
-        framerate
-
-        Returns
-        -------
+         startat : str, optional
+            If specified, start at this time point in the video file. You
+            can use two different time unit formats: sexagesimal
+            (HOURS:MM:SS.MILLISECONDS, as in 01:23:45.678), or in seconds.
+        nframes  : int, optional
+            Read a specified number of frames.
+        framerate : int, optional
+            The default framerate is None, which means that the average frame
+            rate of video stream, as reported in the metadata, is used.
 
         """
         if framerate is None:
             framerate = self.avgframerate
-        waitkey = int(round(1000 / framerate))
-        for frame in self.iter_frames(startat=startat, nframes=nframes):
-            cv.imshow('frame', frame)
-            if cv.waitKey(waitkey) & 0xFF == ord('q'):
-                break
-        cv.destroyAllWindows()
-
+        f = self.iter_frames(startat=startat, nframes=nframes)
+        return f.show(framerate=framerate)
 
 
 def testvideosmall():
@@ -300,10 +303,10 @@ def walk_videofiles(dirpath, extension='.avi'):
 
     Parameters
     ----------
-    dirpath: str or Path
+    dirpath : str or Path
         The top-level directory to start at.
-    extension: str
-        Filter on this extension. Default: '.avi'
+    extension : str, default='.avi'
+        Filter on this extension.
 
     """
 

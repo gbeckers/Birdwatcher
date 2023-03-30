@@ -3,32 +3,29 @@ from distutils.core import setup
 import versioneer
 import setuptools
 
-if sys.version_info < (3,6):
-    print("Birdwatcher requires Python 3.6 or higher please upgrade")
+# we follow https://scientific-python.org/specs/spec-0000/
+if sys.version_info < (3,9):
+    print("Birdwatcher requires Python 3.9 or higher please upgrade")
     sys.exit(1)
 
 long_description = \
-"""Birdwatcher is a Python computer vision library for the measurement and
-analysis of animal behavior.
+"""Birdwatcher is a Python computer vision library for analyzing animal behavior
+in a Python scientific computing environment.
 
-The purpose of this library is to provide base functionality for analysing
-animal behavior in a Python scientific computing environment. It
-is not intended as a specialized final product to analyse specific behaviors
-of specific animals, but rather to facilitate working efficiently with
-video data in a scientific Python environment and to apply computer vision
-algorithms. Birdwatcher should help you getting up and running quickly when
-building your own specific analysis code or measurement tools. It provides
+Birdwatcher should help you getting up and running quickly when building
+analysis code or tools for specific measurements. It provides high-level
 functionality that is common in video analysis, such as reading and writing
 videos into and from numpy arrays, applying processing algorithms such as
 background subtraction, morphological transformation, resizing, drawing on
 frames etc. Much of the underlying video and image processing is based on
 `FFmpeg <https://www.ffmpeg.org/>`__ and `OpenCV <https://opencv.org/>`__,
-but Birdwatcher is a lot easier to use for many tasks.
+but Birdwatcher is a lot easier to use for many tasks because its
+higher-level implementation of functionality as compared to these tools.
 
 Despite its name, Birdwatcher is not only for birds. We also successfully
-analyze dog behavior, and it could be used on anything that moves. It is
-being used in our lab but not stable enough yet for general use. More info
-will be provided when a first release is appropriate.
+analyzed dog behavior, and it could be used on anything that moves. It is
+being used in our lab but still under heavy development, and should be
+considered alpha software.
 
 Code can be found on GitHub: https://github.com/gbeckers/Birdwatcher .
 
@@ -49,11 +46,11 @@ setup(
     include_package_data=True,
     url='https://github.com/gbeckers/birdwatcher',
     license='BSD-3',
-    author='Gabriel J.L. Beckers',
+    author='Gabriel J.L. Beckers, Carien Mol',
     author_email='gabriel@gbeckers.nl',
     description='A Python computer vision library for animal behavior',
     long_description=long_description,
-    long_description_content_type="text/markdown",
+    long_description_content_type="text/x-rst",
     requires=['numpy', 'darr', 'opencv'],
     install_requires=['numpy', 'darr','matplotlib', 'opencv-python',
                       'opencv-contrib-python'],
