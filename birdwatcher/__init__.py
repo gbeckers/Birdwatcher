@@ -3,6 +3,7 @@ from .movementdetection import *
 from .backgroundsubtraction import *
 from .coordinatearrays import *
 from .frames import *
+from .parameters import *
 from .utils import *
 try:
     import pypylon
