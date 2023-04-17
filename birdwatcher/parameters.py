@@ -24,7 +24,7 @@ def get_all_combinations(**kwargs):
     return list(product_dict(**kwargs))
 
 
-def apply_all_parameters(vfs, bgs_params, other_settings):
+def apply_all_parameters(vfs, bgs_params, other_settings, startat=None, duration=None):
     """Run movement detection with each set of parameters.
     
     Parameters
@@ -43,11 +43,14 @@ def apply_all_parameters(vfs, bgs_params, other_settings):
     
     """
     
+    nframes = vfs.avgframerate*duration if duration else None
+    
     list_with_dfs = []
 
     for settings in product_dict(**bgs_params, **other_settings):
         
-        frames = vfs.iter_frames(color=settings['color'])
+        frames = vfs.iter_frames(startat=startat, nframes=nframes, 
+                                 color=settings['color'])
         
         if settings['resizebyfactor'] != 1:
             val = settings['resizebyfactor']
@@ -67,7 +70,8 @@ def apply_all_parameters(vfs, bgs_params, other_settings):
         
         # find mean of nonzero coordinates
         coordinates = frames.find_nonzero()
-        coordsmean = np.array([c.mean(0) if c.size>0 else (np.nan, np.nan) for c in coordinates])
+        coordsmean = np.array([c.mean(0) if c.size>0 else (np.nan, np.nan) for 
+                               c in coordinates])
 
         # save coordsmean x,y in pandas DataFrame 
         # with associated settings as column labels
