@@ -24,21 +24,23 @@ def get_all_combinations(**kwargs):
     return list(product_dict(**kwargs))
 
 
-def apply_all_parameters(vfs, bgs_params, other_settings, startat=None, duration=None):
+def apply_all_parameters(vfs, params, startat=None, duration=None):
     """Run movement detection with each set of parameters.
     
     Parameters
     ----------
     vfs : VideoFileStream
         A Birdwatcher VideoFileStream object
-    bgs_params : dict
-        Dictionary wit parameter settings from BackgroundSubtractorMOG2.
-    settings : dict
-        Dictionary contianing the following settings:
-        {'color': [True, False],       # booleans only
-        'resizebyfactor': [1, (2/3)],  # use '1' for no change in size
-        'blur': [1, 10],               # use '1' for no blur
-        'morphologyex': [True]}        # booleans only
+    params : dict
+        Dictionary with parameter settings from the backgroundSubtractorMOG2 
+        and settings for applying color, resizebyfactor, blur and morphologyex 
+        manipulations.
+    startat : str, optional
+        If specified, start at this time point in the video file. You can use 
+        two different time unit formats: sexagesimal 
+        (HOURS:MM:SS.MILLISECONDS, as in 01:23:45.678), or in seconds.
+    duration : int, optional
+        Duration of video fragment in seconds.
     
     
     """
@@ -47,7 +49,7 @@ def apply_all_parameters(vfs, bgs_params, other_settings, startat=None, duration
     
     list_with_dfs = []
 
-    for settings in product_dict(**bgs_params, **other_settings):
+    for settings in product_dict(**params):
         
         frames = vfs.iter_frames(startat=startat, nframes=nframes, 
                                  color=settings['color'])
@@ -61,8 +63,9 @@ def apply_all_parameters(vfs, bgs_params, other_settings, startat=None, duration
             frames = frames.blur((val,val))
         
         # extract bgs settings and apply bgs
-        params = {p:settings[p] for p in bgs_params.keys()}  
-        bgs = BackgroundSubtractorMOG2(**params)
+        bgs_params = BackgroundSubtractorMOG2().get_params()
+        bgs_settings = {p:settings[p] for p in bgs_params.keys()}
+        bgs = BackgroundSubtractorMOG2(**bgs_settings)
         frames = frames.apply_backgroundsegmenter(bgs, learningRate=-1)
         
         if settings['morphologyex']:
