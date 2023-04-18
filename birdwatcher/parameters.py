@@ -87,9 +87,8 @@ def apply_all_parameters(vfs, params, startat=None, duration=None):
     
     # create long-format
     df.index.name = 'framenumber'
-    df_long = df.stack(list(range(df.columns.nlevels)), 
-                       dropna=False).reset_index()  # stack all column level
-    df_long = df_long.rename({0: 'pixel'}, axis=1)
-    df_long
+    df = (df.stack(list(range(df.columns.nlevels)), dropna=False)
+          .reset_index()  # stack all column levels
+          .rename({0: 'pixel'}, axis=1))
 
-    return df_long
+    return df
