@@ -42,9 +42,7 @@ def apply_all_parameters(vfs, settings, startat=None, duration=None):
     duration : int, optional
         Duration of video fragment in seconds.
     
-    
     """
-    
     nframes = vfs.avgframerate*duration if duration else None
     
     list_with_dfs = []
@@ -113,10 +111,42 @@ class Parameterselection():
                 'duration': self.duration}
     
     def get_videofragment(self):
-        """Returns video fragment as frames.
+        """Returns video fragment as Frames.
         
         """
         nframes = self.vfs.avgframerate*self.duration
         return self.vfs.iter_frames(startat=self.startat, nframes=nframes)
+    
+    def get_parameters(self, selection='multi_only'):
+        """Returns the parameter settings used for movement detection.
+
+        Parameters
+        ----------
+        selection : {'all', multi_only'}
+            Specify which selection of parameters is returned:
+            all : returns all parameters and their settings.
+            multi_only : returns only parameters for which multiple values 
+            have been used to run movement detection.
+        
+        Returns
+        ------
+        dict
+            With parameters as keys, and each value contains a list of the 
+            settings used for movement detection.
+
+        """
+        paramkeys = (set(self.df.columns) - 
+                     set(['framenumber', 'pixel', 'coords']))
+        
+        all_parameters = {k:list(self.df[k].unique()) for k in paramkeys}
+        
+        if selection == 'all':
+            return all_parameters
+        elif selection == 'multi_only':
+            return {k:all_parameters[k] for k in paramkeys if 
+                    len(all_parameters[k])>1}
+        else:
+            raise Exception(f"'{selection}' is not recognized. Please "
+                            "choose between 'all' and 'multi_only'.")
 
     return df
