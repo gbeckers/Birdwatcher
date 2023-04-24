@@ -1,4 +1,4 @@
-"""This module contains objects and functions helpfull for determining which settings result in optimal movement detection. 
+"""This module contains objects and functions helpfull for determining which settings result in optimal movement detection.
 
 """
 
@@ -24,14 +24,14 @@ def get_all_combinations(**kwargs):
     return list(product_dict(**kwargs))
 
 
-def apply_all_parameters(vfs, params, startat=None, duration=None):
+def apply_all_parameters(vfs, settings, startat=None, duration=None):
     """Run movement detection with each set of parameters.
     
     Parameters
     ----------
     vfs : VideoFileStream
         A Birdwatcher VideoFileStream object
-    params : dict
+    settings : dict
         Dictionary with parameter settings from the backgroundSubtractorMOG2 
         and settings for applying color, resizebyfactor, blur and morphologyex 
         manipulations.
@@ -49,22 +49,22 @@ def apply_all_parameters(vfs, params, startat=None, duration=None):
     
     list_with_dfs = []
 
-    for settings in product_dict(**params):
+    for setting in product_dict(**settings):
         
         frames = vfs.iter_frames(startat=startat, nframes=nframes, 
-                                 color=settings['color'])
+                                 color=setting['color'])
         
-        if settings['resizebyfactor'] != 1:
-            val = settings['resizebyfactor']
+        if setting['resizebyfactor'] != 1:
+            val = setting['resizebyfactor']
             frames = frames.resizebyfactor(val,val)
         
-        if settings['blur'] != 1:
-            val = settings['blur']
+        if setting['blur'] != 1:
+            val = setting['blur']
             frames = frames.blur((val,val))
         
         # extract bgs settings and apply bgs
         bgs_params = BackgroundSubtractorMOG2().get_params()
-        bgs_settings = {p:settings[p] for p in bgs_params.keys()}
+        bgs_settings = {p:setting[p] for p in bgs_params.keys()}
         bgs = BackgroundSubtractorMOG2(**bgs_settings)
         frames = frames.apply_backgroundsegmenter(bgs, learningRate=-1)
         
@@ -78,8 +78,8 @@ def apply_all_parameters(vfs, params, startat=None, duration=None):
 
         # save coordsmean x,y in pandas DataFrame 
         # with associated settings as column labels
-        settings['coords'] = ['x', 'y']
-        columns = pd.MultiIndex.from_frame(pd.DataFrame(settings))
+        setting['coords'] = ['x', 'y']
+        columns = pd.MultiIndex.from_frame(pd.DataFrame(setting))
         df = pd.DataFrame(coordsmean, columns=columns)
         list_with_dfs.append(df)
         
@@ -90,5 +90,33 @@ def apply_all_parameters(vfs, params, startat=None, duration=None):
     df = (df.stack(list(range(df.columns.nlevels)), dropna=False)
           .reset_index()  # stack all column levels
           .rename({0: 'pixel'}, axis=1))
+    
+    return Parameterselection(df, vfs.filepath, startat, duration)
+
+
+class Parameterselection():
+    """A Pandas dataframe with movement detection results of various parameter 
+    settings associated with a (fragment of a) Videofilestream.
+    
+    
+    """
+    
+    def __init__(self, df, videofilepath, startat, duration):
+        self.df = df
+        self.vfs = VideoFileStream(videofilepath)
+        self.startat = startat
+        self.duration = duration
+        
+    def get_info(self):
+        return {'vfs': str(self.vfs.filepath),
+                'startat': self.startat,
+                'duration': self.duration}
+    
+    def get_videofragment(self):
+        """Returns video fragment as frames.
+        
+        """
+        nframes = self.vfs.avgframerate*self.duration
+        return self.vfs.iter_frames(startat=self.startat, nframes=nframes)
 
     return df
