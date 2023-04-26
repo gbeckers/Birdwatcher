@@ -7,6 +7,7 @@ import numpy as np
 import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
+from pathlib import Path
 
 from .video import VideoFileStream
 from .backgroundsubtraction import BackgroundSubtractorMOG2, \
@@ -89,21 +90,43 @@ def apply_all_parameters(vfs, settings, startat=None, duration=None):
           .reset_index()  # stack all column levels
           .rename({0: 'pixel'}, axis=1))
     
-    return Parameterselection(df, vfs.filepath, startat, duration)
+    return ParameterSelection(df, vfs.filepath, startat, duration)
 
-
-class Parameterselection():
-    """A Pandas dataframe with movement detection results of various parameter 
-    settings associated with a (fragment of a) Videofilestream.
+def load_parameterselection(path):
+    """Load a parameterselection.csv file.
     
+    Parameters
+    ----------
+    path : str
+        Name of the directory where parameterselection.csv is saved.
+    
+    Returns
+    ------
+    ParameterSelection
     
     """
     
-    def __init__(self, df, videofilepath, startat, duration):
+    filepath = Path(path) / 'parameterselection.csv' 
+    df = pd.read_csv(filepath, index_col=0, engine='python')
+    info = eval(df.index.names[0])
+    df.index.name = None
+    
+    return ParameterSelection(df, info['vfs'], info['startat'], 
+                                 info['duration'], path)
+
+
+class ParameterSelection():
+    """A Pandas dataframe with movement detection results of various parameter 
+    settings associated with a (fragment of a) Videofilestream.
+    
+    """
+    
+    def __init__(self, df, videofilepath, startat, duration, path=None):
         self.df = df
         self.vfs = VideoFileStream(videofilepath)
         self.startat = startat
         self.duration = duration
+        self.path = path
         
     def get_info(self):
         return {'vfs': str(self.vfs.filepath),
@@ -149,4 +172,63 @@ class Parameterselection():
             raise Exception(f"'{selection}' is not recognized. Please "
                             "choose between 'all' and 'multi_only'.")
 
-    return df
+    
+    def save_parameters(self, path, foldername=None, overwrite=False):
+        """Save results of all parameter settings as .csv file.
+        
+        Often several rounds of parameter selection per videofragment will be 
+        done with different parameter settings. For this, the same foldername 
+        could be used, in which case a number is added automatically as suffix 
+        to display the round.
+        
+        Parameters
+        ----------
+        path : str
+            Path to disk-based directory that should be written to.
+        foldername : str, optional
+            Name of the folder the data should be written to.
+        overwrite : bool, default=False
+            If False, an integer number (1,2,3,etc.) will be added as suffix 
+            to the foldername, if the filepath already exists.
+        
+        """
+        if foldername is None:
+            foldername = f'params_{self.vfs.filepath.stem}'
+        path = self.create_path(path, foldername, overwrite)
+        
+        # add information header
+        info = self.get_info()
+        
+        # save as .csv file
+        self.df.to_csv(path / 'parameterselection.csv', index_label=info)
+        
+        # return path information
+        self.path = str(path)
+
+
+    def create_path(self, path, foldername, overwrite):
+        """Useful for creating a path with a number added as suffix in case 
+        the folder already exists.
+
+        Parameters
+        ----------
+        path : str
+            Path to disk-based directory that should be written to.
+        foldername : str, optional
+            Name of the folder the data should be written to.
+        overwrite : bool, default=False
+            If False, an integer number (1,2,3,etc.) will be added as suffix 
+            to the foldername, if the filepath already exists. 
+
+        """
+        path = Path(path) / foldername
+
+        if not overwrite:
+            i = 1
+            while path.exists():
+                i += 1
+                path = path.parent / f'{foldername}_{i}'
+
+        Path(path).mkdir(parents=True, exist_ok=overwrite)
+
+        return path
