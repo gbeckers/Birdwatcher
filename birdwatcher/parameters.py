@@ -120,26 +120,26 @@ class ParameterSelection():
     settings associated with a (fragment of a) Videofilestream.
     
     """
-    
+
     def __init__(self, df, videofilepath, startat, duration, path=None):
         self.df = df
         self.vfs = VideoFileStream(videofilepath)
         self.startat = startat
         self.duration = duration
         self.path = path
-        
+
     def get_info(self):
         return {'vfs': str(self.vfs.filepath),
                 'startat': self.startat,
                 'duration': self.duration}
-    
+
     def get_videofragment(self):
         """Returns video fragment as Frames.
         
         """
         nframes = self.vfs.avgframerate*self.duration
         return self.vfs.iter_frames(startat=self.startat, nframes=nframes)
-    
+
     def get_parameters(self, selection='multi_only'):
         """Returns the parameter settings used for movement detection.
 
@@ -172,7 +172,99 @@ class ParameterSelection():
             raise Exception(f"'{selection}' is not recognized. Please "
                             "choose between 'all' and 'multi_only'.")
 
+    def select_data(self, **kwargs):
+        """Returns a copy with a selection of the dataframe.
+        
+        **kwargs can be a dictionary, with keys matching column names. The
+        value of each key will be selected from a copy of the dataframe.
+        
+        """
+        
+        df = self.df.copy()
+        for key, value in kwargs.items():
+            df = df.loc[df[key]==value]
+        
+        return df
+
+    def plot_parameters(self, rows, cols, default_values):
+        """Returns a figure from seaborn with subplots.
+        
+        Usefull to look at different location detection results from two 
+        parameters with various values.
+        
+        Parameters
+        ----------
+        rows : str
+            One parameter from tested with multiple values.
+        cols : str
+            A second parameter with multiple values.
+        default_values : dict
+            All parameters that are tested with multiple settings, should be 
+            added to a dictionary with each parameter as key, and the default 
+            as value.
+        
+        Returns
+        ------
+        FacedGrid
+            A seaborn object managing multiple subplots.
+        """
     
+        other_values = {key:default_values[key] for key in 
+                        default_values.keys()-[rows, cols]}
+        df_selection = self.select_data(**other_values)
+
+        # plot with seaborn
+        g = sns.relplot(x="framenumber", y="pixel", hue="coords", style=None, 
+                        col=cols, row=rows, kind="line", data=df_selection, 
+                        height=3, aspect=2)
+        g.figure.suptitle(str(other_values), fontsize=15, x=0.51, y=1.05)
+
+        return g
+
+    def batch_plot_parameters(self, default_values, overwrite=False):
+        """Saves multiple figures with subplots of all combinations of 
+        parameters.
+        
+        The figures are saved in a folder 'figures' in the same directory as 
+        the associated ParameterSelection file. Multiple rounds of plotting 
+        with different default values can be easily saved in new folders with 
+        a number added to the foldername.
+        
+        Parameters
+        ----------
+        default_values : dict
+            All parameters that are tested with multiple settings, should be 
+            added to a dictionary with each parameter as key, and the default 
+            as value.
+        overwrite : bool, default=False
+            If False, an integer number (1,2,3,etc.) will be added as suffix 
+            to the foldername, if the filepath already exists.
+        
+        """            
+        path = self.create_path(self.path, 'figures', overwrite)
+        
+        # save default values as txt file
+        with open(path / 'default_values.txt', 'w') as f:
+            for key, val in default_values.items():
+                f.write(f"{key} = {val}\n")
+        
+        # plot and save each combination of two parameters
+        settings = self.get_parameters('multi_only')
+        
+        for rows, _ in settings.items():
+            for cols, _ in settings.items():
+                if rows != cols:
+                    g = self.plot_parameters(rows, cols, default_values)
+                    
+                    # save figure
+                    filename = f'{self.vfs.filepath.stem}_{rows}_{cols}.png'
+                    g.savefig(path / filename)
+                    
+                    # close figure
+                    plt.close(g.figure)
+                    
+        print(f"The figures are saved in {path}")
+
     def save_parameters(self, path, foldername=None, overwrite=False):
         """Save results of all parameter settings as .csv file.
         
@@ -204,7 +296,6 @@ class ParameterSelection():
         
         # return path information
         self.path = str(path)
-
 
     def create_path(self, path, foldername, overwrite):
         """Useful for creating a path with a number added as suffix in case 
