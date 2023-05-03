@@ -57,7 +57,7 @@ def apply_all_parameters(vfs, settings, startat=None, duration=None):
             val = setting['resizebyfactor']
             frames = frames.resizebyfactor(val,val)
         
-        if setting['blur'] != 1:
+        if setting['blur']:
             val = setting['blur']
             frames = frames.blur((val,val))
         
