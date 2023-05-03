@@ -120,7 +120,14 @@ class ParameterSelection():
     settings associated with a (fragment of a) Videofilestream.
     
     """
-
+    # colors in BGR
+    colors = [('blue', [255, 0, 0]),
+              ('orange', [0, 100, 255]),
+              ('red', [0, 0, 255]),
+              ('lime', [0, 255, 0]),
+              ('cyan', [255, 255, 0]),
+              ('magenta', [255, 0, 255])]
+    
     def __init__(self, df, videofilepath, startat, duration, path=None):
         self.df = df
         self.vfs = VideoFileStream(videofilepath)
@@ -264,6 +271,59 @@ class ParameterSelection():
                     plt.close(g.figure)
                     
         print(f"The figures are saved in {path}")
+
+    def draw_multiple_circles(self, settings, radius=60, thickness=2):
+        """Returns a Frames object with circles on the videofragment.
+        
+        It is possible to plot multiple circles on the videofragment to see 
+        the results from different parameter settings.
+        
+        Parameters
+        ----------
+        settings : dict
+            All parameters that are tested with multiple settings, should be 
+            added to a dictionary with each parameter as key, and the value(s) 
+            that should be superimposed on the video added as list.
+        radius : int, default=60
+            Radius of circle.
+        thickness : int, default=2
+            Line thickness.
+        
+        Returns
+        ------
+        Frames, DataFrame
+            Iterator that generates frames with multiple circles, and a Pandas 
+            DataFrame with the settings for each color of the circles.
+        
+        """
+        n_combinations = len(get_all_combinations(**settings))
+        n_colors = len(self.colors)
+        if n_combinations > n_colors:
+            raise Exception(
+                f"The number of settings combinations is {n_combinations}, "
+                f"but a maximum of {n_colors} circles can be plotted. Reduce "
+                "the number of setting combinations, or add new colors to "
+                "the class attribute 'colors' to be able to plot more " 
+                "circles.")
+        
+        frames = self.get_videofragment().draw_framenumbers()
+        colorspecs = {}
+        
+        for i, setting in enumerate(product_dict(**settings)):
+            colorspecs[self.colors[i][0]] = setting
+            
+            # select data
+            df_selection = self.select_data(**setting)
+            
+            # transform into iterable
+            iterdata = (df_selection.set_index(['framenumber', 'coords'])
+                        .loc[:, 'pixel'].unstack().values)
+            
+            frames = frames.draw_circles(iterdata, radius=radius,
+                                         color=self.colors[i][1],
+                                         thickness=thickness)
+            
+        return frames, pd.DataFrame(colorspecs)
 
     def save_parameters(self, path, foldername=None, overwrite=False):
         """Save results of all parameter settings as .csv file.
