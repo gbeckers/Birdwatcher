@@ -200,6 +200,16 @@ class ParameterSelection():
             df = df.loc[df[key]==value]
         
         return df
+    
+    def _check_multi_only(self, inputdict):
+        """Check if all parameters that are tested with multiple settings, are 
+        included in the inputdic.
+        
+        """
+        multi_only = self.get_parameters('multi_only')
+        if multi_only.keys() != inputdict.keys():
+            raise Exception("Make sure the input dictionary contains all keys"
+                            f" with multiple values: {multi_only.keys()}")
 
     def plot_parameters(self, rows, cols, default_values):
         """Returns a figure from seaborn with subplots.
@@ -222,8 +232,9 @@ class ParameterSelection():
         ------
         FacedGrid
             A seaborn object managing multiple subplots.
+            
         """
-    
+        self._check_multi_only(default_values)
         other_values = {key:default_values[key] for key in 
                         default_values.keys()-[rows, cols]}
         df_selection = self.select_data(**other_values)
@@ -304,6 +315,8 @@ class ParameterSelection():
             DataFrame with the settings for each color of the circles.
         
         """
+        self._check_multi_only(settings)
+        
         n_combinations = len(get_all_combinations(**settings))
         n_colors = len(self.colors)
         if n_combinations > n_colors:
