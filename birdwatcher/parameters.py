@@ -25,17 +25,22 @@ def get_all_combinations(**kwargs):
     return list(product_dict(**kwargs))
 
 
-def apply_all_parameters(vfs, settings, startat=None, duration=None):
+def apply_all_parameters(vfs, settings, bgs_type=BackgroundSubtractorMOG2, 
+                         startat=None, duration=None):
     """Run movement detection with each set of parameters.
     
     Parameters
     ----------
     vfs : VideoFileStream
-        A Birdwatcher VideoFileStream object
+        A Birdwatcher VideoFileStream object.
     settings : dict
-        Dictionary with parameter settings from the backgroundSubtractorMOG2 
-        and settings for applying color, resizebyfactor, blur and morphologyex 
+        Dictionary with parameter settings from the BackgroundSubtractor and 
+        settings for applying color, resizebyfactor, blur and morphologyex 
         manipulations.
+    bge_type: BackgroundSubtractor
+        This can be any of the BackgroundSubtractors in Birdwatcher, e.g. 
+        BackgroundSubtractorMOG2, BackgroundSubtractorKNN, 
+        BackgroundSubtractorLSBP.
     startat : str, optional
         If specified, start at this time point in the video file. You can use 
         two different time unit formats: sexagesimal 
@@ -62,9 +67,9 @@ def apply_all_parameters(vfs, settings, startat=None, duration=None):
             frames = frames.blur((val,val))
         
         # extract bgs settings and apply bgs
-        bgs_params = BackgroundSubtractorMOG2().get_params()
+        bgs_params = bgs_type().get_params()
         bgs_settings = {p:setting[p] for p in bgs_params.keys()}
-        bgs = BackgroundSubtractorMOG2(**bgs_settings)
+        bgs = bgs_type(**bgs_settings)
         frames = frames.apply_backgroundsegmenter(bgs, learningRate=-1)
         
         if settings['morphologyex']:
@@ -90,7 +95,7 @@ def apply_all_parameters(vfs, settings, startat=None, duration=None):
           .reset_index()  # stack all column levels
           .rename({0: 'pixel'}, axis=1))
     
-    return ParameterSelection(df, vfs.filepath, startat, duration)
+    return ParameterSelection(df, vfs.filepath, str(bgs_type), startat, duration)
 
 def load_parameterselection(path):
     """Load a parameterselection.csv file.
@@ -111,8 +116,8 @@ def load_parameterselection(path):
     info = eval(df.index.names[0])
     df.index.name = None
     
-    return ParameterSelection(df, info['vfs'], info['startat'], 
-                                 info['duration'], path)
+    return ParameterSelection(df, info['vfs'], info['bgs_type'], 
+                              info['startat'], info['duration'], path)
 
 
 class ParameterSelection():
@@ -128,15 +133,18 @@ class ParameterSelection():
               ('cyan', [255, 255, 0]),
               ('magenta', [255, 0, 255])]
     
-    def __init__(self, df, videofilepath, startat, duration, path=None):
+    def __init__(self, df, videofilepath, bgs_type, startat, duration, 
+                 path=None):
         self.df = df
         self.vfs = VideoFileStream(videofilepath)
+        self.bgs_type = bgs_type
         self.startat = startat
         self.duration = duration
         self.path = path
 
     def get_info(self):
         return {'vfs': str(self.vfs.filepath),
+                'bgs_type': self.bgs_type,
                 'startat': self.startat,
                 'duration': self.duration}
 
