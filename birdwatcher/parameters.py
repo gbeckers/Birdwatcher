@@ -21,10 +21,6 @@ def product_dict(**kwargs):
         yield dict(zip(keys, instance))
 
 
-def get_all_combinations(**kwargs):
-    return list(product_dict(**kwargs))
-
-
 class ParameterSelection():
     """A Pandas dataframe with movement detection results of various parameter 
     settings associated with a (fragment of a) Videofilestream.
@@ -198,7 +194,7 @@ class ParameterSelection():
         """
         self._check_multi_only(settings)
         
-        n_combinations = len(get_all_combinations(**settings))
+        n_combinations = len(list(product_dict(**settings)))
         n_colors = len(self.colors)
         if n_combinations > n_colors:
             raise Exception(
