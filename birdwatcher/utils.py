@@ -14,6 +14,16 @@ def datetimestring():
     return time.strftime('%Y%m%d%H%M%S')
 
 
+def product_dict(**kwargs):
+    """Generates a Cartesian product of dictionary values.
+    
+    """
+    keys = kwargs.keys()
+    vals = kwargs.values()
+    for instance in itertools.product(*vals):
+        yield dict(zip(keys, instance))
+
+
 @contextmanager
 def tempdir(dirname='.', keep=False, report=False):
     """Yields a temporary directory which is removed when context is

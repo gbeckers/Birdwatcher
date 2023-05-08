@@ -2,23 +2,15 @@
 
 """
 
-import itertools
 import numpy as np
 import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
 from pathlib import Path
 
+from .utils import product_dict
 from .video import VideoFileStream
-from .backgroundsubtraction import BackgroundSubtractorMOG2, \
-    BackgroundSubtractorKNN, BackgroundSubtractorLSBP
-
-
-def product_dict(**kwargs):
-    keys = kwargs.keys()
-    vals = kwargs.values()
-    for instance in itertools.product(*vals):
-        yield dict(zip(keys, instance))
+from .backgroundsubtraction import BackgroundSubtractorMOG2
 
 
 class ParameterSelection():
