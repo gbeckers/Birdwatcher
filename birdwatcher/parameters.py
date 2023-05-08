@@ -185,16 +185,7 @@ class ParameterSelection():
         
         """
         self._check_multi_only(settings)
-        
-        n_combinations = len(list(product_dict(**settings)))
-        n_colors = len(self.colors)
-        if n_combinations > n_colors:
-            raise Exception(
-                f"The number of settings combinations is {n_combinations}, "
-                f"but a maximum of {n_colors} circles can be plotted. Reduce "
-                "the number of setting combinations, or add new colors to "
-                "the class attribute 'colors' to be able to plot more " 
-                "circles.")
+        self._check_number_of_colorcombinations(settings)
         
         frames = self.get_videofragment().draw_framenumbers()
         colorspecs = {}
@@ -297,6 +288,21 @@ class ParameterSelection():
         if multi_only.keys() != inputdict.keys():
             raise Exception("Make sure the input dictionary contains all keys"
                             f" with multiple values: {multi_only.keys()}")
+    
+    def _check_number_of_colorcombinations(self, settings):
+        """Check if the number of settings combinations does not exceed the
+        number of possible colors.
+        
+        """
+        n_combinations = len(list(product_dict(**settings)))
+        n_colors = len(self.colors)
+        if n_combinations > n_colors:
+            raise Exception(
+                f"The number of settings combinations is {n_combinations}, "
+                f"but a maximum of {n_colors} circles can be plotted. Reduce "
+                "the number of setting combinations, or add new colors to "
+                "the class attribute 'colors' to be able to plot more "
+                "circles.")
 
 
 def apply_all_parameters(vfs, settings, bgs_type=BackgroundSubtractorMOG2, 
