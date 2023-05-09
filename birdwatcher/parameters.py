@@ -7,6 +7,7 @@ import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
 from pathlib import Path
+import json
 
 from .utils import product_dict
 from .video import VideoFileStream
@@ -229,11 +230,11 @@ class ParameterSelection():
             foldername = f'params_{self.vfs.filepath.stem}'
         path = self.create_path(path, foldername, overwrite)
         
-        # add information header
-        info = self.get_info()
+        # add object information to dataframe
+        json_info = json.dumps(self.get_info())
         
         # save as .csv file
-        self.df.to_csv(path / 'parameterselection.csv', index_label=info)
+        self.df.to_csv(path / 'parameterselection.csv', index_label=json_info)
         
         # return path information
         self.path = str(path)
@@ -393,7 +394,7 @@ def load_parameterselection(path):
     """
     filepath = Path(path) / 'parameterselection.csv' 
     df = pd.read_csv(filepath, index_col=0, engine='python')
-    info = eval(df.index.names[0])
+    info = json.loads(df.index.names[0])
     df.index.name = None
     
     return ParameterSelection(df, info['vfs'], info['bgs_type'], 
