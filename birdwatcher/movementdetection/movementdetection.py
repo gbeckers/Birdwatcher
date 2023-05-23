@@ -3,6 +3,8 @@ import numpy as np
 import darr
 
 import birdwatcher as bw
+from birdwatcher.utils import derive_filepath
+
 
 __all__ = ['batch_detect_movement', 'detect_movement', 'detect_movementmog2',
            'detect_movementknn', 'detect_movementlsbp', 
@@ -336,7 +338,7 @@ def create_movementvideo(videofilestream, coordinatearrays,
         raise TypeError(f"`videofilestream` parameter not a VideoFileStream "
                         f"object ({type(videofilestream)}).")
     if videofilepath is None:
-        videofilepath = bw.derive_filepath(vfs.filepath, 'results',
+        videofilepath = derive_filepath(vfs.filepath, 'results',
                                         suffix='.mp4')
     frames = coordinatearrays.iter_frames(nchannels=3, value=(0, 0, 255)).add_weighted(0.8, vfs.iter_frames(), 0.7)
     if draw_framenumbers is not None:

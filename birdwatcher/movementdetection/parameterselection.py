@@ -10,6 +10,7 @@ from pathlib import Path
 import json
 
 import birdwatcher as bw
+from birdwatcher.utils import product_dict
 
 
 class ParameterSelection():
@@ -181,7 +182,7 @@ class ParameterSelection():
 
         frames = self.get_videofragment().draw_framenumbers()
         colorspecs = {}
-        for i, setting in enumerate(bw.product_dict(**settings)):
+        for i, setting in enumerate(product_dict(**settings)):
             colorspecs[self.colors[i][0]] = setting
             df_selection = self._select_data(**setting)
             iterdata = (df_selection.set_index(['framenumber', 'coords'])
@@ -274,7 +275,7 @@ class ParameterSelection():
         number of possible colors.
         
         """
-        n_combinations = len(list(bw.product_dict(**settings)))
+        n_combinations = len(list(product_dict(**settings)))
         n_colors = len(self.colors)
         if n_combinations > n_colors:
             raise Exception(
@@ -312,7 +313,7 @@ def apply_all_parameters(vfs, settings, bgs_type=bw.BackgroundSubtractorMOG2,
     nframes = vfs.avgframerate*duration if duration else None
     list_with_dfs = []
     
-    for setting in bw.product_dict(**settings):
+    for setting in product_dict(**settings):
         frames = vfs.iter_frames(startat=startat, nframes=nframes, 
                                  color=setting['color'])
 

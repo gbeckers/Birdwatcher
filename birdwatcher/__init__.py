@@ -2,7 +2,6 @@ from .video import *
 from .backgroundsubtraction import *
 from .coordinatearrays import *
 from .frames import *
-from .utils import *
 
 from ._version import get_versions
 __version__ = get_versions()['version']
