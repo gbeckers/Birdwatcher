@@ -3,7 +3,6 @@ import numpy as np
 import darr
 
 import birdwatcher as bw
-from birdwatcher._version import get_versions
 
 __all__ = ['batch_detect_movement', 'detect_movement', 'detect_movementmog2',
            'detect_movementknn', 'detect_movementlsbp', 
@@ -104,7 +103,7 @@ def detect_movement(videofilestream, bgs, morphologyex=2, color=False,
     metadata['morphologyex'] = morphologyex
     metadata['roi'] = roi
     metadata['nroi'] = nroi
-    metadata['birdwatcherversion'] = get_versions()['version']
+    metadata['birdwatcherversion'] = bw.__version__
     
     frames = (vfs.iter_frames(color=color)
               .apply_backgroundsegmenter(bgs, roi=roi, nroi=nroi))
