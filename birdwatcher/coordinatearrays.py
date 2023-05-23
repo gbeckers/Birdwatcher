@@ -13,17 +13,18 @@ archived in compressed form (lzma) to save disk space.
 """
 
 import os
+import shutil
+import tarfile
 from contextlib import contextmanager
 from pathlib import Path
-import shutil
-import numpy as np
-import tarfile
 
+import numpy as np
 from darr import RaggedArray, delete_raggedarray, create_raggedarray
 
 from ._version import get_versions
 from .utils import tempdir
 from .frames import frameiterator
+
 
 __all__ = ['CoordinateArrays', 'open_archivedcoordinatedata',
            'create_coordarray']

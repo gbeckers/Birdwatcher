@@ -1,12 +1,11 @@
-import os,sys
+import itertools
+import os, sys
+import pathlib
 import shutil
 import tempfile
-import itertools
-import pathlib
+import time
 from contextlib import contextmanager
 
-
-import time
 
 def datetimestring():
     return time.strftime('%Y%m%d%H%M%S')

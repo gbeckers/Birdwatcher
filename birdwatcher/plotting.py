@@ -5,11 +5,13 @@ in Jupyter, use `%matplotlib inline`
 
 """
 
+import cv2 as cv
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
-import cv2 as cv
+
 
 __all__ = ['imshow_frame']
+
 
 def imshow_frame(frame, fig=None, ax=None, figsize=None, cmap=None,
                  draw_rectangle=None ):

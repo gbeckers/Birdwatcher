@@ -8,15 +8,18 @@ to understand the parameters in more depth.
 
 """
 
-import numpy as np
-import cv2 as cv
 from functools import wraps
 from pathlib import Path
 
+import numpy as np
+import cv2 as cv
+
 from .utils import peek_iterable
+
 
 __all__ = ['Frames', 'FramesColor', 'FramesGray', 'FramesNoise', 'framecolor',
            'framegray', 'framenoise']
+
 
 def frameiterator(func):
     @wraps(func)

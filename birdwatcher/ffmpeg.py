@@ -1,9 +1,11 @@
-import subprocess
-import numpy as np
 import json
+import subprocess
 from pathlib import Path
 
+import numpy as np
+
 from .utils import peek_iterable
+
 
 __all__ = ['arraytovideo']
 

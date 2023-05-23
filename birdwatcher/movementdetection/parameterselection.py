@@ -2,12 +2,13 @@
 
 """
 
+import json
+from pathlib import Path
+
 import numpy as np
 import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
-from pathlib import Path
-import json
 
 import birdwatcher as bw
 from birdwatcher.utils import product_dict
