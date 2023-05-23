@@ -1,2 +1,2 @@
 from .movementdetection import *
-from .parameters import *
+from .parameterselection import *
