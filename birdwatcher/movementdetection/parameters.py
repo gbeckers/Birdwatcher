@@ -9,9 +9,7 @@ import matplotlib.pyplot as plt
 from pathlib import Path
 import json
 
-from .utils import product_dict
-from .video import VideoFileStream
-from .backgroundsubtraction import BackgroundSubtractorMOG2
+import birdwatcher as bw
 
 
 class ParameterSelection():
@@ -30,7 +28,7 @@ class ParameterSelection():
     def __init__(self, df, videofilepath, bgs_type, startat, duration, 
                  path=None):
         self.df = df
-        self.vfs = VideoFileStream(videofilepath)
+        self.vfs = bw.VideoFileStream(videofilepath)
         self.bgs_type = bgs_type
         self.startat = startat
         self.duration = duration
@@ -183,7 +181,7 @@ class ParameterSelection():
 
         frames = self.get_videofragment().draw_framenumbers()
         colorspecs = {}
-        for i, setting in enumerate(product_dict(**settings)):
+        for i, setting in enumerate(bw.product_dict(**settings)):
             colorspecs[self.colors[i][0]] = setting
             df_selection = self._select_data(**setting)
             iterdata = (df_selection.set_index(['framenumber', 'coords'])
@@ -276,7 +274,7 @@ class ParameterSelection():
         number of possible colors.
         
         """
-        n_combinations = len(list(product_dict(**settings)))
+        n_combinations = len(list(bw.product_dict(**settings)))
         n_colors = len(self.colors)
         if n_combinations > n_colors:
             raise Exception(
@@ -287,7 +285,7 @@ class ParameterSelection():
                 "circles.")
 
 
-def apply_all_parameters(vfs, settings, bgs_type=BackgroundSubtractorMOG2, 
+def apply_all_parameters(vfs, settings, bgs_type=bw.BackgroundSubtractorMOG2, 
                          startat=None, duration=None):
     """Run movement detection with each set of parameters.
     
@@ -314,7 +312,7 @@ def apply_all_parameters(vfs, settings, bgs_type=BackgroundSubtractorMOG2,
     nframes = vfs.avgframerate*duration if duration else None
     list_with_dfs = []
     
-    for setting in product_dict(**settings):
+    for setting in bw.product_dict(**settings):
         frames = vfs.iter_frames(startat=startat, nframes=nframes, 
                                  color=setting['color'])
 

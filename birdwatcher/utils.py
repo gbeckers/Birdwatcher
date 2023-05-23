@@ -5,7 +5,8 @@ import itertools
 import pathlib
 from contextlib import contextmanager
 
-__all__ = ['derive_filepath', 'peek_iterable', 'datetimestring']
+__all__ = ['product_dict', 'derive_filepath', 'peek_iterable', 
+           'datetimestring']
 
 
 import time

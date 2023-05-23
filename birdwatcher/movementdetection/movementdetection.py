@@ -2,12 +2,8 @@ from pathlib import Path
 import numpy as np
 import darr
 
-from .video import VideoFileStream
-from .coordinatearrays import create_coordarray
-from .backgroundsubtraction import BackgroundSubtractorMOG2, \
-    BackgroundSubtractorKNN, BackgroundSubtractorLSBP
-from .utils import derive_filepath
-from ._version import get_versions
+import birdwatcher as bw
+from birdwatcher._version import get_versions
 
 __all__ = ['batch_detect_movement', 'detect_movement', 'detect_movementmog2',
            'detect_movementknn', 'detect_movementlsbp', 
@@ -92,7 +88,7 @@ def detect_movement(videofilestream, bgs, morphologyex=2, color=False,
         These are Darr arrays that are disk-based.
 
     """
-    if isinstance(videofilestream, VideoFileStream):
+    if isinstance(videofilestream, bw.VideoFileStream):
         vfs = videofilestream
     else:
         raise TypeError(f"`videofilestream` parameter not a VideoFileStream "
@@ -176,7 +172,7 @@ def detect_movementknn(videofilestream, morphologyex=2, color=False,
         These are Darr arrays that are disk-based.
 
     """
-    bgs = BackgroundSubtractorKNN(**kwargs)
+    bgs = bw.BackgroundSubtractorKNN(**kwargs)
     cd, cc, cm = detect_movement(videofilestream=videofilestream,
                                  bgs=bgs,
                                  morphologyex=morphologyex,
@@ -234,7 +230,7 @@ def detect_movementmog2(videofilestream, morphologyex=2, color=False,
         These are Darr arrays that are disk-based.
 
     """
-    bgs = BackgroundSubtractorMOG2(**kwargs)
+    bgs = bw.BackgroundSubtractorMOG2(**kwargs)
     cd, cc, cm = detect_movement(videofilestream=videofilestream,
                                  bgs=bgs,
                                  morphologyex=morphologyex,
@@ -290,7 +286,7 @@ def detect_movementlsbp(videofilestream, morphologyex=2, color=False,
         These are Darr arrays that are disk-based.
 
     """
-    bgs = BackgroundSubtractorLSBP(**kwargs)
+    bgs = bw.BackgroundSubtractorLSBP(**kwargs)
     cd, cc, cm = detect_movement(videofilestream=videofilestream,
                                  bgs=bgs,
                                  morphologyex=morphologyex,
@@ -335,13 +331,13 @@ def create_movementvideo(videofilestream, coordinatearrays,
         Videofilestream object of the output video.
 
     """
-    if isinstance(videofilestream, VideoFileStream):
+    if isinstance(videofilestream, bw.VideoFileStream):
         vfs = videofilestream
     else:
         raise TypeError(f"`videofilestream` parameter not a VideoFileStream "
                         f"object ({type(videofilestream)}).")
     if videofilepath is None:
-        videofilepath = derive_filepath(vfs.filepath, 'results',
+        videofilepath = bw.derive_filepath(vfs.filepath, 'results',
                                         suffix='.mp4')
     frames = coordinatearrays.iter_frames(nchannels=3, value=(0, 0, 255)).add_weighted(0.8, vfs.iter_frames(), 0.7)
     if draw_framenumbers is not None:
