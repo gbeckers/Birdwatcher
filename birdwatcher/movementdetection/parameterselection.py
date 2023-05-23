@@ -13,6 +13,10 @@ import birdwatcher as bw
 from birdwatcher.utils import product_dict
 
 
+__all__ = ['ParameterSelection', 'apply_all_parameters', 
+           'load_parameterselection', 'product_dict']
+
+
 class ParameterSelection():
     """A Pandas dataframe with movement detection results of various parameter 
     settings associated with a (fragment of a) Videofilestream.
