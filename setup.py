@@ -51,8 +51,8 @@ setup(
     description='A Python computer vision library for animal behavior',
     long_description=long_description,
     long_description_content_type="text/x-rst",
-    install_requires=['numpy', 'darr','matplotlib', 'opencv-python',
-                      'opencv-contrib-python'],
+    install_requires=['numpy', 'pandas', 'matplotlib', 'seaborn', 'darr', 
+                      'opencv-python', 'opencv-contrib-python'],
     data_files=[("", ["LICENSE"])],
     classifiers=[
         "Programming Language :: Python :: 3",
