@@ -50,7 +50,11 @@ class ParameterSelection():
         """Returns video fragment as Frames.
         
         """
-        nframes = self.vfs.avgframerate*self.duration
+        if self.duration is not None:
+            nframes = self.vfs.avgframerate*self.duration
+        else:
+            nframes = None
+        
         return self.vfs.iter_frames(startat=self.startat, nframes=nframes)
 
     def get_parameters(self, selection='multi_only'):
