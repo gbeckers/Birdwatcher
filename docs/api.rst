@@ -13,6 +13,7 @@ Video input from file
 
 .. autofunction:: birdwatcher.testvideosmall
 
+
 Frame processing
 ================
 
@@ -66,7 +67,6 @@ Frames methods
    :members:
 
 
-
 Background subtraction
 ======================
 
@@ -94,22 +94,6 @@ LSBP
    :inherited-members:
 
 
-Movement detection
-==================
-
-.. automodule:: birdwatcher.movementdetection
-
-.. autofunction:: birdwatcher.detect_movement
-
-.. autofunction:: detect_movementmog2
-
-.. autofunction:: detect_movementknn
-
-.. autofunction:: detect_movementlsbp
-
-.. autofunction:: create_movementvideo
-
-
 Coordinate Arrays
 =================
 
@@ -124,6 +108,36 @@ Coordinate Arrays
 .. autofunction:: create_coordarray
 
 
+Movement detection
+==================
+
+Movement detection contains top-level functionality. The classes, methods and functions provided in these submodules, are written to help the user get the most out of Birdwatcher. Also see the notebooks for examples how to use it and  how to find the optimal parameter settings for movement detection.
+
+.. automodule:: birdwatcher.movementdetection.movementdetection
+
+.. autofunction:: birdwatcher.movementdetection.detect_movement
+
+.. autofunction:: birdwatcher.movementdetection.detect_movementmog2
+
+.. autofunction:: birdwatcher.movementdetection.detect_movementknn
+
+.. autofunction:: birdwatcher.movementdetection.detect_movementlsbp
+
+.. autofunction:: birdwatcher.movementdetection.create_movementvideo
+
+Parameter selection
+-------------------
+
+.. automodule:: birdwatcher.movementdetection.parameters
+
+.. autoclass:: birdwatcher.movementdetection.ParameterSelection
+   :members:
+   :inherited-members:
+
+.. autofunction:: birdwatcher.movementdetection.apply_all_parameters
+
+.. autofunction:: birdwatcher.movementdetection.load_parameterselection
+
 
 Plotting
 ========
@@ -132,8 +146,9 @@ Plotting
 
 .. autofunction:: birdwatcher.plotting.imshow_frame
 
+
 Utils
-========
+=====
 
 .. automodule:: birdwatcher.utils
 

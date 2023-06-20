@@ -42,7 +42,9 @@ The following dependencies are automatically taken care of when you
 install Birdwatcher from GitHub using the pip method above:
 
 - numpy
+- pandas
 - matplotlib
+- seaborn
 - darr
 - opencv-python
 - opencv-contrib-python

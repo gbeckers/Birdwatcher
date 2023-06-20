@@ -12,6 +12,7 @@ Commits by Carien Mol and Gabriel Beckers.
 Other changes:
     - `product_dict` function in utils module
     - some restrictions in what is imported automatically via the init file
+    - added more tests
 
 
 Version 0.3
