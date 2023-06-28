@@ -24,8 +24,8 @@ class ParameterSelection():
     
     """
     # colors in BGR
-    colors = [('blue', [255, 0, 0]),
-              ('orange', [0, 100, 255]),
+    colors = [('orange', [0, 100, 255]),
+              ('blue', [255, 0, 0]),
               ('red', [0, 0, 255]),
               ('lime', [0, 255, 0]),
               ('cyan', [255, 255, 0]),
