@@ -149,7 +149,7 @@ class ParameterSelection():
         # save default values as txt file
         with open(path / 'default_values.txt', 'w') as f:
             for key, val in default_values.items():
-                f.write(f"{key} = {val}\n")
+                f.write(f"{key}: {val}\n")
         
         # plot and save each combination of two parameters
         settings = self.get_parameters('multi_only')
@@ -229,6 +229,12 @@ class ParameterSelection():
         # add extra information to saved .csv file
         json_info = json.dumps(self.get_info())
         self.df.to_csv(path / 'parameterselection.csv', index_label=json_info)
+        
+        # save parameter settings as readme file        
+        with open(path / 'readme.txt', 'w') as f:            
+            for key, val in self.get_parameters('all').items():
+                f.write(f"{key}: {val}\n")
+        
 
     def _create_path(self, path, foldername, overwrite):
         """Useful for creating a path with a number added as suffix in case 
