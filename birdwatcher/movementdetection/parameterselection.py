@@ -296,7 +296,7 @@ class ParameterSelection():
 
 
 def apply_all_parameters(vfs, settings, bgs_type=bw.BackgroundSubtractorMOG2, 
-                         startat=None, duration=None):
+                         startat=None, duration=None, reportprogress=50):
     """Run movement detection with each set of parameters.
     
     Parameters
@@ -317,8 +317,17 @@ def apply_all_parameters(vfs, settings, bgs_type=bw.BackgroundSubtractorMOG2,
         (HOURS:MM:SS.MILLISECONDS, as in 01:23:45.678), or in seconds.
     duration : int, optional
         Duration of video fragment in seconds.
+    reportprogress: int or bool, default=50
+        The input integer represents how often the progress of applying each 
+        combination of settings is printed. Use False, to turn off 
+        reportprogress.
     
     """
+    if reportprogress:
+        import datetime
+        starttime = datetime.datetime.now()
+        n = 0
+    
     nframes = vfs.avgframerate*duration if duration else None
     list_with_dfs = []
     
@@ -353,6 +362,13 @@ def apply_all_parameters(vfs, settings, bgs_type=bw.BackgroundSubtractorMOG2,
         columns = pd.MultiIndex.from_frame(pd.DataFrame(setting))
         df = pd.DataFrame(coordsmean, columns=columns)
         list_with_dfs.append(df)
+        
+        if reportprogress:
+            n += 1
+            if n % reportprogress == 0:
+                diff = datetime.datetime.now() - starttime 
+                print(f'{n} combinations of settings applied in'
+                      f' {str(diff).split(".")[0]} hours:min:sec')
     
     # create long-format DataFrame
     df = pd.concat(list_with_dfs, axis=1)
