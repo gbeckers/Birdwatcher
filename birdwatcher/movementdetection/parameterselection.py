@@ -313,7 +313,7 @@ def apply_all_parameters(vfs, settings, bgs_type=bw.BackgroundSubtractorMOG2,
         Dictionary with parameter settings from the BackgroundSubtractor and 
         settings for applying color, resizebyfactor, blur and morphologyex 
         manipulations.
-    bge_type: BackgroundSubtractor
+    bgs_type: BackgroundSubtractor
         This can be any of the BackgroundSubtractors in Birdwatcher, e.g. 
         BackgroundSubtractorMOG2, BackgroundSubtractorKNN, 
         BackgroundSubtractorLSBP.
@@ -355,7 +355,7 @@ def apply_all_parameters(vfs, settings, bgs_type=bw.BackgroundSubtractorMOG2,
         bgs = bgs_type(**bgs_settings)
         frames = frames.apply_backgroundsegmenter(bgs, learningRate=-1)
         
-        if settings['morphologyex']:
+        if setting['morphologyex']:
             frames = frames.morphologyex(morphtype='open', kernelsize=2)
         
         # find mean of nonzero coordinates
