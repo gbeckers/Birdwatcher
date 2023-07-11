@@ -51,7 +51,7 @@ class ParameterSelection():
         
         """
         if self.duration is not None:
-            nframes = self.vfs.avgframerate*self.duration
+            nframes = int(self.vfs.avgframerate*self.duration)
         else:
             nframes = None
         
