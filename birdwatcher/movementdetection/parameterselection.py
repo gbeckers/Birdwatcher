@@ -334,7 +334,7 @@ def apply_all_parameters(vfs, settings, bgs_type=bw.BackgroundSubtractorMOG2,
         starttime = datetime.datetime.now()
         n = 0
     
-    nframes = vfs.avgframerate*duration if duration else None
+    nframes = int(vfs.avgframerate*duration) if duration else None
     list_with_dfs = []
     
     for setting in product_dict(**settings):
