@@ -31,23 +31,30 @@ class ParameterSelection():
               ('cyan', [255, 255, 0]),
               ('magenta', [255, 0, 255])]
 
-    def __init__(self, df, videofilepath, bgs_type, startat, duration, 
-                 path=None):
+    def __init__(self, df, videofilepath, bgs_type, 
+                 startat, duration, roi, nroi, path=None):
         self.df = df
         self.vfs = bw.VideoFileStream(videofilepath)
         self.bgs_type = bgs_type
         self.startat = startat
         self.duration = duration
+        self.roi = roi
+        self.nroi = nroi
         self.path = path
 
     def get_info(self):
         return {'vfs': str(self.vfs.filepath),
                 'bgs_type': self.bgs_type,
                 'startat': self.startat,
-                'duration': self.duration}
+                'duration': self.duration,
+                'roi': self.roi,
+                'nroi': self.nroi}
 
     def get_videofragment(self):
         """Returns video fragment as Frames.
+        
+        NOTE: the whole frames are returned. If a region of interest (roi or 
+        nroi) is specified, this is not visible in the videofragment.
         
         """
         if self.duration is not None:
@@ -302,7 +309,8 @@ class ParameterSelection():
 
 
 def apply_all_parameters(vfs, settings, bgs_type=bw.BackgroundSubtractorMOG2, 
-                         startat=None, duration=None, reportprogress=50):
+                         startat=None, duration=None, roi=None, nroi=None, 
+                         reportprogress=50):
     """Run movement detection with each set of parameters.
     
     Parameters
@@ -323,6 +331,12 @@ def apply_all_parameters(vfs, settings, bgs_type=bw.BackgroundSubtractorMOG2,
         (HOURS:MM:SS.MILLISECONDS, as in 01:23:45.678), or in seconds.
     duration : int, optional
         Duration of video fragment in seconds.
+    roi : (int, int, int, int), optional
+        Region of interest. Only look at this rectangular region. h1,
+        h2, w1, w2.
+    nroi : (int, int, int, int), optional
+        Not region of interest. Exclude this rectangular region. h1,
+        h2, w1, w2.
     reportprogress: int or bool, default=50
         The input integer represents how often the progress of applying each 
         combination of settings is printed. Use False, to turn off 
@@ -353,7 +367,8 @@ def apply_all_parameters(vfs, settings, bgs_type=bw.BackgroundSubtractorMOG2,
         bgs_params = bgs_type().get_params()
         bgs_settings = {p:setting[p] for p in bgs_params.keys()}
         bgs = bgs_type(**bgs_settings)
-        frames = frames.apply_backgroundsegmenter(bgs, learningRate=-1)
+        frames = frames.apply_backgroundsegmenter(bgs, learningRate=-1, 
+                                                  roi=roi, nroi=nroi)
         
         if setting['morphologyex']:
             frames = frames.morphologyex(morphtype='open', kernelsize=2)
@@ -384,7 +399,7 @@ def apply_all_parameters(vfs, settings, bgs_type=bw.BackgroundSubtractorMOG2,
           .rename({0: 'pixel'}, axis=1))
     
     return ParameterSelection(df, vfs.filepath, str(bgs_type), startat, 
-                              duration)
+                              duration, roi, nroi)
 
 def load_parameterselection(path):
     """Load a parameterselection.csv file.
@@ -405,4 +420,5 @@ def load_parameterselection(path):
     df.index.name = None
     
     return ParameterSelection(df, info['vfs'], info['bgs_type'], 
-                              info['startat'], info['duration'], path)
+                              info['startat'], info['duration'], 
+                              info['roi'], info['nroi'], path)
