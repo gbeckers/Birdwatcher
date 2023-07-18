@@ -3,7 +3,7 @@ Release notes
 
 Commits by Carien Mol and Gabriel Beckers.
     
-- New submodule `parameterselection` part of module `movementdetection`:
+New submodule `parameterselection` part of module `movementdetection`:
     - `ParameterSelection` class with the results as Pandas DataFrame, and 
     methods to easily view and compare the results of various parameters
     - `apply_all_parameters` and `load_parameterselection` function
@@ -13,6 +13,10 @@ Other changes:
     - `product_dict` function in utils module
     - some restrictions in what is imported automatically via the init file
     - added more tests
+	
+Some corrections:
+	- switch frameheight/framewidth when calling framecolor or framegray
+	- also include first frame when calculating the mean frame in `calc_meanframe`
 
 
 Version 0.3
