@@ -32,6 +32,7 @@ class TestFrames(unittest.TestCase):
                          framecolor(height=480, width=640, color=(30,30,30))])
         meanframe = frames.calc_meanframe()
         self.assertTupleEqual(meanframe.shape, (480, 640, 3))
+        self.assertEqual(meanframe[0,0].sum(), 60)
 
 
 class TestPeekFrame(unittest.TestCase):

@@ -781,7 +781,7 @@ class Frames:
                                    (0, 0, 0), dtype='float64')
         for i, frame in enumerate(self._frames):
             meanframe += frame
-        meanframe /= i
+        meanframe /= (i+1)
         if dtype is None:
             dtype = self._dtype
         return meanframe.astype(dtype)
