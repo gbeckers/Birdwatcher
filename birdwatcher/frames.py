@@ -818,17 +818,18 @@ class FramesColor(Frames):
 
     """
 
-    def __init__(self, nframes, width, height, color=(0, 0, 0), dtype='uint8'):
+    def __init__(self, nframes, height, width, color=(0, 0, 0), 
+                 dtype='uint8'):
         """Creates an iterator that yields color frames.
 
         Parameters
         ----------
         nframes : int
             Number of frames to be produced.
-        width : int
-            Width of frame.
         height : int
             Height of frame.
+        width : int
+            Width of frame.
         color : tuple of ints, optional
             Fill value of frame (r, g, b). The default (0, 0, 0) color is
             black.
@@ -840,7 +841,7 @@ class FramesColor(Frames):
         Iterator of numpy ndarrays
 
         """
-        frame = framecolor(width=width, height=height, color=color,
+        frame = framecolor(height=height, width=width, color=color,
                            dtype=dtype)
         frames = (frame.copy() for _ in range(nframes))
         super().__init__(frames=frames)
@@ -853,17 +854,17 @@ class FramesGray(Frames):
 
     """
 
-    def __init__(self, nframes, width, height, value=0, dtype='uint8'):
+    def __init__(self, nframes, height, width, value=0, dtype='uint8'):
         """Creates an iterator that yields gray frames.
 
         Parameters
         ----------
         nframes : int
             Number of frames to be produced.
-        width : int
-            Width of frame.
         height : int
             Height of frame.
+        width : int
+            Width of frame.
         value : int, optional
             Fill value of frame. The default (0) is black.
         dtype : numpy dtype, default='uint8'
@@ -875,9 +876,8 @@ class FramesGray(Frames):
 
         """
 
-        frame = framegray(width=width, height=height, value=value,
+        frame = framegray(height=height, width=width, value=value,
                           dtype=dtype)
-
         frames = (frame.copy() for _ in range(nframes))
         super().__init__(frames=frames)
 
@@ -889,17 +889,17 @@ class FramesNoise(Frames):
 
     """
 
-    def __init__(self, nframes,width,  height, dtype='uint8'):
+    def __init__(self, nframes, height, width, dtype='uint8'):
         """Creates an iterator that yields gray frames.
 
         Parameters
         ----------
         nframes : int
             Number of frames to be produced.
-        width : int
-            Width of frame.
         height : int
             Height of frame.
+        width : int
+            Width of frame.
         dtype : numpy dtype, default='uint8'
             Dtype of frame.
 
@@ -914,15 +914,15 @@ class FramesNoise(Frames):
         super().__init__(frames=frames)
 
 
-def framegray(width, height, value=0, dtype='uint8'):
+def framegray(height, width, value=0, dtype='uint8'):
     """Creates a gray frame.
 
     Parameters
     ----------
-    width : int
-        Width of frame.
     height : int
         Height of frame.
+    width : int
+        Width of frame.
     value : int, optional
         Fill value of frame. The default (0) is black.
     dtype : numpy dtype, default='uint8'
@@ -936,15 +936,15 @@ def framegray(width, height, value=0, dtype='uint8'):
     return np.ones((height, width), dtype=dtype) * value
 
 
-def framecolor(width, height, color=(0, 0, 0), dtype='uint8'):
+def framecolor(height, width, color=(0, 0, 0), dtype='uint8'):
     """Creates a color frame.
 
     Parameters
     ----------
-    width : int
-        Width of frame.
     height : int
         Height of frame.
+    width : int
+        Width of frame.
     color : tuple of ints, optional
         Fill value of frame (r, g, b). The default (0, 0, 0) color is black.
     dtype : numpy dtype, default='uint8'
@@ -955,19 +955,18 @@ def framecolor(width, height, color=(0, 0, 0), dtype='uint8'):
     numpy ndarray
 
     """
-    return np.ones((height, width, 3), dtype=dtype) * np.asanyarray(color,
-                                                                    dtype=dtype)
+    return np.ones((height, width, 3), dtype=dtype) * np.asanyarray(color, dtype=dtype)
 
 
-def framenoise(width, height, dtype='uint8'):
+def framenoise(height, width, dtype='uint8'):
     """Creates a noise frame.
 
     Parameters
     ----------
-    width : int
-        Width of frame.
     height : int
         Height of frame.
+    width : int
+        Width of frame.
     dtype : numpy dtype, default='uint8'
         Dtype of frame.
 
