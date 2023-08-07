@@ -365,8 +365,9 @@ def apply_all_parameters(vfs, settings, bgs_type=bw.BackgroundSubtractorMOG2,
         
         # extract and apply bgs settings
         bgs_params = bgs_type().get_params()
-        bgs_settings = {p:setting[p] for p in bgs_params.keys()}
-        bgs = bgs_type(**bgs_settings)
+        bgs_params.update((k, v) for k, v in setting.items() if k in 
+                          bgs_params)
+        bgs = bgs_type(**bgs_params)
         frames = frames.apply_backgroundsegmenter(bgs, learningRate=-1, 
                                                   roi=roi, nroi=nroi)
         
