@@ -11,6 +11,12 @@ __all__ = ['batch_detect_movement', 'detect_movement', 'apply_settings',
            'create_movementvideo']
 
 
+default_settings = {'color': False,   # booleans only
+                    'resizebyfactor': 1,   # use '1' for no change in size
+                    'blur': 0,   # use '0' for no blur
+                    'morphologyex': True}   # booleans only
+
+
 def _f(rar):
     rar.archive(overwrite=True)
     darr.delete_raggedarray(rar)
@@ -46,7 +52,7 @@ def batch_detect_movement(vfs_list, settings, startat=None, nframes=None,
             tobearchived = []
 
 
-def detect_movement(vfs, settings, startat=None, nframes=None, roi=None, 
+def detect_movement(vfs, settings=None, startat=None, nframes=None, roi=None, 
                     nroi=None, bgs_type=bw.BackgroundSubtractorMOG2, 
                     analysispath='.', ignore_firstnframes=10, 
                     overwrite=False, resultvideo=False):
@@ -58,10 +64,12 @@ def detect_movement(vfs, settings, startat=None, nframes=None, roi=None,
     ----------
     vfs : VideoFileStream
         A Birdwatcher VideoFileStream object.
-    settings : dict
+    settings : dict, optional
         Dictionary with parameter settings from the BackgroundSubtractor and 
         settings for applying color, resizebyfactor, blur and morphologyex 
-        manipulations.
+        manipulations. If None, the default settings of the 
+        BackgroundSubtractor are used on grey color frames, including 
+        morphological transformation to reduce noise.
     startat : str, optional
         If specified, start at this time point in the video file. You can use 
         two different time unit formats: sexagesimal 
@@ -98,6 +106,10 @@ def detect_movement(vfs, settings, startat=None, nframes=None, roi=None,
     if not isinstance(vfs, bw.VideoFileStream):
         raise TypeError(f"`vfs` parameter not a VideoFileStream "
                         f"object ({type(videofilestream)}).")
+    
+    if settings is None:
+        settings = bgs_type().get_params()
+        settings.update(default_settings)
 
     movementpath = Path(analysispath) / f'movement_{vfs.filepath.stem}'
     Path(movementpath).mkdir(parents=True, exist_ok=True)
