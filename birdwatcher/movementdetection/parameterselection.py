@@ -11,6 +11,7 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 
 import birdwatcher as bw
+import birdwatcher.movementdetection as md
 from birdwatcher.utils import product_dict
 
 
@@ -169,7 +170,7 @@ class ParameterSelection():
                     plt.close(g.figure)
         print(f"The figures are saved in {path}")
 
-    def draw_multiple_circles(self, settings, radius=60, thickness=2):
+    def draw_multiple_circles(self, all_settings, radius=60, thickness=2):
         """Returns a Frames object with circles on the videofragment.
         
         It is possible to plot multiple circles on the videofragment to see 
@@ -193,14 +194,14 @@ class ParameterSelection():
             DataFrame with the settings for each color of the circles.
         
         """
-        self._check_multi_only(settings)
-        self._check_number_of_colorcombinations(settings)
+        self._check_multi_only(all_settings)
+        self._check_number_of_colorcombinations(all_settings)
 
         frames = self.get_videofragment().draw_framenumbers()
         colorspecs = {}
-        for i, setting in enumerate(product_dict(**settings)):
-            colorspecs[self.colors[i][0]] = setting
-            df_selection = self._select_data(**setting)
+        for i, settings in enumerate(product_dict(**all_settings)):
+            colorspecs[self.colors[i][0]] = settings
+            df_selection = self._select_data(**settings)
             iterdata = (df_selection.set_index(['framenumber', 'coords'])
                         .loc[:, 'pixel'].unstack().values)
             frames = frames.draw_circles(iterdata, radius=radius,
@@ -303,13 +304,14 @@ class ParameterSelection():
             raise Exception(
                 f"The number of settings combinations is {n_combinations}, "
                 f"but a maximum of {n_colors} circles can be plotted. Reduce "
-                "the number of setting combinations, or add new colors to "
+                "the number of settings combinations, or add new colors to "
                 "the class attribute 'colors' to be able to plot more "
                 "circles.")
 
 
-def apply_all_parameters(vfs, settings, bgs_type=bw.BackgroundSubtractorMOG2, 
-                         startat=None, duration=None, roi=None, nroi=None, 
+def apply_all_parameters(vfs, all_settings, startat=None, duration=None, 
+                         roi=None, nroi=None, 
+                         bgs_type=bw.BackgroundSubtractorMOG2, 
                          reportprogress=50):
     """Run movement detection with each set of parameters.
     
@@ -317,14 +319,10 @@ def apply_all_parameters(vfs, settings, bgs_type=bw.BackgroundSubtractorMOG2,
     ----------
     vfs : VideoFileStream
         A Birdwatcher VideoFileStream object.
-    settings : dict
+    all_settings : dict
         Dictionary with parameter settings from the BackgroundSubtractor and 
         settings for applying color, resizebyfactor, blur and morphologyex 
         manipulations.
-    bgs_type: BackgroundSubtractor
-        This can be any of the BackgroundSubtractors in Birdwatcher, e.g. 
-        BackgroundSubtractorMOG2, BackgroundSubtractorKNN, 
-        BackgroundSubtractorLSBP.
     startat : str, optional
         If specified, start at this time point in the video file. You can use 
         two different time unit formats: sexagesimal 
@@ -337,6 +335,10 @@ def apply_all_parameters(vfs, settings, bgs_type=bw.BackgroundSubtractorMOG2,
     nroi : (int, int, int, int), optional
         Not region of interest. Exclude this rectangular region. h1,
         h2, w1, w2.
+    bgs_type: BackgroundSubtractor
+        This can be any of the BackgroundSubtractors in Birdwatcher, e.g. 
+        BackgroundSubtractorMOG2, BackgroundSubtractorKNN, 
+        BackgroundSubtractorLSBP.
     reportprogress: int or bool, default=50
         The input integer represents how often the progress of applying each 
         combination of settings is printed. Use False, to turn off 
@@ -348,31 +350,12 @@ def apply_all_parameters(vfs, settings, bgs_type=bw.BackgroundSubtractorMOG2,
         starttime = datetime.datetime.now()
         n = 0
     
-    nframes = int(vfs.avgframerate*duration) if duration else None
+    nframes = int(vfs.avgframerate*duration) if duration is not None else None
     list_with_dfs = []
     
-    for setting in product_dict(**settings):
-        frames = vfs.iter_frames(startat=startat, nframes=nframes, 
-                                 color=setting['color'])
-
-        if setting['resizebyfactor'] != 1:
-            val = setting['resizebyfactor']
-            frames = frames.resizebyfactor(val,val)
-
-        if setting['blur']:
-            val = setting['blur']
-            frames = frames.blur((val,val))
-        
-        # extract and apply bgs settings
-        bgs_params = bgs_type().get_params()
-        bgs_params.update((k, v) for k, v in setting.items() if k in 
-                          bgs_params)
-        bgs = bgs_type(**bgs_params)
-        frames = frames.apply_backgroundsegmenter(bgs, learningRate=-1, 
-                                                  roi=roi, nroi=nroi)
-        
-        if setting['morphologyex']:
-            frames = frames.morphologyex(morphtype='open', kernelsize=2)
+    for settings in product_dict(**all_settings):
+        frames = md.apply_settings(vfs, settings, startat, nframes, roi, nroi, 
+                                   bgs_type)
         
         # find mean of nonzero coordinates
         coordinates = frames.find_nonzero()
@@ -380,8 +363,8 @@ def apply_all_parameters(vfs, settings, bgs_type=bw.BackgroundSubtractorMOG2,
                                c in coordinates])
 
         # add results as pandas DataFrame
-        setting['coords'] = ['x', 'y']
-        columns = pd.MultiIndex.from_frame(pd.DataFrame(setting))
+        settings['coords'] = ['x', 'y']
+        columns = pd.MultiIndex.from_frame(pd.DataFrame(settings))
         df = pd.DataFrame(coordsmean, columns=columns)
         list_with_dfs.append(df)
         
