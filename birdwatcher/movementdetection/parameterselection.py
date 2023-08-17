@@ -319,10 +319,11 @@ def apply_all_parameters(vfs, all_settings, startat=None, duration=None,
     ----------
     vfs : VideoFileStream
         A Birdwatcher VideoFileStream object.
-    all_settings : dict
-        Dictionary with parameter settings from the BackgroundSubtractor and 
-        settings for applying color, resizebyfactor, blur and morphologyex 
-        manipulations.
+    all_settings : {dict, dict}
+        Dictionary with two dictionaries. One 'bgs_params' with the parameter 
+        settings from the BackgroundSubtractor and another 'processing' 
+        dictionary with settings for applying color, resizebyfactor, blur and 
+        morphologyex manipulations.
     startat : str, optional
         If specified, start at this time point in the video file. You can use 
         two different time unit formats: sexagesimal 
@@ -352,8 +353,10 @@ def apply_all_parameters(vfs, all_settings, startat=None, duration=None,
     
     nframes = int(vfs.avgframerate*duration) if duration is not None else None
     list_with_dfs = []
+    all_combinations = product_dict(**all_settings['bgs_params'],
+                                    **all_settings['processing'])
     
-    for settings in product_dict(**all_settings):
+    for settings in all_combinations:
         frames = md.apply_settings(vfs, settings, startat, nframes, roi, nroi, 
                                    bgs_type)
         

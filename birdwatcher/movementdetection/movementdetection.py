@@ -11,10 +11,10 @@ __all__ = ['batch_detect_movement', 'detect_movement', 'apply_settings',
            'create_movementvideo']
 
 
-default_settings = {'color': False,   # booleans only
-                    'resizebyfactor': 1,   # use '1' for no change in size
-                    'blur': 0,   # use '0' for no blur
-                    'morphologyex': True}   # booleans only
+default_settings = {'processing':{'color': False, # booleans only
+                                  'blur': 0, # use '0' for no blur
+                                  'morphologyex': True, # booleans only
+                                  'resizebyfactor': 1}} # use '1' for no change in size
 
 
 def _f(rar):
@@ -58,16 +58,18 @@ def detect_movement(vfs, settings=None, startat=None, nframes=None, roi=None,
                     overwrite=False, resultvideo=False):
     """Detects movement based on a background subtraction algorithm.
 
-    The background subtractor should be provided as a parameter.
+    High-level function to perform movement detection with default parameters, 
+    but also the option to modify many parameter settings.
 
     Parameters
     ----------
     vfs : VideoFileStream
         A Birdwatcher VideoFileStream object.
-    settings : dict, optional
-        Dictionary with parameter settings from the BackgroundSubtractor and 
-        settings for applying color, resizebyfactor, blur and morphologyex 
-        manipulations. If None, the default settings of the 
+    settings : {dict, dict}, optional
+        Dictionary with two dictionaries. One 'bgs_params' with the parameter 
+        settings from the BackgroundSubtractor and another 'processing' 
+        dictionary with settings for applying color, resizebyfactor, blur and 
+        morphologyex manipulations. If None, the default settings of the 
         BackgroundSubtractor are used on grey color frames, including 
         morphological transformation to reduce noise.
     startat : str, optional
@@ -107,23 +109,25 @@ def detect_movement(vfs, settings=None, startat=None, nframes=None, roi=None,
         raise TypeError(f"`vfs` parameter not a VideoFileStream "
                         f"object ({type(videofilestream)}).")
     
-    if settings is None:
-        settings = bgs_type().get_params()
-        settings.update(default_settings)
-
+    output_settings = {**bgs_type().get_params(), 
+                       **default_settings['processing']} # get flat dict
+    if settings is not None:
+        settings = {**settings['bgs_params'], **settings['processing']}
+        output_settings.update(settings)
+        
     movementpath = Path(analysispath) / f'movement_{vfs.filepath.stem}'
     Path(movementpath).mkdir(parents=True, exist_ok=True)
 
     metadata = {}
     metadata['backgroundsegmentclass'] = str(bgs_type)
-    metadata['settings'] = settings
+    metadata['settings'] = output_settings
     metadata['startat'] = startat
     metadata['nframes'] = nframes
     metadata['roi'] = roi
     metadata['nroi'] = nroi
     metadata['birdwatcherversion'] = bw.__version__
 
-    frames = apply_settings(vfs, settings, startat, nframes, roi, nroi, 
+    frames = apply_settings(vfs, output_settings, startat, nframes, roi, nroi, 
                             bgs_type)
 
     cd = frames.save_nonzero(Path(movementpath) / 'coords.darr',
