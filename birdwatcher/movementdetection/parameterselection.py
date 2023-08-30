@@ -33,12 +33,12 @@ class ParameterSelection():
               ('magenta', [255, 0, 255])]
 
     def __init__(self, df, videofilepath, bgs_type, 
-                 startat, duration, roi, nroi, path=None):
+                 startat, nframes, roi, nroi, path=None):
         self.df = df
         self.vfs = bw.VideoFileStream(videofilepath)
         self.bgs_type = bgs_type
         self.startat = startat
-        self.duration = duration
+        self.nframes = nframes
         self.roi = roi
         self.nroi = nroi
         self.path = path
@@ -47,7 +47,7 @@ class ParameterSelection():
         return {'vfs': str(self.vfs.filepath),
                 'bgs_type': self.bgs_type,
                 'startat': self.startat,
-                'duration': self.duration,
+                'nframes': self.nframes,
                 'roi': self.roi,
                 'nroi': self.nroi}
 
@@ -57,13 +57,9 @@ class ParameterSelection():
         NOTE: the whole frames are returned. If a region of interest (roi or 
         nroi) is specified, this is not visible in the videofragment.
         
-        """
-        if self.duration is not None:
-            nframes = int(self.vfs.avgframerate*self.duration)
-        else:
-            nframes = None
-        
-        return self.vfs.iter_frames(startat=self.startat, nframes=nframes)
+        """        
+        return self.vfs.iter_frames(startat=self.startat, 
+                                    nframes=self.nframes)
 
     def get_parameters(self, selection='multi_only'):
         """Returns the parameter settings used for movement detection.
@@ -309,7 +305,7 @@ class ParameterSelection():
                 "circles.")
 
 
-def apply_all_parameters(vfs, all_settings, startat=None, duration=None, 
+def apply_all_parameters(vfs, all_settings, startat=None, nframes=None, 
                          roi=None, nroi=None, 
                          bgs_type=bw.BackgroundSubtractorMOG2, 
                          reportprogress=50):
@@ -328,8 +324,8 @@ def apply_all_parameters(vfs, all_settings, startat=None, duration=None,
         If specified, start at this time point in the video file. You can use 
         two different time unit formats: sexagesimal 
         (HOURS:MM:SS.MILLISECONDS, as in 01:23:45.678), or in seconds.
-    duration : int, optional
-        Duration of video fragment in seconds.
+    nframes  : int, optional
+            Read a specified number of frames.
     roi : (int, int, int, int), optional
         Region of interest. Only look at this rectangular region. h1,
         h2, w1, w2.
@@ -351,7 +347,6 @@ def apply_all_parameters(vfs, all_settings, startat=None, duration=None,
         starttime = datetime.datetime.now()
         n = 0
     
-    nframes = int(vfs.avgframerate*duration) if duration is not None else None
     list_with_dfs = []
     all_combinations = product_dict(**all_settings['bgs_params'],
                                     **all_settings['processing'])
@@ -386,7 +381,7 @@ def apply_all_parameters(vfs, all_settings, startat=None, duration=None,
           .rename({0: 'pixel'}, axis=1))
     
     return ParameterSelection(df, vfs.filepath, str(bgs_type), startat, 
-                              duration, roi, nroi)
+                              nframes, roi, nroi)
 
 def load_parameterselection(path):
     """Load a parameterselection.csv file.
@@ -407,5 +402,5 @@ def load_parameterselection(path):
     df.index.name = None
     
     return ParameterSelection(df, info['vfs'], info['bgs_type'], 
-                              info['startat'], info['duration'], 
+                              info['startat'], info['nframes'], 
                               info['roi'], info['nroi'], path)
