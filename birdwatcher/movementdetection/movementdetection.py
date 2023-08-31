@@ -22,7 +22,7 @@ def _f(rar):
     darr.delete_raggedarray(rar)
 
 
-def batch_detect_movement(vfs_list, settings, startat=None, nframes=None, 
+def batch_detect_movement(vfs_list, settings=None, startat=None, nframes=None, 
                           roi=None, nroi=None, 
                           bgs_type=bw.BackgroundSubtractorMOG2, 
                           analysispath='.', ignore_firstnframes=10, 
@@ -38,7 +38,7 @@ def batch_detect_movement(vfs_list, settings, startat=None, nframes=None,
 
     tobearchived = []
     for i, vfs in enumerate(vfs_list):
-        cd, cc, cm = detect_movement(vfs, settings, startat=startat, 
+        cd, cc, cm = detect_movement(vfs, settings=settings, startat=startat, 
                                      nframes=nframes, roi=roi, nroi=nroi, 
                                      bgs_type=bgs_type, 
                                      analysispath=analysispath, 
