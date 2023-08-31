@@ -11,32 +11,34 @@ import birdwatcher as bw
 import birdwatcher.movementdetection as md
 
 
-settings = {'History': [4, 12],
-            'ComplexityReductionThreshold': [0.05],
-            'BackgroundRatio': [0.1],
-            'NMixtures': [7,],
-            'VarInit': [15],
-            'VarMin': [4],
-            'VarMax': [75],
-            'VarThreshold': [10,],
-            'VarThresholdGen': [9],
-            'DetectShadows': [False],
-            'ShadowThreshold': [0.5],
-            'ShadowValue': [127],
-            'color': [True],
-            'resizebyfactor': [1],
-            'blur': [0],
-            'morphologyex': [True]}
+settings = {'bgs_params':  {'History': [4, 12],
+                            'ComplexityReductionThreshold': [0.05],
+                            'BackgroundRatio': [0.1],
+                            'NMixtures': [7],
+                            'VarInit': [15],
+                            'VarMin': [4],
+                            'VarMax': [75],
+                            'VarThreshold': [10],
+                            'VarThresholdGen': [9],
+                            'DetectShadows': [False],
+                            'ShadowThreshold': [0.5],
+                            'ShadowValue': [0]},
+
+            'processing':  {'color': [True],
+                            'resizebyfactor': [1],
+                            'blur': [0,],
+                            'morphologyex': [True]}}
 
 
 class TestParameterSelection(unittest.TestCase):
-
+        
     def setUp(self):
         self.tempdirname1 = Path(tempfile.mkdtemp())
-        self.params = md.apply_all_parameters(bw.testvideosmall(), settings)
+        self.params = md.apply_all_parameters(bw.testvideosmall(), settings, 
+                                              nframes=200)
 
     def tearDown(self):
-         shutil.rmtree(self.tempdirname1)
+        shutil.rmtree(self.tempdirname1)
 
     def test_attributes(self):
         self.assertIsInstance(self.params, md.ParameterSelection)
@@ -45,7 +47,7 @@ class TestParameterSelection(unittest.TestCase):
         self.assertEqual(self.params.bgs_type, 
                          str(bw.BackgroundSubtractorMOG2))
         self.assertEqual(self.params.startat, None)
-        self.assertEqual(self.params.duration, None)
+        self.assertEqual(self.params.nframes, 200)
         self.assertEqual(self.params.path, None)
 
     def test_getvideofragment(self):
@@ -54,7 +56,8 @@ class TestParameterSelection(unittest.TestCase):
 
     def test_getparams(self):
         all = self.params.get_parameters('all')
-        self.assertEqual(all, settings)
+        settings_flat = {**settings['bgs_params'], **settings['processing']}
+        self.assertEqual(all, settings_flat)
         multi_only = self.params.get_parameters('multi_only')
         self.assertEqual(multi_only, {'History': [4, 12]})
 
