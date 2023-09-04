@@ -19,15 +19,14 @@ settings = {'bgs_params':  {'History': 12,
                             'DetectShadows': False,
                             'ShadowThreshold': 0.5,
                             'ShadowValue': 0},
-
-            'processing':  {'color': False, 
+            'processing':  {'color': False,
                             'resizebyfactor': 1,
                             'blur': 10,
                             'morphologyex': True}}
 
 
 class TestApplySettingst(unittest.TestCase):
-    
+
     def test_applysettings(self):
         vfs = bw.testvideosmall()
         settings_flat = {**settings['bgs_params'], **settings['processing']}

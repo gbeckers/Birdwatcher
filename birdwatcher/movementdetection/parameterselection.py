@@ -22,7 +22,7 @@ __all__ = ['ParameterSelection', 'apply_all_parameters',
 class ParameterSelection():
     """A Pandas dataframe with movement detection results of various parameter 
     settings associated with a (fragment of a) Videofilestream.
-    
+
     """
     # colors in BGR
     colors = [('orange', [0, 100, 255]),
@@ -53,11 +53,11 @@ class ParameterSelection():
 
     def get_videofragment(self):
         """Returns video fragment as Frames.
-        
+
         NOTE: the whole frames are returned. If a region of interest (roi or 
         nroi) is specified, this is not visible in the videofragment.
-        
-        """        
+
+        """
         return self.vfs.iter_frames(startat=self.startat, 
                                     nframes=self.nframes)
 
@@ -71,7 +71,7 @@ class ParameterSelection():
             all : returns all parameters and their settings.
             multi_only : returns only parameters for which multiple values 
             have been used to run movement detection.
-        
+
         Returns
         ------
         dict
@@ -82,7 +82,7 @@ class ParameterSelection():
         paramkeys = (set(self.df.columns) - 
                      set(['framenumber', 'pixel', 'coords']))
         all_parameters = {k:list(self.df[k].unique()) for k in paramkeys}
-        
+
         if selection == 'all':
             return all_parameters
         elif selection == 'multi_only':
@@ -94,10 +94,10 @@ class ParameterSelection():
 
     def plot_parameters(self, rows, cols, default_values):
         """Returns a figure from seaborn with subplots.
-        
+
         Usefull to look at different location detection results from two 
         parameters with various values.
-        
+
         Parameters
         ----------
         rows : str
@@ -108,12 +108,12 @@ class ParameterSelection():
             All parameters that are tested with multiple settings, should be 
             added to a dictionary with each parameter as key, and the default 
             as value.
-        
+
         Returns
         ------
         FacedGrid
             A seaborn object managing multiple subplots.
-            
+
         """
         self._check_multi_only(default_values)
         other_values = {key:default_values[key] for key in 
@@ -125,18 +125,18 @@ class ParameterSelection():
                         col=cols, row=rows, kind="line", data=df_selection, 
                         height=3, aspect=2)
         g.figure.suptitle(str(other_values), fontsize=15, x=0.51, y=1.05)
-        
+
         return g
 
     def batch_plot_parameters(self, default_values, overwrite=False):
         """Saves multiple figures with subplots of all combinations of 
         parameters.
-        
+
         The figures are saved in a folder 'figures' in the same directory as 
         the associated ParameterSelection file. Multiple rounds of plotting 
         with different default values can be easily saved in new folders with 
         a number added to the foldername.
-        
+
         Parameters
         ----------
         default_values : dict
@@ -146,15 +146,15 @@ class ParameterSelection():
         overwrite : bool, default=False
             If False, an integer number (1,2,3,etc.) will be added as suffix 
             to the foldername, if the filepath already exists.
-        
-        """            
+
+        """
         path = self._create_path(self.path, 'figures', overwrite)
-        
+
         # save default values as txt file
         with open(path / 'default_values.txt', 'w') as f:
             for key, val in default_values.items():
                 f.write(f"{key}: {val}\n")
-        
+
         # plot and save each combination of two parameters
         settings = self.get_parameters('multi_only')
         for rows, _ in settings.items():
@@ -168,10 +168,10 @@ class ParameterSelection():
 
     def draw_multiple_circles(self, all_settings, radius=60, thickness=2):
         """Returns a Frames object with circles on the videofragment.
-        
+
         It is possible to plot multiple circles on the videofragment to see 
         the results from different parameter settings.
-        
+
         Parameters
         ----------
         settings : dict
@@ -182,13 +182,13 @@ class ParameterSelection():
             Radius of circle.
         thickness : int, default=2
             Line thickness.
-        
+
         Returns
-        ------
+        -------
         Frames, DataFrame
             Iterator that generates frames with multiple circles, and a Pandas 
             DataFrame with the settings for each color of the circles.
-        
+
         """
         self._check_multi_only(all_settings)
         self._check_number_of_colorcombinations(all_settings)
@@ -208,12 +208,12 @@ class ParameterSelection():
 
     def save_parameters(self, path, foldername=None, overwrite=False):
         """Save results of all parameter settings as .csv file.
-        
+
         Often several rounds of parameter selection per videofragment will be 
         done with different parameter settings. For this, the same foldername 
         could be used, in which case a number is added automatically as suffix 
         to display the round.
-        
+
         Parameters
         ----------
         path : str
@@ -223,22 +223,22 @@ class ParameterSelection():
         overwrite : bool, default=False
             If False, an integer number (1,2,3,etc.) will be added as suffix 
             to the foldername, if the filepath already exists.
-        
+
         """
         if foldername is None:
             foldername = f'params_{self.vfs.filepath.stem}'
         path = self._create_path(path, foldername, overwrite)
         self.path = str(path)
-        
+
         # add extra information to saved .csv file
         json_info = json.dumps(self.get_info())
         self.df.to_csv(path / 'parameterselection.csv', index_label=json_info)
-        
-        # save parameter settings as readme file        
-        with open(path / 'readme.txt', 'w') as f:            
+
+        # save parameter settings as readme file
+        with open(path / 'readme.txt', 'w') as f:
             for key, val in self.get_parameters('all').items():
                 f.write(f"{key}: {val}\n")
-        
+
 
     def _create_path(self, path, foldername, overwrite):
         """Useful for creating a path with a number added as suffix in case 
@@ -256,33 +256,33 @@ class ParameterSelection():
 
         """
         path = Path(path) / foldername
-        
+
         if not overwrite:
             i = 1
             while path.exists():
                 i += 1
                 path = path.parent / f'{foldername}_{i}'
         Path(path).mkdir(parents=True, exist_ok=overwrite)
-        
+
         return path
 
     def _select_data(self, **kwargs):
         """Returns a copy with a selection of the dataframe.
-        
+
         **kwargs can be a dictionary, with keys matching column names. The
         value of each key will be selected from a copy of the dataframe.
-        
+
         """
         df = self.df.copy()
         for key, value in kwargs.items():
             df = df.loc[df[key]==value]
-            
+
         return df
 
     def _check_multi_only(self, inputdict):
         """Check if all parameters that are tested with multiple settings, are 
         included in the inputdic.
-        
+
         """
         multi_only = self.get_parameters('multi_only')
         if multi_only.keys() != inputdict.keys():
@@ -292,7 +292,7 @@ class ParameterSelection():
     def _check_number_of_colorcombinations(self, settings):
         """Check if the number of settings combinations does not exceed the
         number of possible colors.
-        
+
         """
         n_combinations = len(list(product_dict(**settings)))
         n_colors = len(self.colors)
@@ -310,7 +310,7 @@ def apply_all_parameters(vfs, all_settings, startat=None, nframes=None,
                          bgs_type=bw.BackgroundSubtractorMOG2, 
                          reportprogress=50):
     """Run movement detection with each set of parameters.
-    
+
     Parameters
     ----------
     vfs : VideoFileStream
@@ -340,21 +340,21 @@ def apply_all_parameters(vfs, all_settings, startat=None, nframes=None,
         The input integer represents how often the progress of applying each 
         combination of settings is printed. Use False, to turn off 
         reportprogress.
-    
+
     """
     if reportprogress:
         import datetime
         starttime = datetime.datetime.now()
         n = 0
-    
+
     list_with_dfs = []
     all_combinations = product_dict(**all_settings['bgs_params'],
                                     **all_settings['processing'])
-    
+
     for settings in all_combinations:
         frames = md.apply_settings(vfs, settings, startat, nframes, roi, nroi, 
                                    bgs_type)
-        
+
         # find mean of nonzero coordinates
         coordinates = frames.find_nonzero()
         coordsmean = np.array([c.mean(0) if c.size>0 else (np.nan, np.nan) for 
@@ -365,42 +365,42 @@ def apply_all_parameters(vfs, all_settings, startat=None, nframes=None,
         columns = pd.MultiIndex.from_frame(pd.DataFrame(settings))
         df = pd.DataFrame(coordsmean, columns=columns)
         list_with_dfs.append(df)
-        
+
         if reportprogress:
             n += 1
             if n % reportprogress == 0:
                 diff = datetime.datetime.now() - starttime 
                 print(f'{n} combinations of settings applied in'
                       f' {str(diff).split(".")[0]} hours:min:sec')
-    
+
     # create long-format DataFrame
     df = pd.concat(list_with_dfs, axis=1)
     df.index.name = 'framenumber'
     df = (df.stack(list(range(df.columns.nlevels)), dropna=False)
           .reset_index()  # stack all column levels
           .rename({0: 'pixel'}, axis=1))
-    
+
     return ParameterSelection(df, vfs.filepath, str(bgs_type), startat, 
                               nframes, roi, nroi)
 
 def load_parameterselection(path):
     """Load a parameterselection.csv file.
-    
+
     Parameters
     ----------
     path : str
         Name of the directory where parameterselection.csv is saved.
-    
+
     Returns
-    ------
+    -------
     ParameterSelection
-    
+
     """
     filepath = Path(path) / 'parameterselection.csv' 
     df = pd.read_csv(filepath, index_col=0, engine='python')
     info = json.loads(df.index.names[0])
     df.index.name = None
-    
+
     return ParameterSelection(df, info['vfs'], info['bgs_type'], 
                               info['startat'], info['nframes'], 
                               info['roi'], info['nroi'], path)

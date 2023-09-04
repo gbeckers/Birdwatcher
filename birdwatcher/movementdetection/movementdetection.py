@@ -108,13 +108,13 @@ def detect_movement(vfs, settings=None, startat=None, nframes=None, roi=None,
     if not isinstance(vfs, bw.VideoFileStream):
         raise TypeError(f"`vfs` parameter not a VideoFileStream "
                         f"object ({type(videofilestream)}).")
-    
+
     output_settings = {**bgs_type().get_params(), 
                        **default_settings['processing']} # get flat dict
     if settings is not None:
         settings = {**settings['bgs_params'], **settings['processing']}
         output_settings.update(settings)
-        
+
     movementpath = Path(analysispath) / f'movement_{vfs.filepath.stem}'
     Path(movementpath).mkdir(parents=True, exist_ok=True)
 
@@ -188,7 +188,7 @@ def apply_settings(vfs, settings, startat=None, nframes=None, roi=None,
     """
     frames = vfs.iter_frames(startat=startat, nframes=nframes, 
                              color=settings['color'])
-    
+
     if settings['resizebyfactor'] != 1:
         val = settings['resizebyfactor']
         frames = frames.resizebyfactor(val,val)
@@ -196,16 +196,16 @@ def apply_settings(vfs, settings, startat=None, nframes=None, roi=None,
     if settings['blur']:
         val = settings['blur']
         frames = frames.blur((val,val))
-    
+
     bgs_params = bgs_type().get_params()
     bgs_params.update((k, v) for k, v in settings.items() if k in bgs_params)
     bgs = bgs_type(**bgs_params)
-    
+
     frames = frames.apply_backgroundsegmenter(bgs, learningRate=-1, 
                                               roi=roi, nroi=nroi)
     if settings['morphologyex']:
         frames = frames.morphologyex(morphtype='open', kernelsize=2)
-        
+
     return frames
 
 
