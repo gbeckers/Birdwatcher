@@ -106,8 +106,7 @@ def detect_movement(vfs, settings=None, startat=None, nframes=None, roi=None,
 
     """
     if not isinstance(vfs, bw.VideoFileStream):
-        raise TypeError(f"`vfs` parameter not a VideoFileStream "
-                        f"object ({type(vfs)}).")
+        raise TypeError(f"`vfs` parameter not a VideoFileStream object.")
 
     output_settings = {**bgs_type().get_params(), 
                        **default_settings['processing']} # get flat dict
@@ -248,8 +247,7 @@ def create_movementvideo(vfs, coords, startat=None, nframes=None,
 
     """
     if not isinstance(vfs, bw.VideoFileStream):
-        raise TypeError(f"`vfs` parameter not a VideoFileStream "
-                        f"object ({type(vfs)}).")
+        raise TypeError(f"`vfs` parameter not a VideoFileStream object.")
 
     if videofilepath is None:
         videofilepath = derive_filepath(vfs.filepath, 'results',
