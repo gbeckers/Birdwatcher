@@ -58,6 +58,10 @@ class TestDetectMovement(unittest.TestCase):
                                       overwrite=True)
         self.assertEqual(cd.metadata['settings']['History'], 12)
         self.assertEqual(cd.metadata['settings']['blur'], 10)
+    
+    def test_exception(self):
+        with self.assertRaises(TypeError):
+            md.detect_movement('not_a_videofilestream_object')
 
 
 class TestBatchDetectMovement(unittest.TestCase):
