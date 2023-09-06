@@ -33,8 +33,12 @@ class TestParameterSelection(unittest.TestCase):
 
     def setUp(self):
         self.tempdirname1 = Path(tempfile.mkdtemp())
-        self.params = md.apply_all_parameters(bw.testvideosmall(), settings, 
-                                              nframes=200)
+        try:
+            self.params = md.apply_all_parameters(bw.testvideosmall(), 
+                                                  settings, nframes=200)
+        except:
+            self.tearDown()
+            raise
 
     def tearDown(self):
         shutil.rmtree(self.tempdirname1)
