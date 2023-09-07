@@ -1,9 +1,11 @@
-import subprocess
-import numpy as np
 import json
+import subprocess
 from pathlib import Path
 
+import numpy as np
+
 from .utils import peek_iterable
+
 
 __all__ = ['arraytovideo']
 
@@ -104,7 +106,7 @@ def videofileinfo(filepath, ffprobepath='ffprobe'):
 
 ## FIXME inform before raising StopIteration that file has no frames
 def iterread_videofile(filepath, startat=None, nframes=None, color=True,
-                       ffmpegpath='ffmpeg', loglevel= 'quiet'):
+                       ffmpegpath='ffmpeg', loglevel='quiet'):
     """
     Parameters
     ----------
@@ -199,11 +201,11 @@ def get_frame(filepath, framenumber, color=True, ffmpegpath='ffmpeg',
                              dtype=np.uint8).reshape(frameshape)
 
 
-def get_frameat(filepath, time, color=True, ffmpegpath='ffmpeg', loglevel=
-                'quiet'):
-    return next(iterread_videofile(filepath, startat=time, nframes=1, \
-                                   color=color, ffmpegpath=ffmpegpath),
-                loglevel=loglevel)
+def get_frameat(filepath, time, color=True, ffmpegpath='ffmpeg', 
+                loglevel='quiet'):
+    return next(iterread_videofile(filepath, startat=time, nframes=1, 
+                                   color=color, ffmpegpath=ffmpegpath, 
+                                   loglevel=loglevel))
 
 
 # FIXME do not assume things on audio (i.e. number of channels) and make more versatile

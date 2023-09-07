@@ -4,15 +4,19 @@ depends on FFmpeg.
 """
 
 
-import pathlib
+from pathlib import Path
+
 import numpy as np
 import cv2 as cv
+
 from .ffmpeg import videofileinfo, iterread_videofile, count_frames, \
     get_frame, get_frameat, extract_audio
 from .frames import frameiterator
-from .utils import progress, walk_paths
+from .utils import progress
+
 
 __all__ = ['VideoFileStream', 'testvideosmall']
+
 
 class VideoFileStream():
     """Video stream from file.
@@ -40,7 +44,7 @@ class VideoFileStream():
 
     def __init__(self, filepath, streamnumber=0):
 
-        self.filepath = fp = pathlib.Path(filepath)
+        self.filepath = fp = Path(filepath)
         self.streamnumber = streamnumber
         if not fp.exists():
             raise FileNotFoundError(f'"{filepath}" does not exist')
@@ -293,7 +297,7 @@ def testvideosmall():
 
     """
     file = 'zf20s_low.mp4'
-    path = pathlib.Path(__file__).parent / 'testvideos' / file
+    path = Path(__file__).parent / 'testvideos' / file
     return VideoFileStream(path)
 
 
@@ -310,7 +314,7 @@ def walk_videofiles(dirpath, extension='.avi'):
 
     """
 
-    dirpath = pathlib.Path(dirpath)
+    dirpath = Path(dirpath)
     if extension.startswith('.'):
         extension = extension[1:]
     for file in dirpath.rglob(f'*.{extension}'):

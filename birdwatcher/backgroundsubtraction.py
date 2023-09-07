@@ -139,7 +139,7 @@ class BackgroundSubtractorMOG2(BaseBackgroundSubtractor):
 
     Parameters
     ----------
-    History : int, default=5
+    History : int, default=3
         Length of the history.
     ComplexityReductionThreshold : float, default=0.5
         This parameter defines the number of samples needed to accept to prove
@@ -155,11 +155,11 @@ class BackgroundSubtractorMOG2(BaseBackgroundSubtractor):
         The number of gaussian components in the background model.
     VarInit : int, default=15
         The initial variance of each gaussian component.
-    VarMin : int, default=4
+    VarMin : int, default=10
         The minimum variance of each gaussian component.
     VarMax : int, default=75
         The maximum variance of each gaussian component.
-    VarThreshold : int, default=10
+    VarThreshold : int, default=70
         The variance threshold for the pixel-model match. The main threshold
         on the squared Mahalanobis distance to decide if the sample is well
         described by the background model or not. Related to Cthr from the
@@ -180,24 +180,24 @@ class BackgroundSubtractorMOG2(BaseBackgroundSubtractor):
         The shadow threshold is a threshold defining how much darker the
         shadow can be. 0.5 means that if a pixel is more than twice darker
         then it is not shadow.
-    ShadowValue : int, default=127
+    ShadowValue : int, default=0
         Shadow value is the value used to mark shadows in the foreground mask.
         Value 0 in the mask always means background, 255 means foreground.
 
     """
     
-    _setparams = {'History': 5,
+    _setparams = {'History': 3,
                   'ComplexityReductionThreshold': 0.05,
                   'BackgroundRatio': 0.1,
                   'NMixtures': 7,
                   'VarInit': 15,
-                  'VarMin': 4,
+                  'VarMin': 10,
                   'VarMax': 75,
-                  'VarThreshold': 10,
+                  'VarThreshold': 70,
                   'VarThresholdGen': 9,
                   'DetectShadows': False,
                   'ShadowThreshold': 0.5,
-                  'ShadowValue': 127}
+                  'ShadowValue': 0}
 
     _bgsubtractorcreatefunc = cv.createBackgroundSubtractorMOG2
 

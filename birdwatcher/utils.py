@@ -1,17 +1,24 @@
-import os,sys
+import itertools
+import os, sys
+import pathlib
 import shutil
 import tempfile
-import itertools
-import pathlib
+import time
 from contextlib import contextmanager
 
-__all__ = ['derive_filepath', 'peek_iterable', 'datetimestring']
-
-
-import time
 
 def datetimestring():
     return time.strftime('%Y%m%d%H%M%S')
+
+
+def product_dict(**kwargs):
+    """Generates a Cartesian product of dictionary values.
+    
+    """
+    keys = kwargs.keys()
+    vals = kwargs.values()
+    for instance in itertools.product(*vals):
+        yield dict(zip(keys, instance))
 
 
 @contextmanager

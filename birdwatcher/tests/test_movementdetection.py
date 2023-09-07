@@ -1,64 +1,37 @@
 import unittest
 import tempfile
-import birdwatcher as bw
 import shutil
-import time
 from pathlib import Path
-from birdwatcher.frames import create_frameswithmovingcircle
+
+import birdwatcher as bw
+import birdwatcher.movementdetection as md
 
 
-class TestBackgroundSubtractorKNN(unittest.TestCase):
-
-    def test_KNNdefaultinstantiation(self):
-        bw.BackgroundSubtractorKNN()
-
-    def test_KNNparams(self):
-        bgs = bw.BackgroundSubtractorKNN(History=10)
-        self.assertEqual(bgs.get_params()['History'], 10)
-
-    def test_KNNapply(self):
-        bgs = bw.BackgroundSubtractorKNN(History=10)
-        frames = create_frameswithmovingcircle(nframes=5, width=1080,
-                                               height=720)
-        for fg in frames.apply_backgroundsegmenter(bgs,  roi=(10, 710, 10, 500),
-                                                   nroi=(20,30,20,30)):
-            pass
-
-
-class TestBackgroundSubtractorMOG2(unittest.TestCase):
-
-    def test_MOG2defaultinstantiation(self):
-        bw.BackgroundSubtractorMOG2()
-
-    def test_MOG2params(self):
-        bgs = bw.BackgroundSubtractorMOG2(History=10)
-        self.assertEqual(bgs.get_params()['History'], 10)
+settings = {'bgs_params':  {'History': 12,
+                            'ComplexityReductionThreshold': 0.05,
+                            'BackgroundRatio': 0.1,
+                            'NMixtures': 7,
+                            'VarInit': 15,
+                            'VarMin': 10,
+                            'VarMax': 75,
+                            'VarThreshold': 70,
+                            'VarThresholdGen': 9,
+                            'DetectShadows': False,
+                            'ShadowThreshold': 0.5,
+                            'ShadowValue': 0},
+            'processing':  {'color': False,
+                            'resizebyfactor': 1,
+                            'blur': 10,
+                            'morphologyex': True}}
 
 
-    def test_MOG2apply(self):
-        bgs = bw.BackgroundSubtractorMOG2(History=10)
-        frames = create_frameswithmovingcircle(nframes=5, width=1080,
-                                               height=720)
-        for fg in frames.apply_backgroundsegmenter(bgs,  roi=(10, 710, 10, 500),
-                                                   nroi=(20, 30, 20, 30)):
-            pass
+class TestApplySettingst(unittest.TestCase):
 
-
-class TestBackgroundSubtractorLSBP(unittest.TestCase):
-
-    def test_LSBPdefaultinstantiation(self):
-        bw.BackgroundSubtractorLSBP()
-
-    def test_LSBPparams(self):
-        bgs = bw.BackgroundSubtractorLSBP(nSamples=10)
-        self.assertEqual(bgs.get_params()['nSamples'], 10)
-
-    def test_LSBPapply(self):
-        bgs = bw.BackgroundSubtractorLSBP()
-        frames = create_frameswithmovingcircle(nframes=5, width=1080,
-                                               height=720)
-        for fg in frames.apply_backgroundsegmenter(bgs):
-            pass
+    def test_applysettings(self):
+        vfs = bw.testvideosmall()
+        settings_flat = {**settings['bgs_params'], **settings['processing']}
+        frames = md.apply_settings(vfs, settings_flat)
+        self.assertIsInstance(frames, bw.Frames)
 
 
 class TestDetectMovement(unittest.TestCase):
@@ -72,21 +45,23 @@ class TestDetectMovement(unittest.TestCase):
     def tearDown(self):
         shutil.rmtree(self.tempdirname1)
 
-    def test_MOG2(self):
-        bgs = bw.BackgroundSubtractorMOG2(History=2)
-        bw.detect_movement(self.vfs, bgs=bgs,
-                           analysispath=self.tempdirname1, overwrite=True)
+    def test_detectmovement(self):
+        cd, _, _ = md.detect_movement(self.vfs, nframes=200,
+                                      analysispath=self.tempdirname1,
+                                      overwrite=True)
+        self.assertIsInstance(cd, bw.CoordinateArrays)
 
-    def test_KNN(self):
-        bgs = bw.BackgroundSubtractorKNN(History=2)
-        bw.detect_movement(self.vfs, bgs=bgs,
-                           analysispath=self.tempdirname1, overwrite=True)
-
-    def test_LSBP(self):
-        bgs = bw.BackgroundSubtractorLSBP(History=2)
-        bw.detect_movement(self.vfs, bgs=bgs,
-                           analysispath=self.tempdirname1,
-                           overwrite=True)
+    def test_movementsettings(self):
+        cd, _, _ = md.detect_movement(self.vfs, settings=settings, 
+                                      nframes=200, 
+                                      analysispath=self.tempdirname1, 
+                                      overwrite=True)
+        self.assertEqual(cd.metadata['settings']['History'], 12)
+        self.assertEqual(cd.metadata['settings']['blur'], 10)
+    
+    def test_exception(self):
+        with self.assertRaises(TypeError):
+            md.detect_movement('not_a_videofilestream_object')
 
 
 class TestBatchDetectMovement(unittest.TestCase):
@@ -104,7 +79,6 @@ class TestBatchDetectMovement(unittest.TestCase):
         p1 = self.vfs
         p2 = p1.iter_frames().tovideo(self.tempdirname1 / 'even2.mp4',
                                       framerate=p1.avgframerate)
-        bgs = bw.BackgroundSubtractorKNN(History=2)
-        bw.batch_detect_movement([p1,p2], bgs=bgs,
-                                 analysispath=self.tempdirname1, overwrite=True)
-
+        md.batch_detect_movement([p1,p2], nframes=200,
+                                 analysispath=self.tempdirname1, 
+                                 overwrite=True)

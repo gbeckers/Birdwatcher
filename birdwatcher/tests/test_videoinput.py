@@ -37,6 +37,11 @@ class TestVideos(unittest.TestCase):
         vf = bw.testvideosmall()
         frame = vf.get_frame(100)
         self.assertSequenceEqual(frame.shape, (720,1280,3))
+    
+    def test_getframeat(self):
+        vf = bw.testvideosmall()
+        frame = vf.get_frameat('00:10.')
+        self.assertSequenceEqual(frame.shape, (720,1280,3))
 
     def test_extractaudio(self):
         d = Path(tempfile.mkdtemp())
