@@ -115,13 +115,11 @@ Movement detection contains top-level functionality. The classes, methods and fu
 
 .. automodule:: birdwatcher.movementdetection.movementdetection
 
+.. autofunction:: birdwatcher.movementdetection.batch_detect_movement
+
 .. autofunction:: birdwatcher.movementdetection.detect_movement
 
-.. autofunction:: birdwatcher.movementdetection.detect_movementmog2
-
-.. autofunction:: birdwatcher.movementdetection.detect_movementknn
-
-.. autofunction:: birdwatcher.movementdetection.detect_movementlsbp
+.. autofunction:: birdwatcher.movementdetection.apply_settings
 
 .. autofunction:: birdwatcher.movementdetection.create_movementvideo
 
@@ -152,5 +150,12 @@ Utils
 
 .. automodule:: birdwatcher.utils
 
-.. autofunction:: birdwatcher.utils.walk_paths
+.. autofunction:: birdwatcher.utils.product_dict
 
+.. autofunction:: birdwatcher.utils.tempdir
+
+.. autofunction:: birdwatcher.utils.derive_filepath
+
+.. autofunction:: birdwatcher.utils.print_dirstructure
+
+.. autofunction:: birdwatcher.utils.walk_paths
