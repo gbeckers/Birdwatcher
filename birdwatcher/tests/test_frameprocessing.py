@@ -9,11 +9,11 @@ import birdwatcher as bw
 from birdwatcher.frames import Frames, FramesColor, framecolor, framegray
 
 
-colorlist = [framecolor(width=640, height=480, color=(0,0,0)),
-             framecolor(width=640, height=480, color=(1,1,1))]
+colorlist = [framecolor(height=480, width=640, color=(0,0,0)),
+             framecolor(height=480, width=640, color=(1,1,1))]
 
-graylist = [framegray(width=640, height=480, value=0),
-            framegray(width=640, height=480, value=1)]
+graylist = [framegray(height=480, width=640, value=0),
+            framegray(height=480, width=640, value=1)]
 
 
 class TestFrames(unittest.TestCase):
@@ -26,6 +26,13 @@ class TestFrames(unittest.TestCase):
     def test_color(self):
         for frame in FramesColor(5, height=480, width=640, color= (0,0,0)):
             self.assertEqual(frame.sum(), 0)
+    
+    def test_calcmeanframe(self):
+        frames = Frames([framecolor(height=480, width=640, color=(10,10,10)),
+                         framecolor(height=480, width=640, color=(30,30,30))])
+        meanframe = frames.calc_meanframe()
+        self.assertTupleEqual(meanframe.shape, (480, 640, 3))
+        self.assertEqual(meanframe[0,0].sum(), 60)
 
 
 class TestPeekFrame(unittest.TestCase):

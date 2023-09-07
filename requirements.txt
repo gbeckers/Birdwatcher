@@ -1,5 +1,7 @@
 numpy
-darr >= 0.4.1
+pandas
 matplotlib
+seaborn
+darr >= 0.4.1
 opencv-python
 opencv-contrib-python
