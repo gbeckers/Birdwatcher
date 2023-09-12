@@ -1,5 +1,4 @@
 import sys
-from distutils.core import setup
 import versioneer
 import setuptools
 
@@ -37,7 +36,7 @@ Utrecht University. It is open source, freely available under the `New BSD Licen
 
 """
 
-setup(
+setuptools.setup(
     name='birdwatcher',
     version=versioneer.get_version(),
     cmdclass=versioneer.get_cmdclass(),
