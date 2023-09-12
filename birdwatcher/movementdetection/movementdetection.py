@@ -191,6 +191,12 @@ def apply_settings(vfs, settings, startat=None, nframes=None, roi=None,
     if settings['resizebyfactor'] != 1:
         val = settings['resizebyfactor']
         frames = frames.resizebyfactor(val,val)
+        
+        # resizebyfactor roi and nroi
+        if roi is not None:
+            roi = tuple([int(r*val) for r in roi])
+        if nroi is not None:
+            nroi = tuple([int(r*val) for r in roi])
 
     if settings['blur']:
         val = settings['blur']
