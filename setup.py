@@ -11,7 +11,7 @@ long_description = \
 """|Github CI Status| |PyPi version| |Docs Status| |Repo Status|
 |Codecov status|
 
-.. image:: https://github.com/gbeckers/Birdwatcher/blob/master/docs/images/banner.gif
+.. image:: https://raw.githubusercontent.com/gbeckers/Birdwatcher/57e1c452c6ee6d51b70acf52da8a3e316adc097a/docs/images/banner.gif
   :align: center
   :width: 720
 
