@@ -88,6 +88,12 @@ If you do not use the conda way above to install ffmpeg, you need to
 install it yourself (https://www.ffmpeg.org/).
 
 
+Run notebooks tutorial
+----------------------
+
+To quickly learn the fundamentals of Birdwatcher, please walk through our notebooks. First, you need to download the notebooks and example videos. Then, navigate to the directory of the notebooks and activate the 'mybirdwatcher' environment. Type `jupyter lab` which opens in your browser. You can now open the notebooks and run the tutorial.
+
+
 Test
 ----
 
