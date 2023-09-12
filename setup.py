@@ -8,7 +8,14 @@ if sys.version_info < (3,9):
     sys.exit(1)
 
 long_description = \
-"""Birdwatcher is a Python computer vision library for analyzing animal behavior
+"""|Github CI Status| |PyPi version| |Docs Status| |Repo Status|
+|Codecov status|
+
+.. image:: https://github.com/gbeckers/Birdwatcher/blob/master/docs/images/banner.gif
+  :align: center
+  :width: 720
+
+Birdwatcher is a Python computer vision library for analyzing animal behavior
 in a Python scientific computing environment.
 
 Birdwatcher should help you getting up and running quickly when building
@@ -33,6 +40,19 @@ Documentation can be found at https://birdwatcher.readthedocs.io .
 It is developed by Gabriel Beckers and Carien Mol, at Experimental Psychology,
 Utrecht University. It is open source, freely available under the `New BSD License
 <https://opensource.org/licenses/BSD-3-Clause>`__ terms.
+
+.. |Repo Status| image:: https://www.repostatus.org/badges/latest/active.svg
+   :alt: Project Status: Active – The project has reached a stable, usable state and is being actively developed.
+   :target: https://www.repostatus.org/#active
+.. |Github CI Status| image:: https://github.com/gbeckers/Birdwatcher/actions/workflows/python_package.yml/badge.svg
+   :target: https://github.com/gbeckers/Birdwatcher/actions/workflows/python_package.yml
+.. |PyPi version| image:: https://img.shields.io/badge/pypi-0.3.0-orange.svg
+   :target: https://pypi.org/project/birdwatcher/
+.. |Docs Status| image:: https://readthedocs.org/projects/birdwatcher/badge/?version=latest
+   :target: https://birdwatcher.readthedocs.io/en/latest/
+.. |Codecov status| image:: https://codecov.io/gh/gbeckers/Birdwatcher/branch/master/graph/badge.svg?token=829BH0NSVM
+   :target: https://codecov.io/gh/gbeckers/Birdwatcher
+
 
 """
 
