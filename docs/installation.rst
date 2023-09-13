@@ -4,36 +4,48 @@ Installation
 
 .. contents:: :local:
 
-Installation Birdwatcher package
---------------------------------
-
 Birdwatcher officially supports Python 3.9 or higher, but older
 Python 3 versions may also work.
 
 **User installation**
 
-1) We recommend using Anaconda for installation. Install Anaconda from https://www.anaconda.com/ .
+#. We recommend using Anaconda for installation. Install Anaconda from https://www.anaconda.com/ .
 
-2) Open Anaconda prompt in terminal.
+#. Open Anaconda prompt in terminal.
 
-3) Create new environment for Birdwatcher (name is up to you, in example
-   here 'mybirdwatcher'). We install Jupter lab and ffmpeg at the same time::
+#. Create new environment for Birdwatcher (name is up to you, in example here 'mybirdwatcher'). We install Jupyter lab and ffmpeg at the same time:
 
-    $ conda create -n mybirdwatcher python=3.9 jupyterlab ffmpeg
+    .. code-block:: bash
 
-4) Switch to this new environment:
+      $ conda create -n mybirdwatcher python=3.9 jupyterlab ffmpeg git
 
-   Linux and MacOS::
+#. Switch to this new environment:
 
-    $ source activate mybirdwatcher
+   Linux and MacOS:
 
-   Windows::
+    .. code-block:: bash
 
-    $ conda activate mybirdwatcher
+      $ source activate mybirdwatcher
 
-5) Install Birdwatcher master branch from git repo::
+   Windows:
 
-    $ pip install git+https://github.com/gbeckers/birdwatcher@master
+    .. code-block:: bash
+
+      $ conda activate mybirdwatcher
+
+#. Install Birdwatcher:
+
+   Stable latest official release from PyPi:
+
+    .. code-block:: bash
+
+      $ pip install Birdwatcher
+
+   If instead you want the latest version of the git master branch from, use:
+
+    .. code-block:: bash
+
+      $ pip install git+https://github.com/gbeckers/birdwatcher@master
 
 
 **Dependencies**
@@ -53,5 +65,5 @@ It further depends on:
 
 - ffmpeg (including ffprobe)
 
-If you do not use the conda way above to install it, you need to
+If you do not use the conda way above to install ffmpeg, you need to
 install it yourself (https://www.ffmpeg.org/).
