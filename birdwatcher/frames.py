@@ -565,10 +565,9 @@ class Frames:
             firstframe = self.peek_frame()
             completeframe = np.zeros((firstframe.shape[0],
                                       firstframe.shape[1]), dtype=np.uint8)
-            h1,h2,w1,w2 = roi
-
         for frame in self._frames:
             if roi is not None:
+                h1,h2,w1,w2 = roi
                 frame = frame[h1:h2, w1:w2]
             mask = bgs.apply(frame=frame, fgmask=fgmask,
                              learningRate=learningRate)
