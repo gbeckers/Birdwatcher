@@ -196,7 +196,7 @@ def apply_settings(vfs, settings, startat=None, nframes=None, roi=None,
         if roi is not None:
             roi = tuple([int(r*val) for r in roi])
         if nroi is not None:
-            nroi = tuple([int(r*val) for r in roi])
+            nroi = tuple([int(r*val) for r in nroi])
 
     if settings['blur']:
         val = settings['blur']
