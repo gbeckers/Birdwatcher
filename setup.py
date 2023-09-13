@@ -28,6 +28,11 @@ frames etc. Much of the underlying video and image processing is based on
 but Birdwatcher is a lot easier to use for many tasks because its
 higher-level implementation of functionality as compared to these tools.
 
+In addition to video analysis tools, Birdwatcher has high-level functions 
+for behavioral analysis based on those tools, although currently these are 
+limited to movement/location detection of single animals.
+
+
 Despite its name, Birdwatcher is not only for birds. We also successfully
 analyzed dog behavior, and it could be used on anything that moves. It is
 being used in our lab but still under heavy development, and should be

@@ -12,7 +12,7 @@ Birdwatcher is a Python computer vision library for analyzing animal behavior in
 
 Birdwatcher should help you getting up and running quickly when building analysis code or tools for specific measurements. It provides functionality that is common in video analysis, such as reading and writing videos into and from numpy arrays, applying processing algorithms such as background subtraction, morphological transformation, resizing, drawing on frames etc. Much of the underlying video and image processing is based on `FFmpeg <https://www.ffmpeg.org/>`__ and `OpenCV <https://opencv.org/>`__, but Birdwatcher is easier to use for many tasks because its higher-level implementation of functionality.
 
-Users can use Birdwatcher to efficiently write code for behavioral analysis. If it targets common use cases, such analysis code can in turn become part of Birdwatcher . At the moment behavioral analysis is limited to movement/location detection of single animals.
+In addition to video analysis tools, Birdwatcher has high-level functions for behavioral analysis based on those tools, although currently these are limited to movement/location detection of single animals.
 
 Despite its name, Birdwatcher is not only for birds. We also successfully analyzed dog behavior, and it could be used on anything that moves. It is being used in our lab but still under heavy development, and should be considered alpha software.
 
