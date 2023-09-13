@@ -29,7 +29,7 @@ but Birdwatcher is a lot easier to use for many tasks because its
 higher-level implementation of functionality as compared to these tools.
 
 In addition to video analysis tools, Birdwatcher has high-level functions 
-for behavioral analysis based on those tools, although currently these are 
+for behavioral analysis based on such tools, although currently these are 
 limited to movement/location detection of single animals.
 
 
