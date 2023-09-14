@@ -75,7 +75,7 @@ Python 3 versions may also work.
 **Dependencies**
 
 The following dependencies are automatically taken care of when you
-install Birdwatcher from GitHub using the pip method above:
+install Birdwatcher using the pip method above:
 
 - numpy
 - pandas
