@@ -143,7 +143,8 @@ class VideoFileStream():
         return count_frames(self.filepath, threads=threads,
                             ffprobepath=ffprobepath)
 
-    def extract_audio(self, outputpath=None, overwrite=False):
+    def extract_audio(self, outputpath=None, overwrite=False, 
+                      ffmpegpath='ffmpeg', loglevel='quiet'):
         """Extract audio as 24-bit pcm wav file.
 
         Parameters
@@ -154,11 +155,19 @@ class VideoFileStream():
             '.wav' extension.
         overwrite : bool, default=False
             Overwrite if audio file exists or not.
+        ffmpegpath : str or pathlib.Path, optional
+            Path to ffmpeg executable. Default is `ffmpeg`, which means it
+            should be in the system path.
+        loglevel : {'quiet', 'panic', 'fatal', 'error', 'warning', 'info', 
+                    'verbose', 'debug' ,'trace'}, optional
+            Level of info that ffmpeg should print to terminal. Default is 
+            'quiet'.
 
         """
         filepath = self.filepath
         return extract_audio(filepath=filepath, outputpath=outputpath,
-                             overwrite=overwrite)
+                             overwrite=overwrite, ffmpegpath=ffmpegpath, 
+                             loglevel=loglevel)
 
     @frameiterator
     def iter_frames(self, startat=None, nframes=None, color=True,
