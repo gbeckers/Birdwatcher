@@ -209,7 +209,7 @@ def get_frameat(filepath, time, color=True, ffmpegpath='ffmpeg',
 
 
 # FIXME do not assume things on audio (i.e. number of channels) and make more versatile
-def extract_audio(filepath, outputpath=None, overwrite=False, verbosity=0,
+def extract_audio(filepath, outputpath=None, overwrite=False, 
                   ffmpegpath='ffmpeg', loglevel= 'quiet'):
     filepath = Path(filepath)
     if outputpath is None:
