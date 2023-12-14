@@ -1,6 +1,10 @@
 Release notes
 =============
 
+- bug correction in notebook 5: fix copy and update of settings dictionary when looking at range of parameter values.
+- `extract_audio' has more argument options, such as specifying the codec and  channel number that should be extracted.
+
+
 Version 0.4
 -----------
 
