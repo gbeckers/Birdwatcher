@@ -210,17 +210,19 @@ def get_frameat(filepath, time, color=True, ffmpegpath='ffmpeg',
 
 # FIXME do not assume things on audio (i.e. number of channels) and make more versatile
 def extract_audio(filepath, outputpath=None, overwrite=False, 
-                  ffmpegpath='ffmpeg', loglevel='quiet'):
-    """Extract audio as 24-bit pcm wav file.
+                  codec='pcm_s24le', ffmpegpath='ffmpeg', loglevel='quiet'):
+    """Extract audio as wav file.
 
     Parameters
     ----------
     outputpath : str or pathlib.Path, optional
         Filename and path to write audio to. The default is None, which means 
-        the same name as the video file is used, but then with '.wav' 
-        extension.
+        the same directoy and name as the video file is used, but then with 
+        '.wav' extension.
     overwrite : bool, default=False
         Overwrite if audio file exists or not.
+    codec : str, default='pcm_s24le'
+        ffmpeg audio codec, with 24-bit pcm as default output.
     ffmpegpath : str or pathlib.Path, optional
         Path to ffmpeg executable. Default is `ffmpeg`, which means it should 
         be in the system path.
@@ -240,7 +242,7 @@ def extract_audio(filepath, outputpath=None, overwrite=False,
     args = [str(ffmpegpath), '-loglevel' , loglevel, '-y',
             '-i', str(filepath),
             '-vn',
-            '-codec:a', 'pcm_s24le',
+            '-codec:a', codec,
             str(outputpath)]
     with subprocess.Popen(args, stdout=subprocess.PIPE,
                           stderr=subprocess.PIPE) as p:
