@@ -208,9 +208,9 @@ def get_frameat(filepath, time, color=True, ffmpegpath='ffmpeg',
                                    loglevel=loglevel))
 
 
-# FIXME do not assume things on audio (i.e. number of channels) and make more versatile
 def extract_audio(filepath, outputpath=None, overwrite=False, 
-                  codec='pcm_s24le', ffmpegpath='ffmpeg', loglevel='quiet'):
+                  codec='pcm_s24le', channel=None, ffmpegpath='ffmpeg', 
+                  loglevel='quiet'):
     """Extract audio as wav file.
 
     Parameters
@@ -223,12 +223,15 @@ def extract_audio(filepath, outputpath=None, overwrite=False,
         Overwrite if audio file exists or not.
     codec : str, default='pcm_s24le'
         ffmpeg audio codec, with 24-bit pcm as default output.
+    channel : int, default=None
+        Channel number to extract. The default None will extract all channels.
     ffmpegpath : str or pathlib.Path, optional
         Path to ffmpeg executable. Default is `ffmpeg`, which means it should 
         be in the system path.
     loglevel : {'quiet', 'panic', 'fatal', 'error', 'warning', 'info', 
                 'verbose', 'debug' ,'trace'}, optional
-        Level of info that ffmpeg should print to terminal. Default is'quiet'.
+        Level of info that ffmpeg should print to terminal. Default is 
+        'quiet'.
 
     """
     filepath = Path(filepath)
@@ -242,8 +245,10 @@ def extract_audio(filepath, outputpath=None, overwrite=False,
     args = [str(ffmpegpath), '-loglevel' , loglevel, '-y',
             '-i', str(filepath),
             '-vn',
-            '-codec:a', codec,
-            str(outputpath)]
+            '-codec:a', codec]
+    if channel is not None:
+        args += ['-af', f'pan=mono|c0=c{channel-1}']
+    args += [str(outputpath)]
     with subprocess.Popen(args, stdout=subprocess.PIPE,
                           stderr=subprocess.PIPE) as p:
         out, err = p.communicate()

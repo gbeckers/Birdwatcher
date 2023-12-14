@@ -144,7 +144,7 @@ class VideoFileStream():
                             ffprobepath=ffprobepath)
 
     def extract_audio(self, outputpath=None, overwrite=False, 
-                      codec='pcm_s24le', ffmpegpath='ffmpeg', 
+                      codec='pcm_s24le', channel=None, ffmpegpath='ffmpeg', 
                       loglevel='quiet'):
         """Extract audio as wav file.
 
@@ -158,6 +158,9 @@ class VideoFileStream():
             Overwrite if audio file exists or not.
         codec : str, default='pcm_s24le'
             ffmpeg audio codec, with 24-bit pcm as default output.
+        channel : int, default=None
+            Channel number to extract. The default None will extract all 
+            channels.
         ffmpegpath : str or pathlib.Path, optional
             Path to ffmpeg executable. Default is `ffmpeg`, which means it
             should be in the system path.
@@ -170,7 +173,8 @@ class VideoFileStream():
         filepath = self.filepath
         return extract_audio(filepath=filepath, outputpath=outputpath,
                              overwrite=overwrite, codec=codec, 
-                             ffmpegpath=ffmpegpath, loglevel=loglevel)
+                             channel=channel, ffmpegpath=ffmpegpath, 
+                             loglevel=loglevel)
 
     @frameiterator
     def iter_frames(self, startat=None, nframes=None, color=True,
