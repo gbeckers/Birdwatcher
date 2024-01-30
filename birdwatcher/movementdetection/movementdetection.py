@@ -219,6 +219,11 @@ def create_movementvideo(vfs, coords, startat=None, nframes=None,
                          draw_framenumbers=(2, 25), crf=17, scale=None):
     """Create a nice video from the original video with movement detection
     results superimposed.
+    
+    Note that the parameters 'startat' and 'nframes' can be used to select a 
+    fragment of the video, but these parameters are not used to get the same 
+    selection of the movement detection results('coords'). Thus, always all 
+    frames from 'coords' are used to plot on the video(fragment).
 
     Parameters
     ----------
