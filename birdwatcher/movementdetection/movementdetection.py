@@ -22,16 +22,30 @@ def _f(rar):
     darr.delete_raggedarray(rar)
 
 
-def batch_detect_movement(vfs_list, settings=None, startat=None, nframes=None, 
-                          roi=None, nroi=None, 
+def batch_detect_movement(vfs_list, settings=None, startat=None, 
+                          nframes=None, roi=None, nroi=None, 
                           bgs_type=bw.BackgroundSubtractorMOG2, 
                           analysispath='.', ignore_firstnframes=10, 
-                          overwrite=False, resultvideo=False, nprocesses=6):
-    """The reason for having a special batch function, instead of just
-    applying functions in a loop, is that compression of coordinate results
-    takes a long time and is single-threaded. We therefore do this in
-    parallel. Use the `nprocesses` parameter to specify the number of cores
-    devoted to this.
+                          overwrite=False, resultvideo=False, 
+                          archived=True, nprocesses=6):
+    """Batch function to apply movement detection to a list of videofiles.
+
+    As default, the coordinate arrays are saved as archived data folders to 
+    reduce memory use. Compression of coordinate results takes a long time and 
+    is single-threaded. We therefore do this in parallel. Use the `nprocesses` 
+    parameter to specify the number of cores devoted to this.
+
+    Parameters
+    ----------
+    archived : bool, default=True
+        As default, the coordinate data are saved as archived data folders. 
+        Use False, to save the coordinate data without compression.
+    nprocesses : int, default=6
+        The number of cores devoted to archiving the coordinate data, if 
+        `archived` is set `True`.
+
+    See the docstrings of `dectect_movement` for an explanation of the other 
+    parameters.
 
     """
     from multiprocessing.pool import ThreadPool
@@ -43,13 +57,14 @@ def batch_detect_movement(vfs_list, settings=None, startat=None, nframes=None,
                                      bgs_type=bgs_type, 
                                      analysispath=analysispath, 
                                      ignore_firstnframes=ignore_firstnframes, 
-                                     overwrite=overwrite,
+                                     overwrite=overwrite, 
                                      resultvideo=resultvideo)
-        tobearchived.append(cd)
-        if (len(tobearchived) == nprocesses) or (i == (len(vfs_list) - 1)):
-            with ThreadPool(processes=nprocesses) as pool:
-                list([i for i in pool.imap_unordered(_f, tobearchived)])
-            tobearchived = []
+        if archived:
+            tobearchived.append(cd)
+            if (len(tobearchived) == nprocesses) or (i == (len(vfs_list)-1)):
+                with ThreadPool(processes=nprocesses) as pool:
+                    list([i for i in pool.imap_unordered(_f, tobearchived)])
+                tobearchived = []
 
 
 def detect_movement(vfs, settings=None, startat=None, nframes=None, roi=None, 
