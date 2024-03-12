@@ -26,7 +26,8 @@ from .utils import tempdir
 from .frames import frameiterator
 
 
-__all__ = ['CoordinateArrays', 'open_archivedcoordinatedata',
+__all__ = ['CoordinateArrays', 'open_archivedcoordinatedata', 
+           'extract_archivedcoordinatedata', 'delete_coordinatearray', 
            'create_coordarray']
 
 
@@ -317,9 +318,6 @@ def create_coordarray(path, framewidth, frameheight, metadata=None,
     return CoordinateArrays(coords.path, accessmode='r+')
 
 
-delete_coordinatearray = delete_raggedarray
-
-
 @ contextmanager
 def open_archivedcoordinatedata(path, temppath=None):
     """A context manager that temporarily decompresses coordinate
@@ -337,7 +335,7 @@ def open_archivedcoordinatedata(path, temppath=None):
 
     Examples
     --------
-    >>> with open_archivedcoordinatedata('coord.tar.xz') as coords:
+    >>> with open_archivedcoordinatedata('coords.darr.tar.xz') as coords:
             # do stuff with coordinate array
 
     """
@@ -351,6 +349,33 @@ def open_archivedcoordinatedata(path, temppath=None):
         tar.close()
         capath = list(dirname.glob('*'))[0]
         yield CoordinateArrays(capath)
+
+
+def extract_archivedcoordinatedata(path):
+    """An archived coordinate array (.tar.xz) is decompressed.
+
+    Parameters
+    ----------
+    path : str
+        Path to the archived coordinate array.
+
+    Returns
+    -------
+    CoordinateArrays
+
+    """
+    path = Path(path)
+    if not path.suffix == '.xz':
+        raise OSError(f'{path} does not seem to be archived coordinate data')
+
+    tar = tarfile.open(path)
+    tar.extractall(path=path.parent)
+    tar.close()
+
+    return CoordinateArrays(path.parent/'coords.darr')
+
+
+delete_coordinatearray = delete_raggedarray
 
 
 def move_coordinatearrays(sourcedirpath, targetdirpath):
