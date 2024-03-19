@@ -39,7 +39,7 @@ class TestDetectMovement(unittest.TestCase):
     def setUp(self):
         self.tempdirname1 = Path(tempfile.mkdtemp())
         self.vfs = (bw.testvideosmall()
-                      .iter_frames(nframes=20)
+                      .iter_frames(nframes=200)
                       .tovideo(self.tempdirname1 / 'even1.mp4', framerate=25))
 
     def tearDown(self):
@@ -69,7 +69,7 @@ class TestBatchDetectMovement(unittest.TestCase):
     def setUp(self):
         self.tempdirname1 = Path(tempfile.mkdtemp())
         self.vfs = (bw.testvideosmall()
-                    .iter_frames(nframes=20)
+                    .iter_frames(nframes=200)
                     .tovideo(self.tempdirname1 / 'even1.mp4', framerate=25))
 
     def tearDown(self):
@@ -81,4 +81,16 @@ class TestBatchDetectMovement(unittest.TestCase):
                                       framerate=p1.avgframerate)
         md.batch_detect_movement([p1,p2], nframes=200,
                                  analysispath=self.tempdirname1, 
-                                 overwrite=True)
+                                 overwrite=True, archived=False)
+        filepath = self.tempdirname1 / 'movement_even1/coords.darr'
+        self.assertTrue(Path.exists(filepath))
+        
+    def test_batcharchive(self):
+        p1 = self.vfs
+        p2 = p1.iter_frames().tovideo(self.tempdirname1 / 'even2.mp4',
+                                      framerate=p1.avgframerate)
+        md.batch_detect_movement([p1,p2], nframes=200,
+                                 analysispath=self.tempdirname1,
+                                 overwrite=True, archived=True)
+        filepath = self.tempdirname1 / 'movement_even1/coords.darr.tar.xz'
+        self.assertTrue(Path.exists(filepath))
