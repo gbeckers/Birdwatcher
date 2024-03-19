@@ -26,9 +26,9 @@ from .utils import tempdir
 from .frames import frameiterator
 
 
-__all__ = ['CoordinateArrays', 'open_archivedcoordinatedata', 
-           'extract_archivedcoordinatedata', 'delete_coordinatearray', 
-           'create_coordarray']
+__all__ = ['CoordinateArrays', 'create_coordarray', 
+           'open_archivedcoordinatedata', 'extract_archivedcoordinatedata', 
+           'delete_coordinatearray', 'move_coordinatearrays']
 
 
 def _coordstoframe(coords, width, height, nchannels=None, dtype='uint8',
