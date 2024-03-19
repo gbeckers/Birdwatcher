@@ -371,8 +371,13 @@ def extract_archivedcoordinatedata(path):
     tar = tarfile.open(path)
     tar.extractall(path=path.parent)
     tar.close()
+    
+    while path.suffix in {'.tar', '.xz'}: # remove extensions
+        path = path.with_suffix('')
+        
+    print(path)
 
-    return CoordinateArrays(path.parent/'coords.darr')
+    return CoordinateArrays(path)
 
 
 delete_coordinatearray = delete_raggedarray
