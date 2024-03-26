@@ -21,6 +21,13 @@ __all__ = ['Frames', 'FramesColor', 'FramesGray', 'FramesNoise', 'framecolor',
            'framegray', 'framenoise']
 
 
+def _check_writable(frame):
+    if not frame.flags.writeable:
+        return frame.copy()
+    else:
+        return frame
+
+
 def frameiterator(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
@@ -244,6 +251,7 @@ class Frames:
 
         """
         for frame, center in zip(self._frames, centers):
+            frame = _check_writable(frame)
             center = np.asanyarray(center)
             if not np.isnan(center).any():
                 (x, y) = center.astype('int16')
@@ -279,6 +287,7 @@ class Frames:
 
         """
         for frame, framepoints in zip(self._frames, points):
+            frame = _check_writable(frame)
             framepoints = np.asanyarray(framepoints)
             if not np.isnan(framepoints).any():
                 (pt1, pt2) = framepoints.astype('int16')
@@ -351,6 +360,7 @@ class Frames:
 
         """
         for frameno, frame in enumerate(self._frames):
+            frame = _check_writable(frame)
             yield cv.putText(frame, str(frameno + startat), org=org,
                              fontFace=fontface, fontScale=fontscale,
                              color=color, thickness=thickness,
@@ -390,6 +400,7 @@ class Frames:
 
         """
         for frame, text in zip(self._frames, textiterator):
+            frame = _check_writable(frame)
             yield cv.putText(frame, str(text), org=org,
                              fontFace=fontface, fontScale=fontscale,
                              color=color, thickness=thickness,
