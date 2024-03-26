@@ -255,8 +255,7 @@ class Frames:
                 yield frame
 
     @frameiterator
-    def draw_rectangles(self, points, color=(255, 100, 0),
-                     thickness=2, linetype=cv.LINE_AA, shift=0):
+    def draw_rectangles(self, points, color=(255, 100, 0), thickness=2):
         """Draws rectangles on frames.
 
         Points should be an iterable that has a length that corresponds to
@@ -272,10 +271,6 @@ class Frames:
             Color of rectangle (BGR). The default (255, 100, 0) color is blue.
         thickness : int, default=2
             Line thickness.
-        linetype : int, default=cv2.LINE_AA
-            OpenCV line type of rectangle boundary.
-        shift : int, default=0
-            Number of fractional bits in the  point coordinates.
 
         Yields
         ------
@@ -284,10 +279,12 @@ class Frames:
 
         """
         for frame, framepoints in zip(self._frames, points):
-            for (pt1, pt2) in framepoints:
-                yield cv.rectangle(frame, pt1=pt1, pt2=pt2, color=color,
-                                thickness=thickness, lineType=linetype,
-                                shift=shift)
+            framepoints = np.asanyarray(framepoints)
+            if not np.isnan(framepoints).any():
+                (pt1, pt2) = framepoints.astype('int16')
+                yield cv.rectangle(frame, pt1=pt1, pt2=pt2, color=color, thickness=thickness)
+            else:
+                yield frame
 
     @frameiterator
     def togray(self):
