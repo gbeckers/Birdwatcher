@@ -38,9 +38,7 @@ class TestDetectMovement(unittest.TestCase):
 
     def setUp(self):
         self.tempdirname1 = Path(tempfile.mkdtemp())
-        self.vfs = (bw.testvideosmall()
-                      .iter_frames(nframes=200)
-                      .tovideo(self.tempdirname1 / 'even1.mp4', framerate=25))
+        self.vfs = bw.testvideosmall()
 
     def tearDown(self):
         shutil.rmtree(self.tempdirname1)
@@ -68,29 +66,26 @@ class TestBatchDetectMovement(unittest.TestCase):
 
     def setUp(self):
         self.tempdirname1 = Path(tempfile.mkdtemp())
-        self.vfs = (bw.testvideosmall()
+        self.vfs1 = (bw.testvideosmall()
                     .iter_frames(nframes=200)
-                    .tovideo(self.tempdirname1 / 'even1.mp4', framerate=25))
+                    .tovideo(self.tempdirname1 / 'video1.mp4', framerate=25))
+        self.vfs2 = (bw.testvideosmall()
+                    .iter_frames(nframes=200)
+                    .tovideo(self.tempdirname1 / 'video2.mp4', framerate=25))
 
     def tearDown(self):
          shutil.rmtree(self.tempdirname1)
 
     def test_batchdetection(self):
-        p1 = self.vfs
-        p2 = p1.iter_frames().tovideo(self.tempdirname1 / 'even2.mp4',
-                                      framerate=p1.avgframerate)
-        md.batch_detect_movement([p1,p2], nframes=200,
+        md.batch_detect_movement([self.vfs1,self.vfs2], nframes=200,
                                  analysispath=self.tempdirname1, 
                                  overwrite=True, archived=False)
-        filepath = self.tempdirname1 / 'movement_even1/coords.darr'
-        self.assertTrue(Path.exists(filepath))
-        
+        self.assertTrue(Path.exists(self.tempdirname1/'movement_video1/coords.darr'))
+        self.assertTrue(Path.exists(self.tempdirname1/'movement_video2/coords.darr'))
+
     def test_batcharchive(self):
-        p1 = self.vfs
-        p2 = p1.iter_frames().tovideo(self.tempdirname1 / 'even2.mp4',
-                                      framerate=p1.avgframerate)
-        md.batch_detect_movement([p1,p2], nframes=200,
+        md.batch_detect_movement([self.vfs1,self.vfs2], nframes=200,
                                  analysispath=self.tempdirname1,
                                  overwrite=True, archived=True)
-        filepath = self.tempdirname1 / 'movement_even1/coords.darr.tar.xz'
-        self.assertTrue(Path.exists(filepath))
+        self.assertTrue(Path.exists(self.tempdirname1/'movement_video1/coords.darr.tar.xz'))
+        self.assertTrue(Path.exists(self.tempdirname1/'movement_video2/coords.darr.tar.xz'))
