@@ -31,6 +31,11 @@ __all__ = ['CoordinateArrays', 'create_coordarray',
            'delete_coordinatearray', 'move_coordinatearrays']
 
 
+def _archive(rar):
+    rar.archive(overwrite=True)
+    delete_raggedarray(rar)
+
+
 def _coordstoframe(coords, width, height, nchannels=None, dtype='uint8',
                    value=1):
     if nchannels is None:
@@ -374,8 +379,6 @@ def extract_archivedcoordinatedata(path):
     
     while path.suffix in {'.tar', '.xz'}: # remove extensions
         path = path.with_suffix('')
-        
-    print(path)
 
     return CoordinateArrays(path)
 
