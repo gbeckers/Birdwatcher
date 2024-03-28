@@ -91,6 +91,12 @@ class TestArchivedCoordinateArrays(unittest.TestCase):
         with bw.open_archivedcoordinatedata(self.archivename) as ca2:
             assert_array_equal(ca2[1], coords1)
 
+    def test_extract_archived(self):
+        coords1 = self.ca1[1]
+        _archive(self.ca1)
+        ca2 = bw.extract_archivedcoordinatedata(self.archivename)
+        assert_array_equal(ca2[1], coords1)
+
 
 class TestMoveCoordinateArrays(unittest.TestCase):
 
