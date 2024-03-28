@@ -17,7 +17,7 @@ default_settings = {'processing':{'color': False, # booleans only
                                   'resizebyfactor': 1}} # use '1' for no change in size
 
 
-def _f(rar):
+def _archive(rar):
     rar.archive(overwrite=True)
     darr.delete_raggedarray(rar)
 
@@ -63,7 +63,7 @@ def batch_detect_movement(vfs_list, settings=None, startat=None,
             tobearchived.append(cd)
             if (len(tobearchived) == nprocesses) or (i == (len(vfs_list)-1)):
                 with ThreadPool(processes=nprocesses) as pool:
-                    list([i for i in pool.imap_unordered(_f, tobearchived)])
+                    list([i for i in pool.imap_unordered(_archive, tobearchived)])
                 tobearchived = []
 
 
