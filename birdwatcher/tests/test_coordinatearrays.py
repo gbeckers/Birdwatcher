@@ -17,8 +17,6 @@ class TestCoordinateArrays(unittest.TestCase):
         self.tempdirname1 = tempfile.mkdtemp()
         fh, self.tempvideoname = tempfile.mkstemp()
         os.close(fh)
-        fh, self.temparchivename = tempfile.mkstemp(suffix='.tar.xz')
-        os.close(fh)
         metadata = {'avgframerate': 5}
         self.ca1 = bw.create_coordarray(path=self.tempdirname1,
                                     framewidth=1080, frameheight=720,
@@ -29,8 +27,6 @@ class TestCoordinateArrays(unittest.TestCase):
         shutil.rmtree(self.tempdirname1)
         if Path(self.tempvideoname).exists():
             Path(self.tempvideoname).unlink()
-        if Path(self.temparchivename).exists():
-            Path(self.temparchivename).unlink()
 
     def test_index(self):
         assert_array_equal(self.ca1[1], np.array([[5,6],[7,8]]))
@@ -66,11 +62,6 @@ class TestCoordinateArrays(unittest.TestCase):
         cmd = self.ca1.get_coordmedian()
         assert_array_equal(cmd, np.array([[2,3],[6,7],[3,4]]))
 
-    def test_open_archived(self):
-        ap = self.ca1.datadir.archive(self.temparchivename, overwrite=True)
-        with bw.open_archivedcoordinatedata(ap) as ca:
-            assert_array_equal(ca[1], self.ca1[1])
-
 
 class TestArchivedCoordinateArrays(unittest.TestCase):
 
@@ -79,8 +70,8 @@ class TestArchivedCoordinateArrays(unittest.TestCase):
         self.archivename = self.tempdirname1.parent / (self.tempdirname1.name + '.tar.xz')
         metadata = {'avgframerate': 5}
         self.ca1 = bw.create_coordarray(path=self.tempdirname1,
-                                    framewidth=1080, frameheight=720,
-                                    metadata=metadata, overwrite=True)
+                                        framewidth=1080, frameheight=720,
+                                        metadata=metadata, overwrite=True)
         self.ca1.iterappend([((1,2),(3,4)),((5,6),(7,8))])
         
     def tearDown(self):
@@ -93,6 +84,12 @@ class TestArchivedCoordinateArrays(unittest.TestCase):
         _archive(self.ca1)
         self.assertTrue(self.archivename.exists())
         self.assertFalse(self.tempdirname1.exists())
+    
+    def test_open_archived(self):
+        coords1 = self.ca1[1]
+        _archive(self.ca1)
+        with bw.open_archivedcoordinatedata(self.archivename) as ca2:
+            assert_array_equal(ca2[1], coords1)
 
 
 class TestMoveCoordinateArrays(unittest.TestCase):
