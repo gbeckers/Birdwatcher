@@ -7,8 +7,8 @@ from pathlib import Path
 import numpy as np
 from numpy.testing import assert_array_equal
 
-from birdwatcher.coordinatearrays import create_coordarray, \
-    open_archivedcoordinatedata, move_coordinatearrays, CoordinateArrays
+import birdwatcher as bw
+from birdwatcher.coordinatearrays import _archive
 
 
 class TestCoordinateArrays(unittest.TestCase):
@@ -17,10 +17,8 @@ class TestCoordinateArrays(unittest.TestCase):
         self.tempdirname1 = tempfile.mkdtemp()
         fh, self.tempvideoname = tempfile.mkstemp()
         os.close(fh)
-        fh, self.temparchivename = tempfile.mkstemp(suffix='.tar.xz')
-        os.close(fh)
         metadata = {'avgframerate': 5}
-        self.ca1 = create_coordarray(path=self.tempdirname1,
+        self.ca1 = bw.create_coordarray(path=self.tempdirname1,
                                     framewidth=1080, frameheight=720,
                                     metadata=metadata, overwrite=True)
         self.ca1.iterappend([((1,2),(3,4)),((5,6),(7,8))])
@@ -29,8 +27,6 @@ class TestCoordinateArrays(unittest.TestCase):
         shutil.rmtree(self.tempdirname1)
         if Path(self.tempvideoname).exists():
             Path(self.tempvideoname).unlink()
-        if Path(self.temparchivename).exists():
-            Path(self.temparchivename).unlink()
 
     def test_index(self):
         assert_array_equal(self.ca1[1], np.array([[5,6],[7,8]]))
@@ -66,10 +62,40 @@ class TestCoordinateArrays(unittest.TestCase):
         cmd = self.ca1.get_coordmedian()
         assert_array_equal(cmd, np.array([[2,3],[6,7],[3,4]]))
 
+
+class TestArchivedCoordinateArrays(unittest.TestCase):
+
+    def setUp(self):
+        self.tempdirname1 = Path(tempfile.mkdtemp())
+        self.archivename = self.tempdirname1.parent / (self.tempdirname1.name + '.tar.xz')
+        metadata = {'avgframerate': 5}
+        self.ca1 = bw.create_coordarray(path=self.tempdirname1,
+                                        framewidth=1080, frameheight=720,
+                                        metadata=metadata, overwrite=True)
+        self.ca1.iterappend([((1,2),(3,4)),((5,6),(7,8))])
+        
+    def tearDown(self):
+        if self.tempdirname1.exists():
+            shutil.rmtree(self.tempdirname1)
+        if self.archivename.exists():
+            self.archivename.unlink()
+    
+    def test_archive(self):
+        _archive(self.ca1)
+        self.assertTrue(self.archivename.exists())
+        self.assertFalse(self.tempdirname1.exists())
+    
     def test_open_archived(self):
-        ap = self.ca1.datadir.archive(self.temparchivename, overwrite=True)
-        with open_archivedcoordinatedata(ap) as ca:
-            assert_array_equal(ca[1], self.ca1[1])
+        coords1 = self.ca1[1]
+        _archive(self.ca1)
+        with bw.open_archivedcoordinatedata(self.archivename) as ca2:
+            assert_array_equal(ca2[1], coords1)
+
+    def test_extract_archived(self):
+        coords1 = self.ca1[1]
+        _archive(self.ca1)
+        ca2 = bw.extract_archivedcoordinatedata(self.archivename)
+        assert_array_equal(ca2[1], coords1)
 
 
 class TestMoveCoordinateArrays(unittest.TestCase):
@@ -78,7 +104,7 @@ class TestMoveCoordinateArrays(unittest.TestCase):
         self.tempdirname1 = tempfile.mkdtemp()
         self.tempdirname2 = tempfile.mkdtemp()
         path = Path(self.tempdirname1)/'even.darr'
-        self.ca1 = create_coordarray(path=path, framewidth=1080,
+        self.ca1 = bw.create_coordarray(path=path, framewidth=1080,
                                      frameheight=720, overwrite=True)
         self.ca1.iterappend([((1, 2), (3, 4)), ((5, 6), (7, 8))])
 
@@ -87,8 +113,8 @@ class TestMoveCoordinateArrays(unittest.TestCase):
         shutil.rmtree(self.tempdirname2)
 
     def test_movecoordinatearrays(self):
-        move_coordinatearrays(self.tempdirname1, self.tempdirname2)
-        ca2 = CoordinateArrays(Path(self.tempdirname2) / 'even.darr')
+        bw.move_coordinatearrays(self.tempdirname1, self.tempdirname2)
+        ca2 = bw.CoordinateArrays(Path(self.tempdirname2) / 'even.darr')
 
 
 

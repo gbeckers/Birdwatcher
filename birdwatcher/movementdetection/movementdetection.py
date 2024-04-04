@@ -5,6 +5,7 @@ import darr
 
 import birdwatcher as bw
 from birdwatcher.utils import derive_filepath
+from birdwatcher.coordinatearrays import _archive
 
 
 __all__ = ['batch_detect_movement', 'detect_movement', 'apply_settings', 
@@ -15,11 +16,6 @@ default_settings = {'processing':{'color': False, # booleans only
                                   'blur': 0, # use '0' for no blur
                                   'morphologyex': True, # booleans only
                                   'resizebyfactor': 1}} # use '1' for no change in size
-
-
-def _f(rar):
-    rar.archive(overwrite=True)
-    darr.delete_raggedarray(rar)
 
 
 def batch_detect_movement(vfs_list, settings=None, startat=None, 
@@ -63,7 +59,7 @@ def batch_detect_movement(vfs_list, settings=None, startat=None,
             tobearchived.append(cd)
             if (len(tobearchived) == nprocesses) or (i == (len(vfs_list)-1)):
                 with ThreadPool(processes=nprocesses) as pool:
-                    list([i for i in pool.imap_unordered(_f, tobearchived)])
+                    list([i for i in pool.imap_unordered(_archive, tobearchived)])
                 tobearchived = []
 
 
