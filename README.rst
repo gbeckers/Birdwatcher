@@ -126,7 +126,7 @@ Examples
 --------
 
 See `jupyter notebook directory
-<https://github .com/gbeckers/Birdwatcher/tree/master/notebooks>`__.
+<https://github.com/gbeckers/Birdwatcher/tree/master/notebooks>`__.
 
 Contributions
 -------------
