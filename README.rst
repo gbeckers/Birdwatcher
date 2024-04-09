@@ -19,8 +19,7 @@ Despite its name, Birdwatcher is not only for birds. We also successfully analyz
 Code can be found on GitHub: https://github.com/gbeckers/Birdwatcher .
 
 Example notebooks are currently the best introduction on how to use
-Birdwatcher. See `jupyter notebook directory <https://github
-.com/gbeckers/Birdwatcher/tree/master/notebooks>`__.
+Birdwatcher. See `jupyter notebook directory <https://github.com/gbeckers/Birdwatcher/tree/master/notebooks>`__.
 
 Documentation can be found at https://birdwatcher.readthedocs.io .
 
