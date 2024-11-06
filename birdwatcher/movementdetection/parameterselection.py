@@ -392,7 +392,7 @@ def apply_all_parameters(vfs, all_settings, startat=None, nframes=None,
     # create long-format DataFrame
     df = pd.concat(list_with_dfs, axis=1)
     df.index.name = 'framenumber'
-    df = (df.stack(list(range(df.columns.nlevels)), dropna=False)
+    df = (df.stack(df.columns.names, future_stack=True)
           .reset_index()  # stack all column levels
           .rename({0: 'pixel'}, axis=1))
 
