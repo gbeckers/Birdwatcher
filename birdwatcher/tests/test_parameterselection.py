@@ -86,3 +86,24 @@ class TestParameterSelection(unittest.TestCase):
         self.params.save_parameters(self.tempdirname1)
         self.params.save_parameters(self.tempdirname1)
         self.assertEqual(self.params.path[-1], '2')
+
+
+class TestParamSelectionCount(unittest.TestCase):
+
+    def setUp(self):
+        self.tempdirname1 = Path(tempfile.mkdtemp())
+        try:
+            self.params = md.apply_all_parameters(bw.testvideosmall(), 
+                                                  settings, nframes=200,
+                                                  use_stats='count')
+        except:
+            self.tearDown()
+            raise
+
+    def tearDown(self):
+        shutil.rmtree(self.tempdirname1)
+
+    def test_count(self):
+        coordslabels = self.params.df.coords.unique()
+        self.assertEqual(coordslabels.shape, (1,))
+        self.assertEqual(coordslabels[0], 'count')
