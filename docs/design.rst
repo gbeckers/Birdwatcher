@@ -29,7 +29,7 @@ interface have not been implemented yet.
 
 Birdwatcher is open and free. Quality of the code is be continuously monitored through its automated testing
 framework. Furthermore, we aim for functions and classes to be well-documented. Users are invited to report bugs or
-other problems using `GitHub's issue tracker<https://github.com/gbeckers/Birdwatcher/issues>`__. That is, users should
+other problems using `GitHub's issue tracker <https://github.com/gbeckers/Birdwatcher/issues>`__. That is, users should
 expect a tested and documented tool that can be easily installed based on provided instructions. The code architecture
 is designed so as to enable rapid identification and fixing of potential problems, or to expand functionality.
 
