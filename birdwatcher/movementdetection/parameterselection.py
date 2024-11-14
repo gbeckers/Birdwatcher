@@ -190,6 +190,7 @@ class ParameterSelection():
             DataFrame with the settings for each color of the circles.
 
         """
+        self._check_stats_is_not_count()
         self._check_multi_only(all_settings)
         self._check_number_of_colorcombinations(all_settings)
 
@@ -303,10 +304,15 @@ class ParameterSelection():
                 "the number of settings combinations, or add new colors to "
                 "the class attribute 'colors' to be able to plot more "
                 "circles.")
+            
+    def _check_stats_is_not_count(self):
+        if self.df.coords.unique()[0] == 'count':
+            raise Exception("This function cannot be executed with count "
+                            "statistics.")
 
 
 def apply_all_parameters(vfs, all_settings, startat=None, nframes=None, 
-                         roi=None, nroi=None, 
+                         roi=None, nroi=None, use_stats='mean',
                          bgs_type=bw.BackgroundSubtractorMOG2, 
                          reportprogress=50):
     """Run movement detection with each set of parameters.
@@ -325,13 +331,16 @@ def apply_all_parameters(vfs, all_settings, startat=None, nframes=None,
         two different time unit formats: sexagesimal 
         (HOURS:MM:SS.MILLISECONDS, as in 01:23:45.678), or in seconds.
     nframes  : int, optional
-            Read a specified number of frames.
+        Read a specified number of frames.
     roi : (int, int, int, int), optional
         Region of interest. Only look at this rectangular region. h1,
         h2, w1, w2.
     nroi : (int, int, int, int), optional
         Not region of interest. Exclude this rectangular region. h1,
         h2, w1, w2.
+    use_stats : str, default='mean'
+        As default the mean pixel per frame is calculated. Another option is 
+        to use 'count' to calculate to number of pixels per frame.    
     bgs_type: BackgroundSubtractor
         This can be any of the BackgroundSubtractors in Birdwatcher, e.g. 
         BackgroundSubtractorMOG2, BackgroundSubtractorKNN, 
@@ -354,16 +363,23 @@ def apply_all_parameters(vfs, all_settings, startat=None, nframes=None,
     for settings in all_combinations:
         frames = md.apply_settings(vfs, settings, startat, nframes, roi, nroi, 
                                    bgs_type)
-
-        # find mean of nonzero coordinates
         coordinates = frames.find_nonzero()
-        coordsmean = np.array([c.mean(0) if c.size>0 else (np.nan, np.nan) for 
-                               c in coordinates])
-
+    
+        # calculate mean or count statistics of coordinates
+        if use_stats == 'mean':
+            coordstats = np.array([c.mean(0) if c.size>0 else (np.nan, np.nan) 
+                                   for c in coordinates])
+            settings['coords'] = ['x', 'y']
+        elif use_stats == 'count':
+            coordstats = np.array([c.shape[0] for c in coordinates])
+            settings['coords'] = ['count']
+        else:
+            raise Exception("Make sure use_stats has 'mean' or 'count' as "
+                            "input value")
+            
         # add results as pandas DataFrame
-        settings['coords'] = ['x', 'y']
         columns = pd.MultiIndex.from_frame(pd.DataFrame(settings))
-        df = pd.DataFrame(coordsmean, columns=columns)
+        df = pd.DataFrame(coordstats, columns=columns)
         list_with_dfs.append(df)
 
         if reportprogress:
@@ -376,7 +392,7 @@ def apply_all_parameters(vfs, all_settings, startat=None, nframes=None,
     # create long-format DataFrame
     df = pd.concat(list_with_dfs, axis=1)
     df.index.name = 'framenumber'
-    df = (df.stack(list(range(df.columns.nlevels)), dropna=False)
+    df = (df.stack(df.columns.names, future_stack=True)
           .reset_index()  # stack all column levels
           .rename({0: 'pixel'}, axis=1))
 
