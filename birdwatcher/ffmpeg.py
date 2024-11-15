@@ -1,3 +1,15 @@
+"""This module provides an interface for video file input and output using
+FFmpeg. Most users will not use functions and classes from this module
+directly, but rather through methods and functions in other modules. We use
+FFmpeg instead of video IO in OpenCV because we want to be more flexible so
+that the user can decide for a (potentially self-compiled) version of FFmpeg
+that supports functionality not present in OpenCV. E.g., specific codecs,
+CUDA support. It is easier to compile or find specific versions of FFmpeg
+than of OpenCV. Keeping all video IO in this module, allows for the easy
+addition of other ways of video IO in Birdwatcher in the future.
+
+"""
+
 import json
 import subprocess
 from pathlib import Path
