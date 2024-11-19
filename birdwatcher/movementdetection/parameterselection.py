@@ -81,7 +81,7 @@ class ParameterSelection():
         """
         paramkeys = (set(self.df.columns) - 
                      set(['framenumber', 'pixel', 'coords']))
-        all_parameters = {k:list(self.df[k].unique()) for k in paramkeys}
+        all_parameters = {k:self.df[k].unique().tolist() for k in paramkeys}
 
         if selection == 'all':
             return all_parameters
