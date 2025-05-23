@@ -6,7 +6,7 @@ Design
 
 **Overall design considerations**
 
-Birdwatcher provides low-level and high-level functionality.
+Birdwatcher provides both low-level and high-level functionality.
 
 The low-level functionality is designed to be sufficiently low for users to design their own analysis pipeline for
 their particular behavioral experiment that hasn't been implemented at a higher level (yet). But not so low that they
@@ -21,9 +21,10 @@ how to do this are provided in jupyter notebooks. Users do not need a high level
 self-explaining, but it is fair to say that the high-level functionality is probably still too low for people suffering
 from programming anxiety.
 
-For people with programming anxiety there is no functionality in Birdwatcher yet, but it would not be difficult to add
-a graphical interface for common analysis tasks, such as movement detection. However at the moment a graphical
-interface have not been implemented yet.
+For people who do not want to come into contact with any Python code, there is no functionality in Birdwatcher yet.
+However, it would not be difficult to add a thin graphical interface layer for common analysis tasks, such as movement
+detection in preference tests, Morris water maze etc. Useful examples are planned for the next release.
+
 
 **Quality and usability considerations**
 
