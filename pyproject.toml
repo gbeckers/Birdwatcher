@@ -34,4 +34,6 @@ Homepage = "https://github.com/gbeckers/Birdwatcher"
 Repository = "https://github.com/gbeckers/Birdwatcher.git"
 Documentation = "https://birdwatcher.readthedocs.io/en/latest/"
 
-
+[tool.setuptools.dynamic]
+dependencies = {file = ["requirements.txt"]}
+optional-dependencies = {dev = { file = ["requirements-dev.txt"] }}
