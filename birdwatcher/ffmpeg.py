@@ -204,7 +204,7 @@ def get_frame(filepath, framenumber, color=True, ffmpegpath='ffmpeg',
     frameshape, framesize, frameheight, framewidth, pix_fmt = \
         _get_frameproperties(filepath=filepath, color=color)
     args = [str(ffmpegpath), '-loglevel' , loglevel, '-i', str(filepath)]
-    args +=['-vcodec', 'rawvideo',  '-vf', f"select='eq(n\,{framenumber})'",
+    args +=['-vcodec', 'rawvideo',  '-vf', f"select='eq(n\\,{framenumber})'",
             '-vframes', '1', '-pix_fmt', pix_fmt,
             '-f', 'rawvideo', 'pipe:1']
     with subprocess.Popen(args, stdout=subprocess.PIPE,
