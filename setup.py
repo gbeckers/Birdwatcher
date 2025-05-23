@@ -2,7 +2,7 @@ import sys
 import setuptools
 
 # we follow https://scientific-python.org/specs/spec-0000/
-if sys.version_info < (3,11):
+if sys.version_info < (3,10):
     print("Birdwatcher requires Python 3.11 or higher please upgrade")
     sys.exit(1)
 
