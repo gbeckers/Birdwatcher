@@ -1,12 +1,16 @@
 Release notes
 =============
 
+Version 0.5
+-----------
+
 - bug correction in notebook 5: fix copy and update of settings dictionary when looking at range of parameter values.
 - `extract_audio' has more argument options, such as specifying the codec and channel number that should be extracted.
 - new function `extract_archivedcoordinatedata` in `coordinatearrays` module.
 - new tutorial notebook 6_batchdetection: with examples of how to use the batch function for movement detect, how to archive coordinate data to save memory space, and how to extract archived coordinate data in a notebook.
 - added option in module parameterselection to inspect count statistics with different combinations of settings. Previously only mean statistics could be used.
 - prepare for future use of pandas stack
+- modernize install system (move to pyproject.toml)
 
 
 Version 0.4

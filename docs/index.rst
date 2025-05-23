@@ -67,7 +67,7 @@ Indices and tables
    :target: https://www.repostatus.org/#active
 .. |Github CI Status| image:: https://github.com/gbeckers/Birdwatcher/actions/workflows/python_package.yml/badge.svg
    :target: https://github.com/gbeckers/Darr/actions/workflows/python_package.yml
-.. |PyPi version| image:: https://img.shields.io/badge/pypi-0.4.0-orange.svg
+.. |PyPi version| image:: https://img.shields.io/badge/pypi-0.5.0-orange.svg
    :target: https://pypi.org/project/birdwatcher/
 .. |Docs Status| image:: https://readthedocs.org/projects/birdwatcher/badge/?version=latest
    :target: https://birdwatcher.readthedocs.io/en/latest/
