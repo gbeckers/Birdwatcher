@@ -4,7 +4,7 @@ Installation
 
 .. contents:: :local:
 
-Birdwatcher officially supports Python 3.9 or higher, but older
+Birdwatcher officially supports Python 3.10 or higher, but older
 Python 3 versions may also work.
 
 **User installation**
