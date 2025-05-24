@@ -4,7 +4,7 @@ Birdwatcher
 |Github CI Status| |PyPi version| |Docs Status| |Repo Status|
 |Codecov status|
 
-.. image:: docs/images/banner.gif
+.. image:: https://github.com/gbeckers/Birdwatcher/blob/master/docs/images/banner.gif
   :align: center
   :width: 720
 
