@@ -126,7 +126,7 @@ class Frames:
         return firstframe
         
     def tovideo(self, filepath, framerate, crf=23, scale=None, format='mp4',
-                codec='libx264', pixfmt='yuv420p', ffmpegpath='ffmpeg'):
+                codec='libopenh264', pixfmt='yuv420p', ffmpegpath='ffmpeg'):
         """Writes frames to video file.
 
         Parameters
@@ -143,7 +143,7 @@ class Frames:
             height.
         format : str, default='mp4'
             ffmpeg video format.
-        codec : str, default='libx264'
+        codec : str, default='libopenh264'
             ffmpeg video codec.
         pixfmt : str, default='yuv420p'
             ffmpeg pixel format.

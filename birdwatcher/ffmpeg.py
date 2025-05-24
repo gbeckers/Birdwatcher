@@ -31,7 +31,7 @@ class FFmpegError(Exception):
 
 
 def arraytovideo(frames, filepath, framerate, scale=None, crf=17,
-                 format='mp4', codec='libx264', pixfmt='yuv420p',
+                 format='mp4', codec='libopenh264', pixfmt='yuv420p',
                  ffmpegpath='ffmpeg', loglevel='quiet'):
     """Writes an iterable of numpy frames as video file using ffmpeg.
 
@@ -52,7 +52,7 @@ def arraytovideo(frames, filepath, framerate, scale=None, crf=17,
         Use 23 for good quality.
     format : str, default='mp4'
         ffmpeg video format.
-    codec : str, default='libx264'
+    codec : str, default='libopenh264'
         ffmpeg video codec.
     pixfmt : str, default='yuv420p'
         ffmpeg pixel format.
@@ -97,7 +97,8 @@ def arraytovideo(frames, filepath, framerate, scale=None, crf=17,
     if scale is not None:
         width, height = scale
         args.extend(['-vf', f'scale={width}:{height}'])
-    args.extend([filepath, '-y'])
+    args.extend([str(filepath), '-y'])
+    #print(' '.join(args)
     p = subprocess.Popen(args, stdin=subprocess.PIPE, stderr=subprocess.PIPE,
                          stdout=subprocess.PIPE)
     for frame in framegen:
@@ -106,7 +107,6 @@ def arraytovideo(frames, filepath, framerate, scale=None, crf=17,
         p.stdin.write(frame.astype(np.uint8).tobytes())
     out, err = p.communicate()
     p.stdin.close()
-    
     return Path(filepath)
 
 
