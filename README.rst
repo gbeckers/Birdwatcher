@@ -44,13 +44,13 @@ Python 3 versions may also work.
 
     .. code-block:: bash
 
-      $ conda create -n mybirdwatcher python=3.13 jupyterlab ffmpeg=6.1.1 git
+      conda create -n mybirdwatcher python=3.13 jupyterlab ffmpeg=6.1.1 git
 
 #. Switch to this new environment:
 
     .. code-block:: bash
 
-      $ conda activate mybirdwatcher
+      conda activate mybirdwatcher
 
 #. Install Birdwatcher:
 
@@ -58,13 +58,13 @@ Python 3 versions may also work.
 
     .. code-block:: bash
 
-      $ pip install Birdwatcher
+      pip install Birdwatcher
 
    If instead you want the latest version of the git master branch from, use:
 
     .. code-block:: bash
 
-      $ pip install git+https://github.com/gbeckers/birdwatcher@master
+      pip install git+https://github.com/gbeckers/birdwatcher@master
 
 
 **Dependencies**
