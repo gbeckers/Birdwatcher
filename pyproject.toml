@@ -26,10 +26,10 @@ classifiers=[
 ]
 dependencies = [
     "darr==0.6.0",
-    "numpy==2.0.2",
-    "matplotlib==3.9.2",
-    "opencv-python==4.10.0.84",
-    "opencv-contrib-python==4.10.0.84",
+    "numpy==2.2.5",
+    "matplotlib==3.10.",
+    "opencv-python==4.11.0.86",
+    "opencv-contrib-python==4.11.0.86",
     "pandas==2.2.3",
     "seaborn==0.13.2"
 ]
