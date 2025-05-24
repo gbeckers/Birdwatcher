@@ -2,7 +2,6 @@ import os
 import unittest
 import tempfile
 import shutil
-import time
 from pathlib import Path
 
 import numpy as np
@@ -23,7 +22,6 @@ class TestCoordinateArrays(unittest.TestCase):
                                     framewidth=1080, frameheight=720,
                                     metadata=metadata, overwrite=True)
         self.ca1.iterappend([((1,2),(3,4)),((5,6),(7,8))])
-        time.sleep(0.1) # for windows compatibility
 
     def tearDown(self):
         shutil.rmtree(self.tempdirname1)
