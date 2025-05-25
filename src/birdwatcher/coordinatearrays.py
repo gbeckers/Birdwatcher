@@ -23,6 +23,7 @@ from darr import RaggedArray, delete_raggedarray, create_raggedarray
 
 from .utils import tempdir
 from .frames import frameiterator
+from . import __version__
 
 
 __all__ = ['CoordinateArrays', 'create_coordarray', 
@@ -316,7 +317,7 @@ def create_coordarray(path, framewidth, frameheight, metadata=None,
         metadata = {}
     metadata.update({'framewidth': framewidth,
                      'frameheight': frameheight,
-                     'birdwatcher_version': get_versions()['version']})
+                     'birdwatcher_version': __version__})
     coords = create_raggedarray(path, atom=(2,), metadata=metadata,
                                 overwrite=overwrite, dtype='uint16')
     return CoordinateArrays(coords.path, accessmode='r+')
