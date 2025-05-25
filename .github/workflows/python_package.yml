@@ -26,7 +26,7 @@ jobs:
         # like "6.1.0". At the moment semver specifiers (i.e. >=6.1.0) are supported
         # only on Windows, on other platforms they are allowed but version is matched
         # exactly regardless.
-        ffmpeg-version: "6"
+        ffmpeg-version: "6.1.0"
         # As of version 3 of this action, builds are no longer downloaded from GitHub
         # except on Windows: https://github.com/GyanD/codexffmpeg/releases.
         github-token: ${{ github.server_url == 'https://github.com' && github.token || '' }}
