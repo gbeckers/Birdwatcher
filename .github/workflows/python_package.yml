@@ -19,23 +19,18 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
     - uses: actions/checkout@v4
-    - name: setup-ffmpeg
-      uses: FedericoCarboni/setup-ffmpeg@v3
-      with:
-        # A specific version to download, may also be "release" or a specific version
-        # like "6.1.0". At the moment semver specifiers (i.e. >=6.1.0) are supported
-        # only on Windows, on other platforms they are allowed but version is matched
-        # exactly regardless.
-        ffmpeg-version: "6.1.0"
-        # As of version 3 of this action, builds are no longer downloaded from GitHub
-        # except on Windows: https://github.com/GyanD/codexffmpeg/releases.
-        github-token: ${{ github.server_url == 'https://github.com' && github.token || '' }}
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v5
       with:
         python-version: ${{ matrix.python-version }}
+    - name: Add conda to system path
+      run: |
+        # $CONDA is an environment variable pointing to the root of the miniconda directory
+        echo $CONDA/bin >> $GITHUB_PATH
     - name: Install dependencies
       run: |
+        conda env update --file environment.yml --name base
+        conda install ffmpeg=6.1.1
         python -m pip install --upgrade pip
         python -m pip install flake8 pytest pytest-cov
         pip install -r requirements.txt
