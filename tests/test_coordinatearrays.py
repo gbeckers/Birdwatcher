@@ -15,7 +15,9 @@ class TestCoordinateArrays(unittest.TestCase):
 
     def setUp(self):
         self.tempdirname1 = tempfile.mkdtemp()
-        fh, self.tempvideoname = tempfile.mkstemp()
+        fh, self.tempvideoname1 = tempfile.mkstemp()
+        os.close(fh)
+        fh, self.tempvideoname2 = tempfile.mkstemp()
         os.close(fh)
         metadata = {'avgframerate': 5}
         self.ca1 = bw.create_coordarray(path=self.tempdirname1,
@@ -25,8 +27,9 @@ class TestCoordinateArrays(unittest.TestCase):
 
     def tearDown(self):
         shutil.rmtree(self.tempdirname1)
-        if Path(self.tempvideoname).exists():
-            Path(self.tempvideoname).unlink()
+        for p in (self.tempvideoname1, self.tempvideoname2):
+            if Path(p).exists():
+                Path(p).unlink()
 
     def test_index(self):
         assert_array_equal(self.ca1[1], np.array([[5,6],[7,8]]))
@@ -44,10 +47,10 @@ class TestCoordinateArrays(unittest.TestCase):
             self.assertTupleEqual(frame.shape, (720, 1080))
 
     def test_tovideo(self):
-        self.ca1.tovideo(self.tempvideoname, framerate=5)
+        self.ca1.tovideo(self.tempvideoname1, framerate=5)
 
     def test_inferframerate(self):
-        self.ca1.tovideo(self.tempvideoname)
+        self.ca1.tovideo(self.tempvideoname2)
 
     def test_coordcount(self):
         cc = self.ca1.get_coordcount()
