@@ -10,9 +10,9 @@ import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
 
-import birdwatcher as bw
-import src.birdwatcher.movementdetection as md
-from src.birdwatcher.utils import product_dict
+from .. import movementdetection as md
+from ..backgroundsubtraction import BackgroundSubtractorMOG2
+from ..utils import product_dict
 
 
 __all__ = ['ParameterSelection', 'apply_all_parameters', 
@@ -313,7 +313,7 @@ class ParameterSelection():
 
 def apply_all_parameters(vfs, all_settings, startat=None, nframes=None, 
                          roi=None, nroi=None, use_stats='mean',
-                         bgs_type=bw.BackgroundSubtractorMOG2, 
+                         bgs_type=BackgroundSubtractorMOG2,
                          reportprogress=50):
     """Run movement detection with each set of parameters.
 
