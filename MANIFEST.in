@@ -1,3 +1,0 @@
-include versioneer.py
-include birdwatcher/_version.py
-include birdwatcher/testvideos/*

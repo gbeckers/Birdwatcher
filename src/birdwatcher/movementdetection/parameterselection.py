@@ -11,6 +11,7 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 
 from .. import movementdetection as md
+from ..video import VideoFileStream
 from ..backgroundsubtraction import BackgroundSubtractorMOG2
 from ..utils import product_dict
 
@@ -35,7 +36,7 @@ class ParameterSelection():
     def __init__(self, df, videofilepath, bgs_type, 
                  startat, nframes, roi, nroi, path=None):
         self.df = df
-        self.vfs = bw.VideoFileStream(videofilepath)
+        self.vfs = VideoFileStream(videofilepath)
         self.bgs_type = bgs_type
         self.startat = startat
         self.nframes = nframes
