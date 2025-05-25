@@ -23,13 +23,12 @@ jobs:
       uses: actions/setup-python@v5
       with:
         python-version: ${{ matrix.python-version }}
-    - name: Add conda to system path
-      run: |
-        # $CONDA is an environment variable pointing to the root of the miniconda directory
-        echo $CONDA/bin >> $GITHUB_PATH
+    - uses: conda-incubator/setup-miniconda@v3
+      with:
+          auto-update-conda: true
+          python-version: ${{ matrix.python-version }}
     - name: Install dependencies
       run: |
-        # conda env update --file environment.yml --name base
         conda install ffmpeg=6.1.1
         python -m pip install --upgrade pip
         python -m pip install flake8 pytest pytest-cov
