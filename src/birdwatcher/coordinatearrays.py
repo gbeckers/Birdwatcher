@@ -24,8 +24,7 @@ from darr import RaggedArray, delete_raggedarray, create_raggedarray
 from .utils import tempdir
 from .frames import frameiterator
 
-from importlib.metadata import version
-__version__ = version("birdwatcher")
+__version__ = "0.6.0"
 
 
 __all__ = ['CoordinateArrays', 'create_coordarray', 

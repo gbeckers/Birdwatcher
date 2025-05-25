@@ -7,8 +7,7 @@ from ..utils import derive_filepath
 from ..coordinatearrays import _archive
 from ..backgroundsubtraction import BackgroundSubtractorMOG2
 from ..video import VideoFileStream
-from importlib.metadata import version
-__version__ = version("birdwatcher")
+__version__ = "0.6.0"
 
 
 __all__ = ['batch_detect_movement', 'detect_movement', 'apply_settings', 
