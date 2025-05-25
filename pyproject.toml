@@ -1,13 +1,10 @@
 [build-system]
-requires = [ "setuptools>=78", "wheel", "setuptools-git-versioning>=2.0,<3", ]
-build-backend = "setuptools.build_meta"
-
-[tool.setuptools-git-versioning]
-enabled = true
+requires = ["hatchling >= 1.27"]
+build-backend = "hatchling.build"
 
 [project]
 name="birdwatcher"
-dynamic = ["version"]
+version = "0.6.0"
 authors = [
   {name = "Gabriel Beckers", email = "g.j.l.beckers@uu.nl"},
   {name = "Carien Mol", email = "c.mol@uu.nl"}
@@ -43,5 +40,7 @@ Homepage = "https://github.com/gbeckers/Birdwatcher"
 Repository = "https://github.com/gbeckers/Birdwatcher.git"
 Documentation = "https://birdwatcher.readthedocs.io/en/latest/"
 
-[tool.setuptools.dynamic]
-optional-dependencies = {dev = { file = ["requirements-dev.txt"] }}
+[tool.pytest.ini_options]
+pythonpath = [
+  "src"
+]

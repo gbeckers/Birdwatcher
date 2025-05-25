@@ -3,9 +3,11 @@ from pathlib import Path
 import numpy as np
 import darr
 
-import birdwatcher as bw
-from birdwatcher.utils import derive_filepath
-from birdwatcher.coordinatearrays import _archive
+from ..utils import derive_filepath
+from ..coordinatearrays import _archive
+from ..backgroundsubtraction import BackgroundSubtractorMOG2
+from ..video import VideoFileStream
+from .. import __version__
 
 
 __all__ = ['batch_detect_movement', 'detect_movement', 'apply_settings', 
@@ -20,7 +22,7 @@ default_settings = {'processing':{'color': False, # booleans only
 
 def batch_detect_movement(vfs_list, settings=None, startat=None, 
                           nframes=None, roi=None, nroi=None, 
-                          bgs_type=bw.BackgroundSubtractorMOG2, 
+                          bgs_type=BackgroundSubtractorMOG2,
                           analysispath='.', ignore_firstnframes=10, 
                           overwrite=False, resultvideo=False, 
                           archived=True, nprocesses=6):
@@ -64,7 +66,7 @@ def batch_detect_movement(vfs_list, settings=None, startat=None,
 
 
 def detect_movement(vfs, settings=None, startat=None, nframes=None, roi=None, 
-                    nroi=None, bgs_type=bw.BackgroundSubtractorMOG2, 
+                    nroi=None, bgs_type=BackgroundSubtractorMOG2,
                     analysispath='.', ignore_firstnframes=10, 
                     overwrite=False, resultvideo=False):
     """Detects movement based on a background subtraction algorithm.
@@ -116,7 +118,7 @@ def detect_movement(vfs, settings=None, startat=None, nframes=None, roi=None,
         These are Darr arrays that are disk-based.
 
     """
-    if not isinstance(vfs, bw.VideoFileStream):
+    if not isinstance(vfs, VideoFileStream):
         raise TypeError(f"`vfs` parameter not a VideoFileStream object.")
 
     output_settings = {**bgs_type().get_params(), 
@@ -135,7 +137,7 @@ def detect_movement(vfs, settings=None, startat=None, nframes=None, roi=None,
     metadata['nframes'] = nframes
     metadata['roi'] = roi
     metadata['nroi'] = nroi
-    metadata['birdwatcherversion'] = bw.__version__
+    metadata['birdwatcherversion'] = __version__
 
     frames = apply_settings(vfs, output_settings, startat, nframes, roi, nroi, 
                             bgs_type)
@@ -159,7 +161,7 @@ def detect_movement(vfs, settings=None, startat=None, nframes=None, roi=None,
 
 
 def apply_settings(vfs, settings, startat=None, nframes=None, roi=None, 
-                   nroi=None, bgs_type=bw.BackgroundSubtractorMOG2):
+                   nroi=None, bgs_type=BackgroundSubtractorMOG2):
     """Applies movement detection based on various parameter settings.
 
     The background subtractor should be provided as a parameter.
@@ -268,7 +270,7 @@ def create_movementvideo(vfs, coords, startat=None, nframes=None,
         Videofilestream object of the output video.
 
     """
-    if not isinstance(vfs, bw.VideoFileStream):
+    if not isinstance(vfs, VideoFileStream):
         raise TypeError(f"`vfs` parameter not a VideoFileStream object.")
 
     if videofilepath is None:

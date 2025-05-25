@@ -7,8 +7,8 @@ from pathlib import Path
 import numpy as np
 from numpy.testing import assert_array_equal
 
-import birdwatcher as bw
-from birdwatcher.coordinatearrays import _archive
+import src.birdwatcher as bw
+from src.birdwatcher.coordinatearrays import _archive
 
 
 class TestCoordinateArrays(unittest.TestCase):

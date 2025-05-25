@@ -11,8 +11,8 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 
 import birdwatcher as bw
-import birdwatcher.movementdetection as md
-from birdwatcher.utils import product_dict
+import src.birdwatcher.movementdetection as md
+from src.birdwatcher.utils import product_dict
 
 
 __all__ = ['ParameterSelection', 'apply_all_parameters', 

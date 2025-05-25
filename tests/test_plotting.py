@@ -1,6 +1,6 @@
 import unittest
-from birdwatcher.frames import framecolor, framegray
-from birdwatcher.plotting import imshow_frame
+from src.birdwatcher.frames import framecolor, framegray
+from src.birdwatcher.plotting import imshow_frame
 
 
 class TestImshowFrame(unittest.TestCase):

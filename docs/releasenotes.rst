@@ -1,9 +1,21 @@
 Release notes
 =============
 
+Version 0.6
+-----------
+Commits Gabriel Beckers.
+
+- depends on ffmpeg 6.1.1
+- Dependencies updated to recent versions
+- GitHub Action tests now use conda ffmpeg package
+
+
 Version 0.5
 -----------
 
+Commits by Carien Mol and Gabriel Beckers.
+
+- depends on ffmpeg 4.2.2
 - bug correction in notebook 5: fix copy and update of settings dictionary when looking at range of parameter values.
 - `extract_audio' has more argument options, such as specifying the codec and channel number that should be extracted.
 - new function `extract_archivedcoordinatedata` in `coordinatearrays` module.

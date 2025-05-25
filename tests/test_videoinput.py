@@ -1,5 +1,5 @@
 import unittest
-import birdwatcher as bw
+import src.birdwatcher as bw
 import tempfile
 import shutil
 
