@@ -13,21 +13,24 @@
 
 **Birdwatcher** is a Python computer vision library for analyzing animal behavior within a scientific computing environment.
 
-It aims to get you up and running quickly when building analysis code or tools for specific measurements. Birdwatcher offers common video analysis functionality such as:
+It aims to get you up and running quickly when building analysis code or tools for specific measurements. 
 
-- Reading and writing videos as NumPy arrays
+Birdwatcher offers high-level tools for behavioral analysis, currently focused on:
+
+- Single-animal movement
+- Location detection. 
+
+Further, to build your own high-level tools Birdwatcher offers video analysis functionality such as:
+
+- Easy reading and writing videos as NumPy arrays
 - Applying processing algorithms like background subtraction
 - Morphological transformations, resizing, and frame annotation
 
-While the underlying tools include [FFmpeg](https://www.ffmpeg.org/) and [OpenCV](https://opencv.org/), Birdwatcher provides a higher-level interface that simplifies many tasks.
-
-In addition to video analysis tools, Birdwatcher also offers basic high-level tools for behavioral analysis, currently focused on single-animal movement and location detection.
+These tools build upon the underlying low-level tools [FFmpeg](https://www.ffmpeg.org/) and [OpenCV](https://opencv.org/), but Birdwatcher provides a higher-level interface that simplifies many tasks.
 
 Despite its name, Birdwatcher is not just for birds! We've used it successfully to analyze dog behavior and it can work for any moving subject.
 
 *Note*: Birdwatcher is actively used in our lab but remains under heavy development. Consider it *alpha software*.
-
-Code can be found on GitHub: https://github.com/gbeckers/Birdwatcher .
 
 Example notebooks are currently the best introduction on how to use
 Birdwatcher. See [jupyter notebook directory](https://github.com/gbeckers/Birdwatcher/tree/master/notebooks).
@@ -38,9 +41,7 @@ It is developed by Gabriel Beckers and Carien Mol, at Experimental Psychology,
 Utrecht University. It is open source, freely available under the 
 [New BSD License](https://opensource.org/licenses/BSD-3-Clause) terms.
 
-
 ## Installation Birdwatcher package
-
 
 Birdwatcher officially supports Python 3.10 or higher, but older
 Python 3 versions may also work.
@@ -51,7 +52,7 @@ Python 3 versions may also work.
 
 2. Open Anaconda prompt in terminal.
 
-3. Create new environment for Birdwatcher (name is up to you, in example here 'mybirdwatcher'). We install Jupyter lab and ffmpeg at the same time:
+3. Create new environment for Birdwatcher (name is up to you, in example here 'mybirdwatcher'). We install Jupyter lab and git at the same time:
 
     ```
     conda create -n mybirdwatcher python=3.13 jupyterlab git
@@ -76,7 +77,7 @@ Python 3 versions may also work.
    pip install Birdwatcher
    ```
 
-   If instead you want the latest version of the git master branch from, use:
+   If instead you want the latest version of the git master branch, use:
 
     ```
     pip install git+https://github.com/gbeckers/birdwatcher@master
@@ -85,7 +86,8 @@ Python 3 versions may also work.
 ## Run notebooks tutorial
 
 
-To quickly learn the fundamentals of Birdwatcher, please walk through our notebooks. First, you need to download the notebooks and example videos from github. Then, navigate to the directory of the notebooks and activate the 'mybirdwatcher' environment. Type `jupyter lab` which opens in your browser. You can now open the notebooks and run the tutorial.
+To quickly learn the fundamentals of Birdwatcher, please walk through our notebooks.
+See [jupyter notebook directory](https://github.com/gbeckers/Birdwatcher/tree/master/notebooks>).
 
 ## Documentation
 
