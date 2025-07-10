@@ -11,7 +11,6 @@ from numpy.testing import assert_array_equal
 
 import src.birdwatcher as bw
 from src.birdwatcher.coordinatearrays import _archive
-from darr.utils import waituntilfileisfree
 
 class TestCoordinateArrays(unittest.TestCase):
 
