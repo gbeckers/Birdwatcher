@@ -5,9 +5,12 @@ Version 0.6
 -----------
 Commits Gabriel Beckers.
 
-- depends on ffmpeg 6.1.1
-- Dependencies updated to recent versions
+- modern package structure
+- depends on ffmpeg 7.1.1
 - GitHub Action tests now use conda ffmpeg package
+- Dependencies updated to recent versions
+- simplified README
+- add overwrite parameters to many functions
 
 
 Version 0.5
