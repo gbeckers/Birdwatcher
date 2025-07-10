@@ -111,7 +111,7 @@ def arraytovideo(frames, filepath, framerate, scale=None, crf=17,
         for frame in framegen:
             # if frame.ndim == 2:
             #     frame = cv.cvtColor(frame, cv.COLOR_GRAY2BGR)
-            if frame.shape != (height, width, 3):
+            if frame.shape[:2] != (height, width):
                 raise ValueError("All frames must be arrays of shape (H, W, 3)")
             p.stdin.write(frame.astype(np.uint8).tobytes())
         p.stdin.close()

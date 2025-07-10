@@ -126,7 +126,8 @@ class Frames:
         return firstframe
         
     def tovideo(self, filepath, framerate, crf=23, scale=None, format='mp4',
-                codec='libopenh264', pixfmt='yuv420p', ffmpegpath='ffmpeg'):
+                codec='libopenh264', pixfmt='yuv420p', ffmpegpath='ffmpeg',
+                overwrite=False):
         """Writes frames to video file.
 
         Parameters
@@ -161,7 +162,7 @@ class Frames:
         filepath = arraytovideo(frames=self, filepath=filepath,
                                 framerate=framerate, crf=crf, scale=scale,
                                 format=format, codec=codec, pixfmt=pixfmt,
-                                ffmpegpath=ffmpegpath)
+                                ffmpegpath=ffmpegpath, overwrite=overwrite)
         return VideoFileStream(filepath)
 
     @frameiterator

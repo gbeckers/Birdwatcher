@@ -229,7 +229,8 @@ def apply_settings(vfs, settings, startat=None, nframes=None, roi=None,
 
 def create_movementvideo(vfs, coords, startat=None, nframes=None, 
                          videofilepath=None, draw_mean=True, 
-                         draw_framenumbers=(2, 25), crf=17, scale=None):
+                         draw_framenumbers=(2, 25), crf=17, scale=None,
+                         overwrite=False):
     """Create a nice video from the original video with movement detection
     results superimposed.
     
@@ -293,5 +294,5 @@ def create_movementvideo(vfs, coords, startat=None, nframes=None,
         #      np.convolve(centers[:, 1], np.ones(7) / 7, 'same')]).T
         # frames = frames.draw_circles(centers=centers_lp, radius=6, color=(100, 255, 0), thickness=2, linetype=16, shift=0)
     vfs = frames.tovideo(videofilepath, framerate=vfs.avgframerate, crf=crf, 
-                         scale=scale)
+                         scale=scale, overwrite=overwrite)
     return vfs
