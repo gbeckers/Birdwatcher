@@ -1,4 +1,6 @@
 import os
+import stat
+import time
 import unittest
 import tempfile
 import shutil
@@ -9,12 +11,12 @@ from numpy.testing import assert_array_equal
 
 import src.birdwatcher as bw
 from src.birdwatcher.coordinatearrays import _archive
-
+from darr.utils import waituntilfileisfree
 
 class TestCoordinateArrays(unittest.TestCase):
 
     def setUp(self):
-        self.tempdirname1 = tempfile.mkdtemp()
+        self.tempdirname1 = Path(tempfile.mkdtemp())
         fh, self.tempvideoname1 = tempfile.mkstemp()
         os.close(fh)
         fh, self.tempvideoname2 = tempfile.mkstemp()
@@ -26,7 +28,12 @@ class TestCoordinateArrays(unittest.TestCase):
         self.ca1.iterappend([((1,2),(3,4)),((5,6),(7,8))])
 
     def tearDown(self):
-        shutil.rmtree(self.tempdirname1)
+        # TODO: is this really necessary?
+        for p in self.tempdirname1.rglob('*'):
+            if not os.access(p, os.W_OK):
+                os.chmod(p, stat.S_IWUSR)
+                os.remove(p)
+        os.chmod(self.tempdirname1, stat.S_IWUSR)
         for p in (self.tempvideoname1, self.tempvideoname2):
             if Path(p).exists():
                 Path(p).unlink()
@@ -47,10 +54,10 @@ class TestCoordinateArrays(unittest.TestCase):
             self.assertTupleEqual(frame.shape, (720, 1080))
 
     def test_tovideo(self):
-        self.ca1.tovideo(self.tempvideoname1, framerate=5)
+        self.ca1.tovideo(self.tempvideoname1, framerate=5, overwrite=True)
 
     def test_inferframerate(self):
-        self.ca1.tovideo(self.tempvideoname2)
+        self.ca1.tovideo(self.tempvideoname2, overwrite=True)
 
     def test_coordcount(self):
         cc = self.ca1.get_coordcount()

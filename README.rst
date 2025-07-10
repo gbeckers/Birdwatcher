@@ -44,7 +44,7 @@ Python 3 versions may also work.
 
     .. code-block:: bash
 
-      conda create -n mybirdwatcher python=3.13 jupyterlab ffmpeg=6.1.1 git
+      conda create -n mybirdwatcher python=3.13 jupyterlab ffmpeg=7.1.1 git
 
 #. Switch to this new environment:
 

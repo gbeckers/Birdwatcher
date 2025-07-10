@@ -12,6 +12,7 @@ addition of other ways of video IO in Birdwatcher in the future.
 
 import json
 import subprocess
+import time
 from pathlib import Path
 
 import numpy as np
@@ -32,7 +33,7 @@ class FFmpegError(Exception):
 
 def arraytovideo(frames, filepath, framerate, scale=None, crf=17,
                  format='mp4', codec='libopenh264', pixfmt='yuv420p',
-                 ffmpegpath='ffmpeg', loglevel='quiet'):
+                 ffmpegpath='ffmpeg', loglevel='quiet', overwrite=False):
     """Writes an iterable of numpy frames as video file using ffmpeg.
 
     Parameters
@@ -72,7 +73,12 @@ def arraytovideo(frames, filepath, framerate, scale=None, crf=17,
     _check_loglevelarg(loglevel)
     frame, framegen = peek_iterable(frames)
     height, width, *_ = frame.shape
-    Path(filepath).parent.mkdir(parents=True, exist_ok=True)   
+    filepath = Path(filepath)
+    if filepath.exists() and not overwrite:
+        raise IOError(
+            f'file "{filepath}" already exists, use the `overwrite` '
+            f'parameter to overwrite' )
+    filepath.parent.mkdir(parents=True, exist_ok=True)
     if frame.ndim == 2:
         ipixfmt = 'gray'
     else: # frame.ndim == 3:
@@ -99,14 +105,26 @@ def arraytovideo(frames, filepath, framerate, scale=None, crf=17,
         args.extend(['-vf', f'scale={width}:{height}'])
     args.extend([str(filepath), '-y'])
     #print(' '.join(args)
-    p = subprocess.Popen(args, stdin=subprocess.PIPE, stderr=subprocess.PIPE,
-                         stdout=subprocess.PIPE)
-    for frame in framegen:
-        # if frame.ndim == 2:
-        #     frame = cv.cvtColor(frame, cv.COLOR_GRAY2BGR)
-        p.stdin.write(frame.astype(np.uint8).tobytes())
-    out, err = p.communicate()
-    p.stdin.close()
+    try:
+        p = subprocess.Popen(args, stdin=subprocess.PIPE, stderr=subprocess.PIPE,
+                             stdout=subprocess.PIPE)
+        for frame in framegen:
+            # if frame.ndim == 2:
+            #     frame = cv.cvtColor(frame, cv.COLOR_GRAY2BGR)
+            if frame.shape != (height, width, 3):
+                raise ValueError("All frames must be arrays of shape (H, W, 3)")
+            p.stdin.write(frame.astype(np.uint8).tobytes())
+        p.stdin.close()
+        stderr = p.stderr.read().decode('utf-8')
+        print(stderr)
+        retcode = p.wait()
+        if retcode != 0:
+            raise RuntimeError(f"FFmpeg failed with code {retcode}:\n{stderr}")
+    finally:
+        if p.stdin:
+            p.stdin.close()
+        if p.stderr:
+            p.stderr.close()
     return Path(filepath)
 
 
