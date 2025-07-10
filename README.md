@@ -89,7 +89,7 @@ Python 3 versions may also work.
 
 
 To quickly learn the fundamentals of Birdwatcher, please walk through our notebooks.
-See [jupyter notebook directory](https://github.com/gbeckers/Birdwatcher/tree/master/notebooks>).
+See [jupyter notebook directory](https://github.com/gbeckers/Birdwatcher/tree/master/notebooks).
 
 ## Documentation
 
@@ -97,7 +97,7 @@ See [jupyter notebook directory](https://github.com/gbeckers/Birdwatcher/tree/ma
 
 ## Examples
 
-See [jupyter notebook directory](https://github.com/gbeckers/Birdwatcher/tree/master/notebooks>).
+See [jupyter notebook directory](https://github.com/gbeckers/Birdwatcher/tree/master/notebooks).
 
 ## Contributions
 
