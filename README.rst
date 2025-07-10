@@ -44,13 +44,20 @@ Python 3 versions may also work.
 
     .. code-block:: bash
 
-      conda create -n mybirdwatcher python=3.13 jupyterlab ffmpeg=7.1.1 git
+      conda create -n mybirdwatcher python=3.13 jupyterlab git
 
 #. Switch to this new environment:
 
     .. code-block:: bash
 
       conda activate mybirdwatcher
+
+#. Install ffmpeg from conda-forge. It needs to be version 7.1.1
+
+    ..code-block:: bash
+
+      conda install -c conda-forge ffmpeg=7.1.1
+
 
 #. Install Birdwatcher:
 
