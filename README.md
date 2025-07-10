@@ -18,7 +18,9 @@ It aims to get you up and running quickly when building analysis code or tools f
 Birdwatcher offers high-level tools for behavioral analysis, currently focused on:
 
 - Single-animal movement
-- Location detection. 
+- Location detection
+
+This is based on machine learning, but not on deep learning (artificial neuronal network) techniques, as the specific goal is that the input to output transformation is entirely understood and predictable.
 
 Further, to build your own high-level tools Birdwatcher offers video analysis functionality such as:
 
