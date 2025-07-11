@@ -1,6 +1,5 @@
 from pathlib import Path
 
-import numpy as np
 import darr
 
 from ..utils import derive_filepath
@@ -143,20 +142,20 @@ def detect_movement(vfs, settings=None, startat=None, nframes=None, roi=None,
                             bgs_type)
 
     cd = frames.save_nonzero(Path(movementpath) / 'coords.darr',
-                             metadata = metadata,
-                             ignore_firstnframes = ignore_firstnframes,
-                             overwrite = overwrite)
+                             metadata=metadata,
+                             ignore_firstnframes=ignore_firstnframes,
+                             overwrite=overwrite)
     cc = darr.asarray(Path(movementpath) / 'coordscount.darr', 
                       cd.get_coordcount(),
-                      metadata=metadata, overwrite=True)
+                      metadata=metadata, overwrite=overwrite)
     cm = darr.asarray(Path(movementpath) / 'coordsmean.darr', 
                       cd.get_coordmean(),
-                      metadata=metadata, overwrite=True)
+                      metadata=metadata, overwrite=overwrite)
 
     if resultvideo:
         create_movementvideo(vfs, cd, startat=startat, nframes=nframes,
                              videofilepath=Path(movementpath) / 
-                             'movementvideo.mp4')
+                             'movementvideo.mp4', overwrite=overwrite)
     return cd, cc, cm
 
 
