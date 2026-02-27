@@ -103,9 +103,9 @@ See [jupyter notebook directory](https://github.com/gbeckers/Birdwatcher/tree/ma
 
 To run the testing framework locally, download this github repo and run:
 
-    ```
-    pytest tests
-    ```
+   ```
+   pytest tests
+   ```
 
 from the birdwatcher directory while in the mybirdwatcher conda environment.
 
