@@ -99,6 +99,17 @@ See [jupyter notebook directory](https://github.com/gbeckers/Birdwatcher/tree/ma
 
 See [jupyter notebook directory](https://github.com/gbeckers/Birdwatcher/tree/master/notebooks).
 
+## Tests
+
+To run the testing framework locally, download this github repo and run:
+
+    ```
+    pytest tests
+    ```
+
+from the birdwatcher directory while in the mybirdwatcher conda environment.
+
+
 ## Contributions
 
 Sita ter Haar and Dylan Minekus helped exploring the application of movement
