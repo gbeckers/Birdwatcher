@@ -54,7 +54,7 @@ Python 3 versions may also work.
 
 2. Open Anaconda prompt in terminal.
 
-3. Create new environment for Birdwatcher (name is up to you, in example here 'mybirdwatcher'). We install Jupyter lab and git at the same time:
+3. Create new environment for Birdwatcher (name is up to you, in example here 'mybirdwatcher'). We install some other packages at the same time:
 
     ```
     conda create -n mybirdwatcher python=3.14 git=2.51 ffmpeg=8.0.1 numpy=2.4.2 matplotlib=3.10.8 pandas=3.0.0 seaborn=0.13.2
@@ -81,6 +81,11 @@ Python 3 versions may also work.
 
    If instead you want the latest version of the git master branch, use:
 
+    ```
+    pip install git+https://github.com/gbeckers/birdwatcher@master
+    ```
+    For development version use:
+    
     ```
     pip install git+https://github.com/gbeckers/birdwatcher@master
     ```
