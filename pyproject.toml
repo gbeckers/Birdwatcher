@@ -28,7 +28,7 @@ dependencies = [
     "opencv-python==4.13",
     "opencv-contrib-python==4.13",
     "pandas==3.0.0",
-    "seaborn=0.13.2"
+    "seaborn=0.13.2",
 ]
 
 [project.readme]
