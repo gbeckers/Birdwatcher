@@ -12,7 +12,7 @@ addition of other ways of video IO in Birdwatcher in the future.
 
 import json
 import subprocess
-import time
+import re
 from pathlib import Path
 
 import numpy as np
@@ -133,6 +133,16 @@ def videofileinfo(filepath, ffprobepath='ffprobe'):
             '-show_streams', str(filepath)]
     p = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     return json.loads(p.stdout.read().decode('utf-8'))
+
+def ffmpegversion(ffmpegpath='ffmpeg'):
+    args = [str(ffmpegpath), '-version']
+    p = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+    firstline =  p.stdout.read().split("\n")[0]
+    match = re.search(r"ffmpeg version (\S+)", firstline)
+    if match:
+        return match.group(1)
+    else:
+        return None
 
 ## FIXME inform before raising StopIteration that file has no frames
 def iterread_videofile(filepath, startat=None, nframes=None, color=True,
