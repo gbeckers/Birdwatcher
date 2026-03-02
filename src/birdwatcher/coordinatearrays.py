@@ -352,7 +352,7 @@ def open_archivedcoordinatedata(path, temppath=None):
 
     with tempdir(dirname=temppath) as dirname:
         tar = tarfile.open(path)
-        tar.extractall(path=dirname)
+        tar.extractall(path=dirname, filter='data')
         tar.close()
         capath = list(dirname.glob('*'))[0]
         yield CoordinateArrays(capath)

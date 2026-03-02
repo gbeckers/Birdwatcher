@@ -5,12 +5,14 @@ Version 0.6
 -----------
 Commits Gabriel Beckers.
 
-- modern package structure
-- depends on ffmpeg 7.1.1
+- modernize package structure
+- depends on ffmpeg 8.0.1
 - GitHub Action tests now use conda ffmpeg package
 - Dependencies updated to recent versions
 - simplified README
 - add overwrite parameters to many functions
+- ffmeg version is added to saved metadata movement detection
+- archived coordinates are extracted with 'data' filter (safer option since Python 3.12)
 
 
 Version 0.5
