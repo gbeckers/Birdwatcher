@@ -45,7 +45,7 @@ Utrecht University. It is open source, freely available under the
 
 ## Installation Birdwatcher package
 
-Birdwatcher officially supports Python 3.10 or higher, but older
+Birdwatcher officially supports Python 3.12 or higher, but older
 Python 3 versions may also work.
 
 **User installation**
