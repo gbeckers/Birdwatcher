@@ -6,6 +6,8 @@ from ..utils import derive_filepath
 from ..coordinatearrays import _archive
 from ..backgroundsubtraction import BackgroundSubtractorMOG2
 from ..video import VideoFileStream
+from ..ffmpeg import ffmpegversion
+
 __version__ = "0.6.0"
 
 
@@ -137,6 +139,7 @@ def detect_movement(vfs, settings=None, startat=None, nframes=None, roi=None,
     metadata['roi'] = roi
     metadata['nroi'] = nroi
     metadata['birdwatcherversion'] = __version__
+    metadata['ffmegversion'] = ffmpegversion()
 
     frames = apply_settings(vfs, output_settings, startat, nframes, roi, nroi, 
                             bgs_type)
