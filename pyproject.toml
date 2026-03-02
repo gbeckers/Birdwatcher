@@ -22,11 +22,11 @@ classifiers=[
         'Intended Audience :: Science/Research',
 ]
 dependencies = [
-    "darr>=0.6.3",
-    "numpy>=2.4.2",
-    "matplotlib>=3.10.8",
-    "opencv-python>=4.13",
-    "opencv-contrib-python>=4.13"
+    "darr==0.6.3",
+    "numpy==2.4.2",
+    "matplotlib==3.10.8",
+    "opencv-python==4.13",
+    "opencv-contrib-python==4.13"
 ]
 
 [project.readme]
