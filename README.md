@@ -15,20 +15,21 @@
 
 It aims to get you up and running quickly when building analysis code or tools for specific measurements. 
 
-Birdwatcher offers high-level tools for behavioral analysis, currently focused on:
+Birdwatcher offers both high-level and lower-level tools for behavioral analysis. Currently, higher level functionality is focused on:
 
 - Single-animal movement
 - Location detection
 
-This is based on machine learning, but not on deep learning (artificial neuronal network) techniques, as the specific goal is that the input to output transformation is entirely understood and predictable.
+Birdwatcher is based on machine learning, but not on deep learning techniques, as the specific goal is that the input to output transformation is entirely understood and predictable.
 
-Further, to build your own high-level tools Birdwatcher offers video analysis functionality such as:
+Further, to build your own high-level tools Birdwatcher offers lower-level video analysis functionality such as:
 
 - Easy reading and writing videos as NumPy arrays
 - Applying processing algorithms like background subtraction
 - Morphological transformations, resizing, and frame annotation
+- Writing lower-level data output to disk-based ragged-arrays for futher analyses
 
-These tools build upon the underlying low-level tools [FFmpeg](https://www.ffmpeg.org/) and [OpenCV](https://opencv.org/), but Birdwatcher provides a higher-level interface that simplifies many tasks.
+Birdwatche builds upon the underlying low-level tools [FFmpeg](https://www.ffmpeg.org/) and [OpenCV](https://opencv.org/), but Birdwatcher provides an interface that simplifies many tasks in typical animal behavior work.
 
 Despite its name, Birdwatcher is not just for birds! We've used it successfully to analyze dog behavior and it can work for any moving subject.
 
