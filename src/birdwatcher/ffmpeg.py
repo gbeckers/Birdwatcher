@@ -249,7 +249,7 @@ def get_frameat(filepath, time, color=True, ffmpegpath='ffmpeg',
 
 
 def extract_audio(filepath, outputpath=None, overwrite=False, 
-                  codec='pcm_s24le', channel=None, ffmpegpath='ffmpeg', 
+                  codec='copy', channel=None, ffmpegpath='ffmpeg',
                   loglevel='quiet'):
     """Extract audio as wav file.
 
@@ -261,8 +261,10 @@ def extract_audio(filepath, outputpath=None, overwrite=False,
         '.wav' extension.
     overwrite : bool, default=False
         Overwrite if audio file exists or not.
-    codec : str, default='pcm_s24le'
-        ffmpeg audio codec, with 24-bit pcm as default output.
+    codec : str, default='copy'
+        ffmpeg audio codec, with as default copying codec to output. Another
+        choice would be 'pcm_s24le', which is a high-quality setting, but may
+        change the audio data as saved in video.
     channel : int, default=None
         Channel number to extract. The default None will extract all channels.
     ffmpegpath : str or pathlib.Path, optional

@@ -13,6 +13,7 @@ Commits Gabriel Beckers.
 - add overwrite parameters to many functions
 - ffmeg version is added to saved metadata movement detection
 - archived coordinates are extracted with 'data' filter (safer option since Python 3.12)
+- use 'copy' as default codec argument when extracting audio from video (doesn't change data)
 
 
 Version 0.5
