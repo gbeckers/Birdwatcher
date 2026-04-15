@@ -29,7 +29,7 @@ Further, to build your own high-level tools Birdwatcher offers lower-level video
 - Morphological transformations, resizing, and frame annotation
 - Writing lower-level data output to disk-based ragged-arrays for futher analyses
 
-Birdwatche builds upon the underlying low-level tools [FFmpeg](https://www.ffmpeg.org/) and [OpenCV](https://opencv.org/), but Birdwatcher provides an interface that simplifies many tasks in typical animal behavior work.
+Birdwatcher provides an interface to the underlying low-level tools [FFmpeg](https://www.ffmpeg.org/) and [OpenCV](https://opencv.org/) and simplifies many tasks in typical animal behavior work.
 
 Despite its name, Birdwatcher is not just for birds! We've used it successfully to analyze dog behavior and it can work for any moving subject.
 
@@ -85,10 +85,10 @@ Python 3 versions may also work.
     ```
     pip install git+https://github.com/gbeckers/birdwatcher@master
     ```
-    For development version use:
+    For the development version use:
     
     ```
-    pip install git+https://github.com/gbeckers/birdwatcher@master
+    pip install git+https://github.com/gbeckers/birdwatcher@develop
     ```
 
 ## Run notebooks tutorial
