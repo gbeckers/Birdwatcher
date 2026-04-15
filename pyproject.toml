@@ -29,6 +29,11 @@ dependencies = [
     "pandas>=3.0",
     "seaborn>=0.13.2",
 ]
+[project.optional-dependencies]
+dev = [
+    "pytest",
+    "pytest-cov",
+]
 
 [project.readme]
 file = "README.md"
