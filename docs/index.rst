@@ -45,7 +45,6 @@ Utrecht University. It is open source, freely available under the `New BSD Licen
    api
    releasenotes
    development
-   testing
 
 Examples
 --------
