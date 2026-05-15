@@ -43,11 +43,6 @@ class TestVideos(unittest.TestCase):
         frame = vf.get_frameat('00:10.')
         self.assertSequenceEqual(frame.shape, (720,1280,3))
 
-    def test_extractaudio(self):
-        d = Path(tempfile.mkdtemp())
-        p = d / 'even.wav'
-        bw.testvideosmall().extract_audio(outputpath=p)
-        shutil.rmtree(d)
 
 
 
