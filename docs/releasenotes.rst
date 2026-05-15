@@ -14,6 +14,7 @@ Commits Gabriel Beckers.
 - ffmeg version is added to saved metadata movement detection
 - archived coordinates are extracted with 'data' filter (safer option since Python 3.12)
 - use 'copy' as default codec argument when extracting audio from video (doesn't change data)
+- improved audio codec handling when extracting audio (best muxer chosen automatically)
 
 
 Version 0.5
