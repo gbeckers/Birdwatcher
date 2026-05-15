@@ -151,15 +151,20 @@ class VideoFileStream():
         Parameters
         ----------
         outputpath : str or pathlib.Path, optional
-            Filename and path to write audio to. The default is None, which
-            means the same directory and name as the video file is used, but 
-            then with '.wav' extension.
+            Filename and path to write audio to. The default is None, which means
+            the same directoy and name as the video file is used, but then with an
+            audio format extension. If you provide an outputpath, best is *not* to
+            specify an audio extension, unless you are sure it is compatible with
+            the audio codec in the video file. If not specified, a suitable file
+            format with appropriate extension will be automatically selected.
         overwrite : bool, default=False
             Overwrite if audio file exists or not.
-        codec : str, default='pcm_s24le'
+        codec : str, default='copy'
             ffmpeg audio codec, with as default copying codec to output. Another
             choice would be 'pcm_s24le', which is a high-quality setting, but may
-            change the audio data as saved in video.
+            change the audio data as saved in video. It is recommended to use the
+            default 'copy' to avoid the possibility of introducing artefacts, unless
+            you know what you are doing.
         channel : int, default=None
             Channel number to extract. The default None will extract all 
             channels.

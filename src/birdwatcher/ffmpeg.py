@@ -13,6 +13,8 @@ addition of other ways of video IO in Birdwatcher in the future.
 import json
 import subprocess
 import re
+import functools
+import warnings
 from pathlib import Path
 
 import numpy as np
@@ -248,23 +250,107 @@ def get_frameat(filepath, time, color=True, ffmpegpath='ffmpeg',
                                    loglevel=loglevel))
 
 
-def extract_audio(filepath, outputpath=None, overwrite=False, 
-                  codec='copy', channel=None, ffmpegpath='ffmpeg',
-                  loglevel='quiet'):
+CODEC_TO_EXTENSION = {
+    "aac":        ".m4a",
+    "mp3":        ".mp3",
+    "opus":       ".opus",
+    "vorbis":     ".ogg",
+    "flac":       ".flac",
+    "pcm_s16le":  ".wav",
+    "pcm_s24le":  ".wav",
+    "pcm_s32le":  ".wav",
+    "pcm_f32le":  ".wav",
+    "pcm_alaw":   ".wav",
+    "pcm_mulaw":  ".wav",
+    "alac":       ".m4a",
+    "eac3":       ".eac3",
+    "ac3":        ".ac3",
+    "dts":        ".dts",
+    "truehd":     ".thd",
+    "mp2":        ".mp2",
+    "wmav2":      ".wma",
+    "wmav1":      ".wma",
+}
+
+def get_audio_codec(filepath: str) -> str:
+    """Detect the audio codec used in the video file.
+
+    """
+    cmd = [
+        "ffprobe",
+        "-v", "quiet",
+        "-print_format", "json",
+        "-show_streams",
+        "-select_streams", "a:0",
+        filepath,
+    ]
+    result = subprocess.run(cmd, capture_output=True, text=True, check=True)
+    streams = json.loads(result.stdout).get("streams", [])
+    if not streams:
+        raise ValueError(f"No audio stream found in {filepath}")
+    return streams[0]["codec_name"]
+
+
+@functools.cache
+def supported_audio_codecs(ffmpegpath: str = "ffmpeg") -> set[str]:
+    """
+    Checks which audio codecs are supported by FFmpeg for encoding/writing.
+
+    Parameters
+    ----------
+
+    ffmpegpath : str
+        Path to ffmpeg executable
+
+    Returns
+    -------
+    tuple of codecs
+
+    """
+
+    args = [str(ffmpegpath), "-hide_banner", "-encoders"]
+    with subprocess.Popen(args, stdout=subprocess.PIPE,
+                          stderr=subprocess.PIPE) as p:
+        out, err = p.communicate()
+    if err:
+        raise FFmpegError(err.decode('utf-8'))
+    codecs = set()
+    for line in out.splitlines():
+        line = line.strip()
+        if not line.startswith(b"A"):
+            continue
+        parts = line.split()
+        if len(parts) < 2:
+            continue
+        codec = parts[1].lower().decode('utf-8')
+        codecs.add(codec)
+        codecs.discard('=')
+    return set(codecs)
+
+
+def extract_audio(filepath: str | Path, outputpath: str | Path | None = None,
+                  overwrite: bool = False, codec: str = 'copy',
+                  channel: int | None = None, ffmpegpath='ffmpeg',
+                  loglevel: str ='quiet') -> Path:
     """Extract audio as wav file.
 
     Parameters
     ----------
     outputpath : str or pathlib.Path, optional
         Filename and path to write audio to. The default is None, which means 
-        the same directoy and name as the video file is used, but then with 
-        '.wav' extension.
+        the same directoy and name as the video file is used, but then with an
+        audio format extension. If you provide an outputpath, best is *not* to
+        specify an audio extension, unless you are sure it is compatible with
+        the audio codec in the video file. If not specified, a suitable file
+        format with appropriate extension will be automatically selected.
     overwrite : bool, default=False
         Overwrite if audio file exists or not.
     codec : str, default='copy'
         ffmpeg audio codec, with as default copying codec to output. Another
         choice would be 'pcm_s24le', which is a high-quality setting, but may
-        change the audio data as saved in video.
+        change the audio data as saved in video. It is recommended to use the
+        default 'copy' to avoid the possibility of introducing artefacts, unless
+        you know what you are doing.
     channel : int, default=None
         Channel number to extract. The default None will extract all channels.
     ffmpegpath : str or pathlib.Path, optional
@@ -275,14 +361,32 @@ def extract_audio(filepath, outputpath=None, overwrite=False,
         Level of info that ffmpeg should print to terminal. Default is 
         'quiet'.
 
+    Returns
+    -------
+    outputpath: Path
+        The path of the generated audio file
+
     """
+
     filepath = Path(filepath)
+    if codec == 'copy':
+        codec = get_audio_codec(str(filepath))
+    if not codec in supported_audio_codecs(ffmpegpath=ffmpegpath):
+        raise ValueError(f'ffmpeg does not support codec "{codec}"')
+    ext = CODEC_TO_EXTENSION.get(codec)
     if outputpath is None:
-        outputpath = filepath.with_suffix('.wav')
+        outputpath = Path(filepath).with_suffix(ext)
     else:
         outputpath = Path(outputpath)
+    if Path(outputpath).suffix:
+        if outputpath.suffix.lower() != ext:
+            warnings.warn(f'Specified audio extension ("{outputpath.suffix}") is '
+                          f'not the same as the default ("{ext}") for this codec '
+                          f'("{codec}"). Proceeding anyway.')
+    else:
+        outputpath = outputpath.with_suffix(ext)
     if outputpath.exists() and not overwrite:
-        raise IOError(f'"{outputpath}" already exists, use overwrite parameter')
+        raise IOError(f'"{outputpath}" already exists, use `overwrite` parameter')
     _check_loglevelarg(loglevel)
     args = [str(ffmpegpath), '-loglevel' , loglevel, '-y',
             '-i', str(filepath),
@@ -291,11 +395,35 @@ def extract_audio(filepath, outputpath=None, overwrite=False,
     if channel is not None:
         args += ['-af', f'pan=mono|c0=c{channel-1}']
     args += [str(outputpath)]
-    with subprocess.Popen(args, stdout=subprocess.PIPE,
-                          stderr=subprocess.PIPE) as p:
-        out, err = p.communicate()
-    if err:
-        return err.decode('utf-8')
+    try:
+        result = subprocess.run(
+            args,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+            text=True,
+            check=True,
+        )
+    except FileNotFoundError as e:
+        print(f"FFmpeg executable not found: {e}")
+    except subprocess.CalledProcessError as e:
+        print("FFmpeg command failed")
+        print(f"Command: {e.cmd}")
+        print(f"Return code: {e.returncode}")
+        if e.stdout:
+            print("STDOUT:")
+            print(e.stdout)
+        if e.stderr:
+            print("STDERR:")
+            print(e.stderr)
+    except Exception as e:
+        print(f"Unexpected error: {e}")
+    #
+    # with subprocess.Popen(args, stdout=subprocess.PIPE,
+    #                       stderr=subprocess.PIPE) as p:
+    #     out, err = p.communicate()
+    # if err:
+    #     raise FFmpegError(err.decode('utf-8'))
+    return outputpath
 
 
 def _get_frameproperties(filepath, color):
