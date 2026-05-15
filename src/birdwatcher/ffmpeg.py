@@ -272,7 +272,7 @@ CODEC_TO_EXTENSION = {
     "wmav1":      ".wma",
 }
 
-def get_audio_codec(filepath: str) -> str:
+def get_audio_codec(filepath: str, audiostreamnr: int = 0) -> str | None:
     """Detect the audio codec used in the video file.
 
     """
@@ -287,8 +287,9 @@ def get_audio_codec(filepath: str) -> str:
     result = subprocess.run(cmd, capture_output=True, text=True, check=True)
     streams = json.loads(result.stdout).get("streams", [])
     if not streams:
-        raise ValueError(f"No audio stream found in {filepath}")
-    return streams[0]["codec_name"]
+        return None
+    else:
+        return streams[audiostreamnr]["codec_name"]
 
 
 @functools.cache
@@ -371,6 +372,8 @@ def extract_audio(filepath: str | Path, outputpath: str | Path | None = None,
     filepath = Path(filepath)
     if codec == 'copy':
         codec = get_audio_codec(str(filepath))
+        if not codec:
+            raise IOError(f'No audio stream in file "{filepath}"')
     if not codec in supported_audio_codecs(ffmpegpath=ffmpegpath):
         raise ValueError(f'ffmpeg does not support codec "{codec}"')
     ext = CODEC_TO_EXTENSION.get(codec)
