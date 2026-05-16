@@ -5,6 +5,7 @@ depends on FFmpeg.
 
 
 from pathlib import Path
+from typing import Tuple, Dict, Optional
 
 import numpy as np
 import cv2 as cv
@@ -15,22 +16,121 @@ from .frames import frameiterator
 from .utils import progress
 
 
-__all__ = ['VideoFileStream', 'testvideosmall']
+__all__ = ['VideoFile', 'VideoFileStream', 'testvideostreamsmall']
 
 
-class VideoFileStream():
+class VideoFile:
+    """Video file.
+
+    This class provides stream and format information of a video file, and
+    retrieves video and audio streams.
+
+    Parameters
+    ----------
+    filepath : str of pathlib.Path
+        Path to videofile.
+
+    Examples
+    --------
+    >>> import birdwatcher as bw
+    >>> vf = bw.VideoFile('zebrafinchrecording.mp4')
+    >>> vf.streamsinfo # look at what streams are available
+    >>> vfs = vf.get_videostream(0) # get video stream that has index 0
+
+    """
+
+    def __init__(self, filepath: str | Path) -> None:
+        self._filepath = fp = Path(filepath)
+        info = videofileinfo(fp)
+        self._formatinfo = info['format']
+        self._streamsinfo = tuple(info['streams'])
+        self._nstreams = len(self._streamsinfo)
+        self._videostreamsinfo = tuple(stream for stream in self._streamsinfo
+                                       if stream['codec_type'] == 'video')
+        self._audiostreamsinfo = tuple(stream for stream in self._streamsinfo
+                                       if stream['codec_type'] == 'audio')
+
+    @property
+    def filepath(self) -> Path:
+        """Path to video file."""
+        return self._filepath
+
+    @property
+    def formatinfo(self) -> Dict:
+        """Metadata of video file format as provided by ffprobe."""
+        return self._formatinfo
+
+    @property
+    def streamsinfo(self) -> Tuple[Dict]:
+        """Metadata of video streams as provided by ffprobe."""
+        return self._streamsinfo
+
+    @property
+    def nstreams(self) -> int:
+        """Number of video streams in video file."""
+        return self._nstreams
+
+    @property
+    def nvideostreams(self) -> int:
+        """Number of video streams in video file."""
+        return len(self._videostreamsinfo)
+
+    @property
+    def naudiostreams(self) -> int:
+        """Number of audio streams in video file."""
+        return len(self._audiostreamsinfo)
+
+    @property
+    def videostreamsinfo(self) -> Tuple[Dict]:
+        """List of metadata of video streams in video file."""
+        return self._videostreamsinfo
+
+    @property
+    def audiostreamsinfo(self) -> Tuple[Dict]:
+        """List of metadata of audio streams in video file."""
+        return self._audiostreamsinfo
+
+    def get_videostream(self, streamnumber: int = 0) -> "VideoFileStream":
+        """
+        Retrieves a video stream from the given file.
+
+        This method uses the specified stream number to identify and return the
+        corresponding video stream within the file. If no stream number is
+        provided, the default stream (0) is used.
+
+        Parameters
+        ----------
+        streamnumber : int, optional
+            The index of the video stream to retrieve, by default 0. Note that
+            this is the stream number as provided by the 'index' key of the
+            `streamsinfo`, `videostreamsinfo` and `audiostreamsinfo` attributes.
+
+        Returns
+        -------
+        VideoFileStream
+            An object representing the requested video stream
+        """
+        for s in self._videostreamsinfo:
+            if s['index'] == streamnumber:
+                return VideoFileStream(self._filepath, streamnumber=streamnumber)
+        raise ValueError(f'Stream number {streamnumber} not found in file')
+
+
+
+
+class VideoFileStream:
     """Video stream from file.
 
     This class can read video frames from a file.
 
     Parameters
     ----------
-    filepath : str of pathlib.Path
+    filepath : str or pathlib.Path
         Path to videofile.
     streamnumber : int, optional
         Video stream number to use as input. Often there is just
         one video stream present in a video file (default=0), but
-        if there are more you can use this parameter to specify
+        if there are more, use this parameter to specify
         which one you want.
 
     Examples
@@ -42,7 +142,7 @@ class VideoFileStream():
 
     """
 
-    def __init__(self, filepath, streamnumber=0):
+    def __init__(self, filepath: str | Path, streamnumber: int = 0):
 
         self.filepath = fp = Path(filepath)
         self.streamnumber = streamnumber
@@ -261,7 +361,7 @@ class VideoFileStream():
         Example
         -------
         >>> import birdwatcher as bw
-        >>> vfs = bw.testvideosmall()
+        >>> vfs = bw.testvideostreamsmall()
         >>> frame = vfs.get_frame(500)
 
         """
@@ -292,7 +392,7 @@ class VideoFileStream():
         Example
         -------
         >>> import birdwatcher as bw
-        >>> vfs = bw.testvideosmall()
+        >>> vfs = bw.testvideostreamsmall()
         >>> frame = vfs.get_frameat('5.05') # at 5 sec and 50 msec
         >>> frame = vfs.get_frameat('00:00:05.05') # same thing
 
@@ -325,7 +425,7 @@ class VideoFileStream():
         return f.show(framerate=framerate)
 
 
-def testvideosmall():
+def testvideostreamsmall():
     """A 20-s video of a zebra finch for testing purposes.
 
     Returns

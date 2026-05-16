@@ -20,6 +20,6 @@ class TestSupportedEncodings(unittest.TestCase):
 class TestExtractAudio(unittest.TestCase):
 
     def test_extract_audio_noaudio(self):
-        vf = bw.testvideosmall()
+        vfs = bw.testvideostreamsmall()
         self.assertRaises(src.birdwatcher.ffmpeg.NoAudioStreamError,
-                          vf.extract_audio)
+                          vfs.extract_audio)

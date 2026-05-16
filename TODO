@@ -1,4 +1,3 @@
-- we should have a VideoFile object from which we can get VideoFileStream and AudioStream objects
 - tests for audio extraction
 - check if it is a video file that is provided to VideoFileStream (wav now works
  as well)

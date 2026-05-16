@@ -34,7 +34,7 @@ class TestParameterSelection(unittest.TestCase):
     def setUp(self):
         self.tempdirname1 = Path(tempfile.mkdtemp())
         try:
-            self.params = md.apply_all_parameters(bw.testvideosmall(), 
+            self.params = md.apply_all_parameters(bw.testvideostreamsmall(),
                                                   settings, nframes=200)
         except:
             self.tearDown()
@@ -93,7 +93,7 @@ class TestParamSelectionCount(unittest.TestCase):
     def setUp(self):
         self.tempdirname1 = Path(tempfile.mkdtemp())
         try:
-            self.params = md.apply_all_parameters(bw.testvideosmall(), 
+            self.params = md.apply_all_parameters(bw.testvideostreamsmall(),
                                                   settings, nframes=200,
                                                   use_stats='count')
         except:

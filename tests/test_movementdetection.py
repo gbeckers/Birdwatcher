@@ -28,7 +28,7 @@ settings = {'bgs_params':  {'History': 12,
 class TestApplySettingst(unittest.TestCase):
 
     def test_applysettings(self):
-        vfs = bw.testvideosmall()
+        vfs = bw.testvideostreamsmall()
         settings_flat = {**settings['bgs_params'], **settings['processing']}
         frames = md.apply_settings(vfs, settings_flat)
         self.assertIsInstance(frames, bw.Frames)
@@ -38,7 +38,7 @@ class TestDetectMovement(unittest.TestCase):
 
     def setUp(self):
         self.tempdirname1 = Path(tempfile.mkdtemp())
-        self.vfs = bw.testvideosmall()
+        self.vfs = bw.testvideostreamsmall()
 
     def tearDown(self):
         shutil.rmtree(self.tempdirname1)
@@ -66,10 +66,10 @@ class TestBatchDetectMovement(unittest.TestCase):
 
     def setUp(self):
         self.tempdirname1 = Path(tempfile.mkdtemp())
-        self.vfs1 = (bw.testvideosmall()
+        self.vfs1 = (bw.testvideostreamsmall()
                     .iter_frames(nframes=200)
                     .tovideo(self.tempdirname1 / 'video1.mp4', framerate=25))
-        self.vfs2 = (bw.testvideosmall()
+        self.vfs2 = (bw.testvideostreamsmall()
                     .iter_frames(nframes=200)
                     .tovideo(self.tempdirname1 / 'video2.mp4', framerate=25))
 
