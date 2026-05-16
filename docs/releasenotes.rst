@@ -3,7 +3,7 @@ Release notes
 
 Version 0.6
 -----------
-Commits Gabriel Beckers.
+Commits by Gabriel Beckers.
 
 - modernize package structure
 - depends on ffmpeg 8.0.1
@@ -15,6 +15,7 @@ Commits Gabriel Beckers.
 - archived coordinates are extracted with 'data' filter (safer option since Python 3.12)
 - use 'copy' as default codec argument when extracting audio from video (doesn't change data)
 - improved audio codec handling when extracting audio (best muxer chosen automatically)
+- refactored ffmpeg module: a.o. better error handling
 
 
 Version 0.5

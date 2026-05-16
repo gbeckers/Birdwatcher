@@ -186,7 +186,7 @@ class CoordinateArrays(RaggedArray):
                                       value=255,
                                       dtype='uint8'),
                      filepath, framerate=framerate, scale=scale, crf=crf,
-                     format=format, codec=codec, pixfmt=pixfmt,
+                     vformat=format, codec=codec, pixfmt=pixfmt,
                      ffmpegpath=ffmpegpath, overwrite=overwrite)
 
     def show(self, startframe=0, endframe=None, stepsize=1, framerate=None,

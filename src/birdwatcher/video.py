@@ -10,7 +10,7 @@ import numpy as np
 import cv2 as cv
 
 from .ffmpeg import videofileinfo, iterread_videofile, count_frames, \
-    get_frame, get_frameat, extract_audio, get_audio_codec
+    get_frame, get_frameat, extract_audio, detect_audio_codec
 from .frames import frameiterator
 from .utils import progress
 
@@ -156,7 +156,7 @@ class VideoFileStream():
         audiocodec: str
 
         """
-        return get_audio_codec(str(self.filepath), audiostreamnr=audiostreamnr)
+        return detect_audio_codec(str(self.filepath), audiostreamnr=audiostreamnr)
 
     def extract_audio(self, outputpath=None, overwrite=False, 
                       codec='copy', channel=None, ffmpegpath='ffmpeg',

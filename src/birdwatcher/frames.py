@@ -161,7 +161,7 @@ class Frames:
         from .video import VideoFileStream
         filepath = arraytovideo(frames=self, filepath=filepath,
                                 framerate=framerate, crf=crf, scale=scale,
-                                format=format, codec=codec, pixfmt=pixfmt,
+                                vformat=format, codec=codec, pixfmt=pixfmt,
                                 ffmpegpath=ffmpegpath, overwrite=overwrite)
         return VideoFileStream(filepath)
 
