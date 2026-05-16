@@ -243,6 +243,7 @@ def ffmpegversion(ffmpegpath: str | Path ='ffmpeg') -> str | None:
         return None
 
 ## FIXME inform before raising StopIteration that file has no frames
+## FIXME startat can be precise or not
 def iterread_videofile(filepath: str | Path, startat: str | None = None,
                        nframes: int | None = None, color: bool=True,
                        ffmpegpath: str | Path = 'ffmpeg',
@@ -288,7 +289,7 @@ def iterread_videofile(filepath: str | Path, startat: str | None = None,
         _get_frameproperties(filepath=filepath, color=color)
     args = [str(ffmpegpath), '-loglevel', loglevel]
     if startat is not None:
-        args.extend(['-ss', startat, '-i', str(filepath)])
+        args.extend(['-i', str(filepath),'-ss', startat])
     else:
         args.extend(['-i', str(filepath)])
     if nframes is not None:
