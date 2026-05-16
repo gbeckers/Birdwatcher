@@ -205,6 +205,7 @@ def arraytovideo(frames, filepath: str | Path, framerate: int,
                 frame = np.ascontiguousarray(frame)
             p.stdin.write(frame.tobytes())
         p.stdin.close()
+        p.stdin = None # needed for python < 3.14
         _, stderr = p.communicate()
         if p.returncode != 0:
             raise FFmpegError(
