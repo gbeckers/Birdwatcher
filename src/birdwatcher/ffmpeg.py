@@ -193,11 +193,15 @@ def arraytovideo(frames, filepath: str | Path, framerate: int,
     if scale is not None:
         outwidth, outheight = scale
         args.extend(['-vf', f'scale={outwidth}:{outheight}'])
-    args.extend([str(filepath), '-y'])
+    args.extend(['-y', str(filepath)])
     p = None
     try:
-        p = subprocess.Popen(args, stdin=subprocess.PIPE, stderr=subprocess.PIPE,
-                             stdout=subprocess.PIPE)
+        p = subprocess.Popen(
+            args,
+            stdin=subprocess.PIPE,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+        )
         for frame in framegen:
             if frame.dtype != np.uint8:
                 raise TypeError("Frames must have dtype uint8")
@@ -205,24 +209,20 @@ def arraytovideo(frames, filepath: str | Path, framerate: int,
                 frame = np.ascontiguousarray(frame)
             p.stdin.write(frame.tobytes())
         p.stdin.close()
-        _, stderr = p.communicate()
+        p.stdin = None
+        stdout, stderr = p.communicate()
         if p.returncode != 0:
             raise FFmpegError(
                 cmd=args,
                 returncode=p.returncode,
-                stderr=stderr.decode("utf-8"),
+                stdout=stdout.decode("utf-8", errors="replace"),
+                stderr=stderr.decode("utf-8", errors="replace"),
             )
-    except:
+    except Exception:
         if p is not None:
             p.kill()
             p.wait()
         raise
-    finally:
-        if p is not None:
-            if p.stdin and not p.stdin.closed:
-                p.stdin.close()
-            if p.stderr and not p.stderr.closed:
-                p.stderr.close()
     return Path(filepath)
 
 
