@@ -61,6 +61,10 @@ class VideoFile:
         return self._formatinfo
 
     @property
+    def duration(self) -> float:
+        return self._formatinfo['duration']
+
+    @property
     def streamsinfo(self) -> Tuple[Dict]:
         """Metadata of video streams as provided by ffprobe."""
         return self._streamsinfo
@@ -86,9 +90,30 @@ class VideoFile:
         return self._videostreamsinfo
 
     @property
+    def videostreamindices(self) -> Tuple[int]:
+        """List of indices of video streams in video file."""
+        return tuple(s['index'] for s in self._videostreamsinfo)
+
+    @property
+    def audiostreamindices(self) -> Tuple[int]:
+        """List of indices of audio streams in video file."""
+        return tuple(s['index'] for s in self._audiostreamsinfo)
+
+    @property
     def audiostreamsinfo(self) -> Tuple[Dict]:
         """List of metadata of audio streams in video file."""
         return self._audiostreamsinfo
+
+    def __repr__(self):
+        return f"{self.__class__.__name__}('{self.filepath}')"
+
+    def __str__(self):
+        s = self.__repr__()
+        s += f"\n    duration: {self.duration}"
+        s += f"\n    number of streams: {self.nstreams}"
+        s += f"\n    videostream indices: {self.videostreamindices}"
+        s += f"\n    audiostreams indices: {self.audiostreamindices}"
+        return s
 
     def get_videostream(self, streamnumber: int = 0) -> "VideoFileStream":
         """
@@ -112,7 +137,7 @@ class VideoFile:
         """
         for s in self._videostreamsinfo:
             if s['index'] == streamnumber:
-                return VideoFileStream(self._filepath, streamnumber=streamnumber)
+                return VideoFileStream(self._filepath, streamindex=streamnumber)
         raise ValueError(f'Stream number {streamnumber} not found in file')
 
 
@@ -127,7 +152,7 @@ class VideoFileStream:
     ----------
     filepath : str or pathlib.Path
         Path to videofile.
-    streamnumber : int, optional
+    streamindex : int, optional
         Video stream number to use as input. Often there is just
         one video stream present in a video file (default=0), but
         if there are more, use this parameter to specify
@@ -142,15 +167,14 @@ class VideoFileStream:
 
     """
 
-    def __init__(self, filepath: str | Path, streamnumber: int = 0):
+    def __init__(self, filepath: str | Path, streamindex: int = 0):
 
-        self.filepath = fp = Path(filepath)
-        self.streamnumber = streamnumber
+        self._filepath = fp = Path(filepath)
+        self._streamindex = streamindex
         if not fp.exists():
             raise FileNotFoundError(f'"{filepath}" does not exist')
         metadata = videofileinfo(fp)
-        self._formatmetadata = metadata['format']
-        self._streammetadata = metadata['streams'][streamnumber]
+        self._streammetadata = metadata['streams'][streamindex]
 
 
     def __iter__(self):
@@ -167,29 +191,32 @@ class VideoFileStream:
         """
         return {'classname': self.__class__.__name__,
                 'classarguments': {'filepath': str(self.filepath),
-                                  'streamnumber': self.streamnumber},
+                                  'streamnumber': self._streamindex},
                 'framewidth': self.framewidth,
                 'frameheight': self.frameheight,
-                'formatmetadata': self.formatmetadata,
                 'streammetadata': self.streammetadata}
+
+    @property
+    def filepath(self) -> Path:
+        """Path to video file containing video stream."""
+        return self._filepath
 
     @property
     def avgframerate(self):
         """Average frame rate of video stream, as reported in the metadata
         of the video file."""
-        ar = self.streammetadata['avg_frame_rate']
+        ar = self._streammetadata['avg_frame_rate']
         return np.divide(*map(int, ar.split('/')))
+
+    @property
+    def codec(self):
+        return self._streammetadata['codec_name']
 
     @property
     def duration(self):
         """Duration of video stream in seconds, as reported in the metadata
         of the video file."""
-        return float(self.streammetadata['duration'])
-
-    @property
-    def formatmetadata(self):
-        """Metadata of video file format as provided by ffprobe."""
-        return self._formatmetadata
+        return float(self._streammetadata['duration'])
 
     @property
     def streammetadata(self):
@@ -217,7 +244,24 @@ class VideoFileStream:
         of the video file. Note that this may not be accurate. Use
         `count_frames` to measure the actual number (may take a lot of
         time)."""
-        return int(self.streammetadata['nb_frames'])
+        return int(self._streammetadata['nb_frames'])
+
+    @property
+    def videofile(self) -> VideoFile:
+        return VideoFile(self._filepath)
+
+    def __repr__(self):
+        return (f"{self.__class__.__name__}('{self.filepath}', stream"
+                f"={self._streamindex})")
+
+    def __str__(self):
+        s = self.__repr__()
+        s += f"\n    codec: {self.streammetadata['codec_name']}"
+        s += f"\n    avgframerate: {self.avgframerate}"
+        s += f"\n    duration: {self.duration}"
+        s += f"\n    nb_frames: {self.nframes}"
+        s += f"\n    framesize: {self.framesize}"
+        return s
 
     def count_frames(self, threads=8, ffprobepath='ffprobe'):
         """Count the number of frames in video file stream.

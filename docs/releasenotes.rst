@@ -16,6 +16,7 @@ Commits by Gabriel Beckers.
 - use 'copy' as default codec argument when extracting audio from video (doesn't change data)
 - improved audio codec handling when extracting audio (best muxer chosen automatically)
 - refactored ffmpeg module: a.o. better error handling
+- implemented a VideoFile class
 
 
 Version 0.5
