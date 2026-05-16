@@ -25,7 +25,7 @@ import numpy as np
 from .utils import peek_iterable
 
 
-__all__ = ['arraytovideo']
+__all__ = ['arraytovideo', 'supported_audio_codecs']
 
 
 AUDIOCODEC_TO_EXTENSION = {
@@ -448,6 +448,7 @@ def supported_encoders(kind: str, ffmpegpath: str | None = "ffmpeg") -> set[str]
         match.group(1).lower()
         for match in _AUDIO_ENCODER_RE.finditer(result.stdout)
     }
+    codecs.discard("=")
     return codecs
 
 

@@ -11,18 +11,23 @@ Birdwatcher
   :width: 720
   :class: custom-image
 
-**Birdwatcher** is a Python computer vision library for analyzing animal behavior within a scientific computing environment.
+**Birdwatcher** is a Python computer vision library for analyzing animal
+behavior within a scientific computing environment.
 
-It aims to get you up and running quickly when building analysis code or tools for specific measurements.
+It aims to get you up and running quickly when building analysis code or tools
+for specific measurements.
 
-Birdwatcher offers both high-level and lower-level tools for behavioral analysis. Currently, higher level functionality is focused on:
+Birdwatcher offers both high-level and lower-level tools for behavioral analysis.
+Currently, higher level functionality is focused on:
 
-- Single-animal movement
-- Location detection
+- Single-animal movement and location detection
 
-Birdwatcher is based on machine learning, but not on deep learning techniques, as the specific goal is that the input to output transformation is entirely understood and predictable.
+This is based on machine learning, but not on deep learning, as the specific
+goal is that the input to output transformation is deterministic and can be
+entirely understood.
 
-Further, to build your own high-level tools Birdwatcher offers lower-level video analysis functionality such as:
+To build your own high-level tools, Birdwatcher offers lower-level
+functionality such as:
 
 - Easy reading and writing videos as NumPy arrays
 - Applying processing algorithms like background subtraction
@@ -32,6 +37,8 @@ Further, to build your own high-level tools Birdwatcher offers lower-level video
 Birdwatcher provides an interface to the underlying low-level tools `FFmpeg
 <https://www.ffmpeg.org/>`__ and `OpenCV <https://opencv.org/>`__ and
 simplifies many tasks in typical animal behavior work.
+
+
 
 Despite its name, Birdwatcher is not just for birds! We've used it successfully to analyze dog behavior and it can work for any moving subject.
 
@@ -50,6 +57,7 @@ Utrecht University. It is open source, freely available under the `New BSD Licen
    :caption: Contents:
 
    installation
+   recipes
    design
    api
    development
