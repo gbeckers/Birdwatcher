@@ -47,8 +47,12 @@ class VideoFile:
         self._nstreams = len(self._streamsinfo)
         self._videostreamsinfo = tuple(stream for stream in self._streamsinfo
                                        if stream['codec_type'] == 'video')
+        self._nvideostreams = len(self._videostreamsinfo)
         self._audiostreamsinfo = tuple(stream for stream in self._streamsinfo
                                        if stream['codec_type'] == 'audio')
+        self._audiostreams = len(self._audiostreamsinfo)
+        # self._videostreamindices = tuple(s['index'] for s in self._videostreamsinfo)
+        # self._audiostreamindices = tuple(s['index'] for s in self._audiostreamsinfo)
 
     @property
     def filepath(self) -> Path:
@@ -77,12 +81,12 @@ class VideoFile:
     @property
     def nvideostreams(self) -> int:
         """Number of video streams in video file."""
-        return len(self._videostreamsinfo)
+        return self._nvideostreams
 
     @property
     def naudiostreams(self) -> int:
         """Number of audio streams in video file."""
-        return len(self._audiostreamsinfo)
+        return self._audiostreams
 
     @property
     def videostreamsinfo(self) -> Tuple[Dict]:
@@ -90,19 +94,19 @@ class VideoFile:
         return self._videostreamsinfo
 
     @property
-    def videostreamindices(self) -> Tuple[int]:
-        """List of indices of video streams in video file."""
-        return tuple(s['index'] for s in self._videostreamsinfo)
-
-    @property
-    def audiostreamindices(self) -> Tuple[int]:
-        """List of indices of audio streams in video file."""
-        return tuple(s['index'] for s in self._audiostreamsinfo)
-
-    @property
     def audiostreamsinfo(self) -> Tuple[Dict]:
         """List of metadata of audio streams in video file."""
         return self._audiostreamsinfo
+
+    # @property
+    # def videostreamindices(self) -> Tuple[int]:
+    #     """List of indices of video streams in video file."""
+    #     return self._videostreamindices
+    #
+    # @property
+    # def audiostreamindices(self) -> Tuple[int]:
+    #     """List of indices of audio streams in video file."""
+    #     return self._audiostreamindices
 
     def __repr__(self):
         return f"{self.__class__.__name__}('{self.filepath}')"
@@ -110,9 +114,8 @@ class VideoFile:
     def __str__(self):
         s = self.__repr__()
         s += f"\n    duration: {self.duration}"
-        s += f"\n    number of streams: {self.nstreams}"
-        s += f"\n    videostream indices: {self.videostreamindices}"
-        s += f"\n    audiostreams indices: {self.audiostreamindices}"
+        s += f"\n    number of video streams: {self._nvideostreams}"
+        s += f"\n    number of audio streams: {self._audiostreams}"
         return s
 
     def get_videostream(self, streamnumber: int = 0) -> "VideoFileStream":
@@ -125,22 +128,85 @@ class VideoFile:
 
         Parameters
         ----------
-        streamnumber : int, optional
-            The index of the video stream to retrieve, by default 0. Note that
-            this is the stream number as provided by the 'index' key of the
-            `streamsinfo`, `videostreamsinfo` and `audiostreamsinfo` attributes.
+        streamnumber : int or None, optional
+            The number of the video stream to retrieve, by default 0.
+            If `None`, the first video stream is used. Use the `videostreamindices`
+            attribute to see which video streams are available.
 
         Returns
         -------
         VideoFileStream
             An object representing the requested video stream
         """
-        for s in self._videostreamsinfo:
-            if s['index'] == streamnumber:
-                return VideoFileStream(self._filepath, streamindex=streamnumber)
-        raise ValueError(f'Stream number {streamnumber} not found in file')
+        return VideoFileStream(self._filepath, streamnumber=streamnumber)
 
 
+    def get_audiocodec(self, streamnumber: int = 0) -> str:
+        """
+
+        Parameters
+        ----------
+        streamindex: int or None, optional
+            Index of the audio stream. Note that this is the stream number as
+            provided by the 'index' key of the `streamsinfo`,
+            `videostreamsinfo` and `audiostreamsinfo` attributes.
+            If `None`, the first audio stream is used. Use the `audiostreamindices`
+            attribute to see which audio streams are available.
+
+        Returns
+        -------
+        audiocodec: str
+
+        """
+        return detect_audio_codec(str(self._filepath), streamnumber=streamnumber)
+
+    def extract_audio(self, outputpath: str | Path | None=None,
+                      overwrite: bool = False, codec: str = 'copy',
+                      channel: int | None = None,
+                      ffmpegpath: str | Path ='ffmpeg', loglevel: str = 'quiet',
+                      streamnumber: int = 0):
+        """Extract audio to audio file.
+
+        Parameters
+        ----------
+        outputpath : str or pathlib.Path, optional
+            Filename and path to write audio to. The default is None, which means
+            the same directoy and name as the video file is used, but then with an
+            audio format extension. If you provide an outputpath, best is *not* to
+            specify an audio extension, unless you are sure it is compatible with
+            the audio codec in the video file. If not specified, a suitable file
+            format with appropriate extension will be automatically selected.
+        overwrite : bool, default=False
+            Overwrite if audio file exists or not.
+        codec : str, default='copy'
+            ffmpeg audio codec, with as default copying codec to output. Another
+            choice would be 'pcm_s24le', which is a high-quality setting, but may
+            change the audio data as saved in video. It is recommended to use the
+            default 'copy' to avoid the possibility of introducing artefacts, unless
+            you know what you are doing.
+        channel : int, default=None
+            Channel number to extract. The default None will extract all
+            channels.
+        ffmpegpath : str or pathlib.Path, optional
+            Path to ffmpeg executable. Default is `ffmpeg`, which means it
+            should be in the system path.
+        loglevel : {'quiet', 'panic', 'fatal', 'error', 'warning', 'info',
+                    'verbose', 'debug' ,'trace'}, optional
+            Level of info that ffmpeg should print to terminal. Default is
+            'quiet'.
+        streamindex: int or None, optional
+            Index of the audio stream. Note that this is the stream number as
+            provided by the 'index' key of the `streamsinfo`,
+            `videostreamsinfo` and `audiostreamsinfo` attributes.
+            If `None`, the first audio stream is used. Use the `audiostreamindices`
+            attribute to see which audio streams are available.
+
+        """
+        filepath = self._filepath
+        return extract_audio(filepath=filepath, outputpath=outputpath,
+                             overwrite=overwrite, codec=codec,
+                             channel=channel, ffmpegpath=ffmpegpath,
+                             loglevel=loglevel, streamnumber=streamnumber)
 
 
 class VideoFileStream:
@@ -152,7 +218,7 @@ class VideoFileStream:
     ----------
     filepath : str or pathlib.Path
         Path to videofile.
-    streamindex : int, optional
+    streamnumber : int, deafult=0
         Video stream number to use as input. Often there is just
         one video stream present in a video file (default=0), but
         if there are more, use this parameter to specify
@@ -167,14 +233,18 @@ class VideoFileStream:
 
     """
 
-    def __init__(self, filepath: str | Path, streamindex: int = 0):
-
+    def __init__(self, filepath: str | Path, streamnumber: int = 0):
         self._filepath = fp = Path(filepath)
-        self._streamindex = streamindex
         if not fp.exists():
             raise FileNotFoundError(f'"{filepath}" does not exist')
-        metadata = videofileinfo(fp)
-        self._streammetadata = metadata['streams'][streamindex]
+        self._videofile = VideoFile(filepath)
+        if self._videofile.nvideostreams == 0:
+            raise ValueError(f"No video streams found in file '{filepath}'")
+        if streamnumber >= self._videofile.nvideostreams:
+            raise ValueError(f"Stream number {streamnumber} is out of range "
+                             f"(max={self._videofile.nvideostreams-1})")
+        self._streamnumber = streamnumber
+        self._streammetadata = self._videofile.videostreamsinfo[streamnumber]
 
 
     def __iter__(self):
@@ -191,7 +261,7 @@ class VideoFileStream:
         """
         return {'classname': self.__class__.__name__,
                 'classarguments': {'filepath': str(self.filepath),
-                                  'streamnumber': self._streamindex},
+                                  'streamnumber': self._streamnumber},
                 'framewidth': self.framewidth,
                 'frameheight': self.frameheight,
                 'streammetadata': self.streammetadata}
@@ -248,11 +318,11 @@ class VideoFileStream:
 
     @property
     def videofile(self) -> VideoFile:
-        return VideoFile(self._filepath)
+        return self._videofile
 
     def __repr__(self):
         return (f"{self.__class__.__name__}('{self.filepath}', stream"
-                f"={self._streamindex})")
+                f"={self._streamnumber})")
 
     def __str__(self):
         s = self.__repr__()
@@ -284,67 +354,13 @@ class VideoFileStream:
             The number of frames in video file.
 
         """
-        return count_frames(self.filepath, threads=threads,
-                            ffprobepath=ffprobepath)
-
-    def get_audiocodec(self, audiostreamnr: int = 0) -> str:
-        """
-
-        Parameters
-        ----------
-        audiostreamnr: int
-            Index of the audio stream, default 0
-
-        Returns
-        -------
-        audiocodec: str
-
-        """
-        return detect_audio_codec(str(self.filepath), audiostreamnr=audiostreamnr)
-
-    def extract_audio(self, outputpath=None, overwrite=False, 
-                      codec='copy', channel=None, ffmpegpath='ffmpeg',
-                      loglevel='quiet'):
-        """Extract audio as wav file.
-
-        Parameters
-        ----------
-        outputpath : str or pathlib.Path, optional
-            Filename and path to write audio to. The default is None, which means
-            the same directoy and name as the video file is used, but then with an
-            audio format extension. If you provide an outputpath, best is *not* to
-            specify an audio extension, unless you are sure it is compatible with
-            the audio codec in the video file. If not specified, a suitable file
-            format with appropriate extension will be automatically selected.
-        overwrite : bool, default=False
-            Overwrite if audio file exists or not.
-        codec : str, default='copy'
-            ffmpeg audio codec, with as default copying codec to output. Another
-            choice would be 'pcm_s24le', which is a high-quality setting, but may
-            change the audio data as saved in video. It is recommended to use the
-            default 'copy' to avoid the possibility of introducing artefacts, unless
-            you know what you are doing.
-        channel : int, default=None
-            Channel number to extract. The default None will extract all 
-            channels.
-        ffmpegpath : str or pathlib.Path, optional
-            Path to ffmpeg executable. Default is `ffmpeg`, which means it
-            should be in the system path.
-        loglevel : {'quiet', 'panic', 'fatal', 'error', 'warning', 'info', 
-                    'verbose', 'debug' ,'trace'}, optional
-            Level of info that ffmpeg should print to terminal. Default is 
-            'quiet'.
-
-        """
-        filepath = self.filepath
-        return extract_audio(filepath=filepath, outputpath=outputpath,
-                             overwrite=overwrite, codec=codec, 
-                             channel=channel, ffmpegpath=ffmpegpath, 
-                             loglevel=loglevel)
+        return count_frames(self.filepath, streamnumber=self._streamnumber,
+                            threads=threads, ffprobepath=ffprobepath, )
 
     @frameiterator
-    def iter_frames(self, startat=None, nframes=None, color=True,
-                    ffmpegpath='ffmpeg', reportprogress=False):
+    def iter_frames(self, startat: str | None = None, nframes: int | None = None,
+                    color: bool = True, ffmpegpath: str | Path = 'ffmpeg',
+                    reportprogress: bool = False):
         """Iterate over frames in video.
 
         Parameters
@@ -374,6 +390,7 @@ class VideoFileStream:
                                                     startat=startat,
                                                     nframes=nframes,
                                                     color=color,
+                                                    streamnumber=self._streamnumber,
                                                     ffmpegpath=ffmpegpath)):
             if reportprogress:
                 progress(i, self.nframes)
@@ -442,6 +459,7 @@ class VideoFileStream:
 
         """
         return get_frameat(self.filepath, time=time, color=color,
+                           streamnumber=self._streamnumber,
                            ffmpegpath=ffmpegpath)
 
     def show(self, startat=None, nframes=None, framerate=None):

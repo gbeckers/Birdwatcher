@@ -1,12 +1,18 @@
 import unittest
 import src.birdwatcher as bw
-import tempfile
-import shutil
-
-from pathlib import Path
+import src.birdwatcher.ffmpeg
 
 
-class TestVideos(unittest.TestCase):
+class TestVideoFile(unittest.TestCase):
+
+    class TestExtractAudio(unittest.TestCase):
+
+        def test_extract_audio_noaudio(self):
+            vf = bw.testvideostreamsmall().videofile
+            self.assertRaises(src.birdwatcher.ffmpeg.NoAudioStreamError,
+                              vf.extract_audio)
+
+class TestVideoStream(unittest.TestCase):
 
     def test_videoiterframes(self):
         vf = bw.testvideostreamsmall()

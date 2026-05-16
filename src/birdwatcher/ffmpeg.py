@@ -246,7 +246,7 @@ def ffmpegversion(ffmpegpath: str | Path ='ffmpeg') -> str | None:
 ## FIXME startat can be precise or not
 def iterread_videofile(filepath: str | Path, startat: str | None = None,
                        nframes: int | None = None, color: bool=True,
-                       ffmpegpath: str | Path = 'ffmpeg',
+                       streamnumber: int = 0, ffmpegpath: str | Path = 'ffmpeg',
                        loglevel: str = 'quiet') -> Generator[NDArray, None, None]:
     """
     Parameters
@@ -289,7 +289,8 @@ def iterread_videofile(filepath: str | Path, startat: str | None = None,
         _get_frameproperties(filepath=filepath, color=color)
     args = [str(ffmpegpath), '-loglevel', loglevel]
     if startat is not None:
-        args.extend(['-i', str(filepath),'-ss', startat])
+        args.extend(['-i', str(filepath), '-map', f'0:v:{streamnumber}',
+                     '-ss', startat])
     else:
         args.extend(['-i', str(filepath)])
     if nframes is not None:
@@ -319,21 +320,22 @@ def iterread_videofile(filepath: str | Path, startat: str | None = None,
         p.wait()
 
 #TODO check threads code
-def count_frames(filepath: str | Path, threads: int = 8,
-                 ffprobepath: str | Path = 'ffprobe') -> int:
+def count_frames(filepath: str | Path, streamnumber: int = 0,
+                 threads: int = 8, ffprobepath: str | Path = 'ffprobe') -> int:
     args = [str(ffprobepath), '-threads:0', str(threads),
-            '-count_frames', '-select_streams', 'v:0', '-show_entries',
+            '-count_frames', '-select_streams', f'v:{streamnumber}', '-show_entries',
             'stream=nb_read_frames', '-print_format', 'json', str(filepath)]
     result = run_ffprobe_json(args)
     return int(result['streams'][0]['nb_read_frames'])
 
 
 def get_frame(filepath: str | Path, framenumber: int, color: bool = True,
-              ffmpegpath: str | Path = 'ffmpeg',
+              streamnumber: int = 0, ffmpegpath: str | Path = 'ffmpeg',
               loglevel: str = 'quiet') -> NDArray:
     _check_loglevelarg(loglevel)
     frameproperties = _get_frameproperties(filepath=filepath, color=color)
-    args = [str(ffmpegpath), '-loglevel' , loglevel, '-i', str(filepath)]
+    args = [str(ffmpegpath), '-loglevel' , loglevel, '-i', str(filepath),
+            '-map', f'0:v:{streamnumber}']
     args +=['-vcodec', 'rawvideo',  '-vf', f"select='eq(n\\,{framenumber})'",
             '-vframes', '1', '-pix_fmt', frameproperties.pix_fmt,
             '-f', 'rawvideo', 'pipe:1']
@@ -344,10 +346,11 @@ def get_frame(filepath: str | Path, framenumber: int, color: bool = True,
 
 
 def get_frameat(filepath: str | Path, time: str, color: bool = True,
-                ffmpegpath: str | Path = 'ffmpeg', loglevel: str = 'quiet') -> NDArray:
+                streamnumber: int = 0, ffmpegpath: str | Path = 'ffmpeg',
+                loglevel: str = 'quiet') -> NDArray:
     return next(iterread_videofile(filepath, startat=time, nframes=1,
-                                   color=color, ffmpegpath=ffmpegpath,
-                                   loglevel=loglevel))
+                                   color=color, streamnumber=streamnumber,
+                                   ffmpegpath=ffmpegpath, loglevel=loglevel))
 
 
 @dataclass
@@ -359,13 +362,15 @@ class FrameProperties:
     pix_fmt: str
 
 
-def _get_frameproperties(filepath: str | Path, color: bool) -> FrameProperties:
+def _get_frameproperties(filepath: str | Path, color: bool,
+                         streamnumber: int = 0) -> FrameProperties:
     """Convenience function that produces frame characteristics for a given
-    video. Handy if you want to know the format of a frame that is returned
+    video stream. Handy if you want to know the format of a frame that is returned
     by ffmpeg from a pipe."""
-    vfi = videofileinfo(filepath)
-    height = vfi['streams'][0]['height']
-    width = vfi['streams'][0]['width']
+    vsi = videofileinfo(filepath)['streams']
+    videostreamsinfo = tuple(stream for stream in vsi if stream['codec_type'] == 'video')
+    height = videostreamsinfo[streamnumber]['height']
+    width = videostreamsinfo[streamnumber]['width']
     if color:
         shape = (height, width, 3)
         size = height * width * 3
@@ -388,7 +393,7 @@ def _check_loglevelarg(loglevelarg: str) -> None:
 # Audio
 
 
-def detect_audio_codec(filepath: str | Path, audiostreamnr: int = 0) -> str | None:
+def detect_audio_codec(filepath: str | Path, streamnumber: int = 0) -> str | None:
     """Detect the audio codec used in the video file.
 
     """
@@ -397,7 +402,7 @@ def detect_audio_codec(filepath: str | Path, audiostreamnr: int = 0) -> str | No
         "-v", "quiet",
         "-print_format", "json",
         "-show_streams",
-        "-select_streams", "a:0",
+        "-select_streams", f"a:{streamnumber}",
         filepath,
     ]
     result = run_ffprobe_json(args)
@@ -405,7 +410,7 @@ def detect_audio_codec(filepath: str | Path, audiostreamnr: int = 0) -> str | No
     if not streams:
         return None
     else:
-        return streams[audiostreamnr]["codec_name"]
+        return streams[0]["codec_name"]
 
 
 def supported_encoders(kind: str, ffmpegpath: str | None = "ffmpeg") -> set[str]:
@@ -451,7 +456,8 @@ supported_audio_codecs = functools.partial(supported_encoders, "A")
 
 def extract_audio(filepath: str | Path, outputpath: str | Path | None = None,
                   overwrite: bool = False, codec: str = 'copy',
-                  channel: int | None = None, ffmpegpath='ffmpeg',
+                  channel: int | None = None, streamnumber: int = 0,
+                  ffmpegpath='ffmpeg',
                   loglevel: str ='quiet') -> Path:
     """Extract audio as wav file.
 
@@ -488,7 +494,6 @@ def extract_audio(filepath: str | Path, outputpath: str | Path | None = None,
         The path of the generated audio file
 
     """
-
     filepath = Path(filepath)
     if codec == 'copy':
         codec = detect_audio_codec(str(filepath))
@@ -512,7 +517,7 @@ def extract_audio(filepath: str | Path, outputpath: str | Path | None = None,
         raise FileExistsError(f'"{outputpath}" already exists, use `overwrite` parameter')
     _check_loglevelarg(loglevel)
     args = [str(ffmpegpath), '-loglevel' , loglevel, '-y',
-            '-i', str(filepath),
+            '-i', str(filepath), '-map', f'0:a:{streamnumber}',
             '-vn',
             '-c:a', codec]
     if channel is not None:

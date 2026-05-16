@@ -16,10 +16,3 @@ class TestSupportedEncodings(unittest.TestCase):
         self.assertIsInstance(ac, set)
         self.assertIn('pcm_s16le', ac) # very common codec, should be supported
 
-
-class TestExtractAudio(unittest.TestCase):
-
-    def test_extract_audio_noaudio(self):
-        vfs = bw.testvideostreamsmall()
-        self.assertRaises(src.birdwatcher.ffmpeg.NoAudioStreamError,
-                          vfs.extract_audio)
