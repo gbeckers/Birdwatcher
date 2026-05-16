@@ -15,9 +15,9 @@ Python 3 versions may also work.
 
 #. Create new environment for Birdwatcher (name is up to you, in example here 'mybirdwatcher'). We install Jupyter lab and ffmpeg at the same time:
 
-    .. code-block:: bash
+   .. code-block:: bash
 
-      conda create -n mybirdwatcher python=3.14 git=2.51 ffmpeg=8.0.1 numpy=2.4.2 matplotlib=3.10.8 pandas=3.0.0 seaborn=0.13.2
+     conda create -n mybirdwatcher python=3.14 git=2.51 ffmpeg=8.0.1 numpy=2.4.2 matplotlib=3.10.8 pandas=3.0.0 seaborn=0.13.2
 
 #. Switch to this new environment:
 
@@ -25,9 +25,9 @@ Python 3 versions may also work.
 
       conda activate mybirdwatcher
 
-#. Install jupyter from conda-forge (currently conda one has a problem).
+#. Install jupyter from conda-forge (currently conda one has a problem):
 
-    ..code-block:: bash
+   .. code-block:: bash
 
       conda install -c conda-forge jupyter
 
@@ -36,21 +36,21 @@ Python 3 versions may also work.
 
    Stable latest official release from PyPi:
 
-    .. code-block:: bash
+   .. code-block:: bash
 
       pip install Birdwatcher
 
    If instead you want the latest version of the git master branch from, use:
 
-    .. code-block:: bash
+   .. code-block:: bash
 
       pip install git+https://github.com/gbeckers/birdwatcher@master
 
-    For the development version use:
+   For the *development version* use:
 
-    ```
-    pip install git+https://github.com/gbeckers/birdwatcher@develop
-    ```
+   .. code-block:: bash
+
+      pip install git+https://github.com/gbeckers/birdwatcher@develop
 
 
 **Dependencies**
