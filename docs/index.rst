@@ -1,7 +1,4 @@
-.. Birdwatcher documentation master file, created by
-   sphinx-quickstart on Sat Dec 15 07:58:37 2018.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
+.. Birdwatcher documentation master file
 
 Birdwatcher
 ===========
@@ -9,30 +6,42 @@ Birdwatcher
 |Github CI Status| |PyPi version| |Docs Status| |Repo Status|
 |Codecov status|
 
-.. image:: images/banner.gif
+.. figure:: images/banner.gif
   :align: center
   :width: 720
 
-Birdwatcher is a Python computer vision library for analyzing animal behavior in a Python scientific computing environment.
+**Birdwatcher** is a Python computer vision library for analyzing animal behavior within a scientific computing environment.
 
-Birdwatcher should help you getting up and running quickly when building analysis code or tools for specific measurements. It provides functionality that is common in video analysis, such as reading and writing videos into and from numpy arrays, applying processing algorithms such as background subtraction, morphological transformation, resizing, drawing on frames etc. Much of the underlying video and image processing is based on `FFmpeg <https://www.ffmpeg.org/>`__ and `OpenCV <https://opencv.org/>`__, but Birdwatcher is easier to use for many tasks because its higher-level implementation of functionality.
+It aims to get you up and running quickly when building analysis code or tools for specific measurements.
 
-In addition to video analysis tools, Birdwatcher has high-level functions for behavioral analysis based on such tools, although currently these are limited to movement/location detection of single animals.
+Birdwatcher offers both high-level and lower-level tools for behavioral analysis. Currently, higher level functionality is focused on:
 
-Despite its name, Birdwatcher is not only for birds. We also successfully analyzed dog behavior, and it could be used on anything that moves. It is being used in our lab but still under heavy development, and should be considered alpha software.
+- Single-animal movement
+- Location detection
+
+Birdwatcher is based on machine learning, but not on deep learning techniques, as the specific goal is that the input to output transformation is entirely understood and predictable.
+
+Further, to build your own high-level tools Birdwatcher offers lower-level video analysis functionality such as:
+
+- Easy reading and writing videos as NumPy arrays
+- Applying processing algorithms like background subtraction
+- Morphological transformations, resizing, and frame annotation
+- Writing lower-level data output to disk-based ragged-arrays for futher analyses
+
+Birdwatcher provides an interface to the underlying low-level tools `FFmpeg
+<https://www.ffmpeg.org/>`__ and `OpenCV <https://opencv.org/>`__ and
+simplifies many tasks in typical animal behavior work.
+
+Despite its name, Birdwatcher is not just for birds! We've used it successfully to analyze dog behavior and it can work for any moving subject.
 
 Code can be found on GitHub: https://github.com/gbeckers/Birdwatcher .
 
 Example notebooks are currently the best introduction on how to use
 Birdwatcher. See `jupyter notebook directory <https://github.com/gbeckers/Birdwatcher/tree/master/notebooks>`__.
 
-Documentation can be found at https://birdwatcher.readthedocs.io .
-
 It is developed by Gabriel Beckers and Carien Mol, at Experimental Psychology,
 Utrecht University. It is open source, freely available under the `New BSD License
 <https://opensource.org/licenses/BSD-3-Clause>`__ terms.
-
-
 
 
 .. toctree::
@@ -41,17 +50,10 @@ Utrecht University. It is open source, freely available under the `New BSD Licen
 
    installation
    design
-   troubleshooting
    api
-   releasenotes
    development
-
-Examples
---------
-
-See `jupyter notebook directory on github
-<https://github .com/gbeckers/Birdwatcher/tree/master/notebooks>`__ .
-
+   troubleshooting
+   releasenotes
 
 Indices and tables
 ==================
@@ -72,4 +74,3 @@ Indices and tables
    :target: https://birdwatcher.readthedocs.io/en/latest/
 .. |Codecov status| image:: https://codecov.io/gh/gbeckers/Birdwatcher/branch/master/graph/badge.svg?token=829BH0NSVM
    :target: https://codecov.io/gh/gbeckers/Birdwatcher
-

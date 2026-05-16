@@ -51,7 +51,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = 'Birdwatcher'
-copyright = '2018-2025, Gabriel Beckers & Carien Mol'
+copyright = '2018-2026, Gabriel Beckers & Carien Mol'
 author = 'Gabriel Beckers & Carien Mol'
 
 # The version info for the project you're documenting, acts as replacement for
