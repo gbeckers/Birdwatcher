@@ -7,4 +7,6 @@ the notebooks in the `jupyter notebook directory <https://github
 
 
 
-:doc:`recipes/extractaudio`
+#. :doc:`recipes/detectmovement`
+
+#. :doc:`recipes/extractaudio`

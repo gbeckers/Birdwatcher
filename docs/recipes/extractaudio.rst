@@ -1,5 +1,5 @@
-Extracting audio from a video file
-==================================
+Extracting audio from a video
+=============================
 
 In many cases this is simple:
 
