@@ -7,7 +7,7 @@
 [![Codecov status](https://codecov.io/gh/gbeckers/Birdwatcher/branch/master/graph/badge.svg?token=829BH0NSVM)](https://codecov.io/gh/gbeckers/Birdwatcher)
 
 <p align="center">
-  <img src="https://github.com/gbeckers/Birdwatcher/blob/develop/docs/_static/banner.webm">
+  <img src="https://github.com/gbeckers/Birdwatcher/blob/develop/docs/_static/banner.mp4">
 </p>
 
 
