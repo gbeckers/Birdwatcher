@@ -1,6 +1,8 @@
 Loading results movement detection
 ==================================
 
+.. currentmodule:: birdwatcher
+
 Movement detection fuctions return three results: the ``coords``,
 ``coordscount`` and ``coordsmean``, which are numpy-like arrays that can
 immediately be used for further analyses. However,  they directly map to

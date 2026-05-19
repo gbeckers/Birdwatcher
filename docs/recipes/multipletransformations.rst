@@ -1,6 +1,8 @@
 Multiple transformations by concatenation
 ==========================================
 
+.. currentmodule:: birdwatcher
+
 If you want to apply multiple transformations to a video, it is best to
 concatenate them on a :class:`Frames` object:
 

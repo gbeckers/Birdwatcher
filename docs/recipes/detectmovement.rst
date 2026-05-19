@@ -1,11 +1,13 @@
 Detecting movement
 ==================
 
+.. currentmodule:: birdwatcher.movementdetection
+
 In many lab situations (static camera and static scene, except for animal),
 'movement' can be captured based on detecting pixels in video frames that
 changed statistcally significantly with respect to preceding frames.
-The high-level function :func:`detect_movement` does this, based on a
-machine learning technique called background substraction.
+The high-level function :func:`detect_movement`
+does this, based on a machine learning technique called background substraction.
 
 .. code:: python
 

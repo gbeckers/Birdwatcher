@@ -1,8 +1,10 @@
 Extracting audio from a video
 =============================
 
-In many cases, this is as simple as calling the :meth:`extract_audio` method
-on a ``VideoFile`` object:
+.. currentmodule:: birdwatcher
+
+In many cases, this is as simple as calling the :meth:`VideoFile.extract_audio`
+method on a :class:`VideoFile` object:
 
 .. code:: python
 
