@@ -289,12 +289,13 @@ def iterread_videofile(filepath: str | Path, startat: str | None = None,
     frameproperties = \
         _get_frameproperties(filepath=filepath, color=color)
     args = [str(ffmpegpath), '-loglevel', loglevel]
-    if startat is not None:
-        args.extend(['-i', str(filepath), '-map', f'0:v:{streamnumber}',
-                     '-ss', startat])
+
     if startframe is not None: # overrides startat
         args.extend(['-i', str(filepath), '-map', f'0:v:{streamnumber}',
                      '-vf', f'select=gte(n\\,{startframe})'])
+    elif startat is not None:
+        args.extend(['-i', str(filepath), '-map', f'0:v:{streamnumber}',
+                     '-ss', startat])
     else:
         args.extend(['-i', str(filepath), '-map', f'0:v:{streamnumber}'])
     if nframes is not None:
