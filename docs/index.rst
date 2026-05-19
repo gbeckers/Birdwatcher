@@ -22,21 +22,21 @@ Birdwatcher
     </div>
 
 **Birdwatcher** is a Python computer vision library for analyzing animal
-behavior within a scientific computing environment.
-
-It aims to get you up and running quickly when building analysis code or tools
-for specific measurements.
+behavior within a Python scientific computing environment. It aims to get you
+up and running quickly when building analysis code or tools for specific
+measurements.
 
 Birdwatcher offers both high-level and lower-level tools for behavioral analysis.
-Currently, higher level functionality is focused on:
+Currently, higher level functionality is focused on **single-animal movement
+and location detection**. This is based on machine learning (background
+subtraction algorithms). Birdwatcher focuses on lower level deterministic
+algorithms that yield predictable output on the basis of transformations and
+decisions that can be understood by the researcher, and that don't require
+the extensive training and testing of neural network models. This makes
+Birdwatcher a nice alterative to deep-learning approaches for exploration of
+data, and robust measurements that don't require the complexity
 
-- Single-animal movement and location detection
-
-This is based on machine learning, but not on deep learning, as the specific
-goal is that the input to output transformation is deterministic and can be
-entirely understood.
-
-To build your own high-level tools, Birdwatcher offers lower-level
+Furthermore, to build your own high-level tools, Birdwatcher offers lower-level
 functionality such as:
 
 - Easy reading and writing videos as NumPy arrays
@@ -44,26 +44,24 @@ functionality such as:
 - Morphological transformations, resizing, and frame annotation
 - Writing lower-level data output to disk-based ragged-arrays for futher analyses
 
-Birdwatcher provides an interface to the underlying low-level tools `FFmpeg
-<https://www.ffmpeg.org/>`__ and `OpenCV <https://opencv.org/>`__ and
-simplifies many tasks in typical animal behavior work.
+`Tutorial notebooks <https://github.com/gbeckers/Birdwatcher/tree/master/notebooks>`__
+on Github help to learn using Birdwatcher. There are also shorter :doc:`recipes`
+providing hands-on examples.
 
-
-
-Despite its name, Birdwatcher is not just for birds! We've used it successfully to analyze dog behavior and it can work for any moving subject.
-
-Code can be found on GitHub: https://github.com/gbeckers/Birdwatcher .
-
-Example notebooks are currently the best introduction on how to use
-Birdwatcher. See `jupyter notebook directory <https://github.com/gbeckers/Birdwatcher/tree/master/notebooks>`__.
+Birdwatcher is based on `FFmpeg <https://www.ffmpeg.org/>`__ and
+`OpenCV <https://opencv.org/>`__.
 
 It is developed by Gabriel Beckers and Carien Mol, at Experimental Psychology,
 Utrecht University. It is open source, freely available under the `New BSD License
-<https://opensource.org/licenses/BSD-3-Clause>`__ terms.
+<https://opensource.org/licenses/BSD-3-Clause>`__ terms. Despite its name,
+Birdwatcher is not just for birds! We've used it successfully to analyze dog
+behavior and it can work for any moving subject.
+
+Code can be found on GitHub: https://github.com/gbeckers/Birdwatcher .
 
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 3
    :caption: Contents:
 
    installation

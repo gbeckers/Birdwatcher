@@ -2,6 +2,8 @@
 API
 ###
 
+
+
 Video input from file
 =====================
 
@@ -21,42 +23,12 @@ Video input from file
 Frame processing
 ================
 
-`Frames` is a central class in Birdwatcher. It is an iterable that yields
-frames and many of its methods return another Frames object. Since
+.. currentmodule:: birdwatcher
+
+:class:`Frames` is a central class in Birdwatcher. It is an iterable that
+yields frames and many of its methods return another Frames object. Since
 there are quite a few methods, we'll list property and method names first,
 and then provide detailed info below that.
-
-Frames properties
------------------
-- dtype
-- frameheight
-- framewidth
-- nchannels
-
-Frames methods
---------------
-- absdiff_frame
-- add_weighted
-- apply_backgroundsegmenter
-- blur
-- calc_meanframe
-- crop
-- draw_circles
-- draw_framenumbers
-- draw_rectangles
-- draw_text
-- find_contours
-- find_nonzero
-- get_info
-- morphologyex
-- peek_frame
-- resize
-- resizebyfactor
-- show
-- threshold
-- tocolor
-- togray
-- tovideo
 
 .. automodule:: birdwatcher.frames
 
@@ -97,21 +69,6 @@ LSBP
    :members:
    :inherited-members:
 
-
-Coordinate Arrays
-=================
-
-.. automodule:: birdwatcher.coordinatearrays
-
-.. autoclass:: birdwatcher.CoordinateArrays
-   :members:
-   :inherited-members:
-
-.. autofunction:: open_archivedcoordinatedata
-
-.. autofunction:: create_coordarray
-
-
 Movement detection
 ==================
 
@@ -139,6 +96,20 @@ Parameter selection
 .. autofunction:: birdwatcher.movementdetection.apply_all_parameters
 
 .. autofunction:: birdwatcher.movementdetection.load_parameterselection
+
+
+Coordinate Arrays
+=================
+
+.. automodule:: birdwatcher.coordinatearrays
+
+.. autoclass:: birdwatcher.CoordinateArrays
+   :members:
+   :inherited-members:
+
+.. autofunction:: open_archivedcoordinatedata
+
+.. autofunction:: create_coordarray
 
 
 Plotting

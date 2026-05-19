@@ -16,13 +16,13 @@ operation or measurement, and save the data in a way that allows for efficient f
 proficiency in Python is required though.
 
 The high-level functionality is designed so that users don't have to code much to produce specific data for a useful
-analysis. Often, a few lines using high-level functions is sufficient. For example in movement detection. Examples on
-how to do this are provided in jupyter notebooks. Users do not need a high level in Python because code and examples are
-self-explaining, but it is fair to say that the high-level functionality is probably still too low for people suffering
-from programming anxiety.
+analysis. Often, a few lines using high-level functions is sufficient. For example in movement detection. See
+`tutorial notebook <https://github.com/gbeckers/Birdwatcher/blob/develop/notebooks/5_movementdetection.ipynb>`__ on
+github or shorter :doc:`recipes`. Users do not always need a high level in Python because code and examples are
+self-explaining.
 
-For people who do not want to come into contact with any Python code, there is no functionality in Birdwatcher yet.
-However, it would not be difficult to add a thin graphical interface layer for common analysis tasks, such as movement
+For people who do not master any Python, there is no functionality in Birdwatcher yet. However, it would not be
+difficult to add a thin graphical interface layer for common analysis tasks, such as movement
 detection in preference tests, Morris water maze etc. Useful examples are planned for the next release.
 
 

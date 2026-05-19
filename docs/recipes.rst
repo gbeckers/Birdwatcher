@@ -2,8 +2,7 @@ Recipes
 =======
 
 A collection of short howto's. For more eleborate explanation, use
-the tutorial notebooks in the `jupyter notebook directory <https://github
-.com/gbeckers/Birdwatcher/tree/master/notebooks>`__ on Github.
+the `tutorial notebooks <https://github.com/gbeckers/Birdwatcher/tree/master/notebooks>`__ on Github.
 
 
 
@@ -17,5 +16,5 @@ the tutorial notebooks in the `jupyter notebook directory <https://github
 
 #. :doc:`recipes/addframenumbers`
 
-#. :doc:`recipes/multipletransformations`
+#. :doc:`recipes/concatenatingtransformations`
 

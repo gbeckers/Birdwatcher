@@ -13,8 +13,8 @@ method on a :class:`VideoFile` object:
     >>> vf.extract_audio()
     PosixPath('myvideo.wav')
 
-Birdwatcher used the same file name as the video, but with an audio extension.
-If you want to determine the audio file name yourself, it is best in most
+The resulting file has the same name as the video, but with an audio extension.
+If you want to choose the audio file name yourself, it is best in most
 cases *not* to specify the file extension. If possible, Birdwatcher tries to
 *copy* the audio data from the video to the audio file without any recoding
 or resampling so that the audio data remains the same. This will only work
@@ -28,8 +28,8 @@ fits best. For example 'aac' encoded audio data is not compatible with a '
     >>> vf.extract_audio(outputpath='mysound')
     PosixPath('mysound.m4a')
 
-Copying data instead of recoding is often preferable, but it may not always be
-the best solution. For example, an '.m4a' audio file with the same'aac'
+Copying data instead of recoding is often preferable, but it may be the best
+solution in all cases. For example, an '.m4a' audio file with the same'aac'
 encoding is fine for media players, but many sound analysis programs won't read
 it. In such cases you can specify the audio codec you want. In the general
 case, we recommend 'pcm_f32le' to avoid degradation of information:

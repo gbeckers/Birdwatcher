@@ -1,5 +1,5 @@
-Multiple transformations by concatenation
-==========================================
+Concatenating transformations
+=============================
 
 .. currentmodule:: birdwatcher
 
