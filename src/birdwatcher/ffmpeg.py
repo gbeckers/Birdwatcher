@@ -25,7 +25,7 @@ import numpy as np
 from .utils import peek_iterable
 
 
-__all__ = ['arraytovideo', 'supported_audio_codecs']
+__all__ = ['arraytovideo', 'supported_audio_codecs', 'supported_video_codecs']
 
 
 AUDIOCODEC_TO_EXTENSION = {
@@ -164,7 +164,7 @@ def arraytovideo(frames, filepath: str | Path, framerate: int,
         ipixfmt = 'gray'
     elif frame.ndim == 3:
         if frame.shape[2] == 3:
-            ipixfmt = 'rgb24'
+            ipixfmt = 'bgr24'
         else:
             raise ValueError(
                 f"Last dimension of color frame should be length 3, "
@@ -453,6 +453,8 @@ def supported_encoders(kind: str, ffmpegpath: str | None = "ffmpeg") -> set[str]
 
 
 supported_audio_codecs = functools.partial(supported_encoders, "A")
+
+supported_video_codecs = functools.partial(supported_encoders, "V")
 
 
 def extract_audio(filepath: str | Path, outputpath: str | Path | None = None,
