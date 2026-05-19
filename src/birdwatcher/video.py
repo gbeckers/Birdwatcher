@@ -358,9 +358,10 @@ class VideoFileStream:
                             threads=threads, ffprobepath=ffprobepath, )
 
     @frameiterator
-    def iter_frames(self, startat: str | None = None, nframes: int | None = None,
+    def iter_frames(self, startat: str | None = None, startframe: int | None = None,
+                    nframes: int | None = None,
                     color: bool = True, ffmpegpath: str | Path = 'ffmpeg',
-                    reportprogress: bool = False):
+                    reportprogress: bool = False, loglevel: str = 'quiet'):
         """Iterate over frames in video.
 
         Parameters
@@ -378,6 +379,9 @@ class VideoFileStream:
             Path to ffmpeg executable. Default is `ffmpeg`, which means it
             should be in the system path.
         reportprogress : bool, default=False
+        loglevel : {'quiet', 'panic', 'fatal', 'error', 'warning', 'info',
+            'verbose', 'debug' ,'trace'}, optional
+
 
         Yields
         ------
@@ -388,10 +392,12 @@ class VideoFileStream:
         """
         for i,frame in enumerate(iterread_videofile(self.filepath,
                                                     startat=startat,
+                                                    startframe=startframe,
                                                     nframes=nframes,
                                                     color=color,
                                                     streamnumber=self._streamnumber,
-                                                    ffmpegpath=ffmpegpath)):
+                                                    ffmpegpath=ffmpegpath,
+                                                    loglevel=loglevel)):
             if reportprogress:
                 progress(i, self.nframes)
             yield frame

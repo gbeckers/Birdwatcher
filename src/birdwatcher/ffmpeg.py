@@ -245,6 +245,7 @@ def ffmpegversion(ffmpegpath: str | Path ='ffmpeg') -> str | None:
 ## FIXME inform before raising StopIteration that file has no frames
 ## FIXME startat can be precise or not
 def iterread_videofile(filepath: str | Path, startat: str | None = None,
+                       startframe: int | None = None,
                        nframes: int | None = None, color: bool=True,
                        streamnumber: int = 0, ffmpegpath: str | Path = 'ffmpeg',
                        loglevel: str = 'quiet') -> Generator[NDArray, None, None]:
@@ -291,13 +292,17 @@ def iterread_videofile(filepath: str | Path, startat: str | None = None,
     if startat is not None:
         args.extend(['-i', str(filepath), '-map', f'0:v:{streamnumber}',
                      '-ss', startat])
+    if startframe is not None: # overrides startat
+        args.extend(['-i', str(filepath), '-map', f'0:v:{streamnumber}',
+                     '-vf', f'select=gte(n\\,{startframe})'])
     else:
-        args.extend(['-i', str(filepath)])
+        args.extend(['-i', str(filepath), '-map', f'0:v:{streamnumber}'])
     if nframes is not None:
         args += ['-vframes', str(nframes)]
     args += ['-c:v', 'rawvideo', '-pix_fmt', frameproperties.pix_fmt,
              '-f', 'rawvideo', 'pipe:1']
 
+    print(args)
     p = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     try:
         frameno = 0
