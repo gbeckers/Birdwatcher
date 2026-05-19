@@ -1,6 +1,6 @@
-#############################
-Birdwatcher API Documentation
-#############################
+########
+API Docs
+########
 
 Video input from file
 =====================
@@ -11,7 +11,7 @@ Video input from file
    :members:
    :inherited-members:
 
-.. autofunction:: birdwatcher.testvideosmall
+.. autofunction:: birdwatcher.testvideostreamsmall
 
 
 Frame processing
@@ -126,7 +126,7 @@ Movement detection contains top-level functionality. The classes, methods and fu
 Parameter selection
 -------------------
 
-.. automodule:: birdwatcher.movementdetection.parameters
+.. automodule:: birdwatcher.movementdetection.parameterselection
 
 .. autoclass:: birdwatcher.movementdetection.ParameterSelection
    :members:
