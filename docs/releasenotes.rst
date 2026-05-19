@@ -19,7 +19,9 @@ Commits by Gabriel Beckers.
 - implemented a VideoFile class
 - improved stream awareness (files can have multiple video and audio streams)
 - started type hinting code
-- seriously extended documentation with Recipes (short howtos).
+- seriously extended documentation with Recipes (short howtos)
+- added vstack_frames function
+- improved banner docs and github
 
 
 Version 0.5
