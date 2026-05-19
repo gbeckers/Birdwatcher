@@ -42,33 +42,6 @@ and then provide detailed info below that.
 .. autoclass:: birdwatcher.FramesGray
    :members:
 
-
-Background subtraction
-======================
-
-.. automodule:: birdwatcher.backgroundsubtraction
-
-MOG2
-----
-
-.. autoclass:: birdwatcher.BackgroundSubtractorMOG2
-   :members:
-   :inherited-members:
-
-KNN
----
-
-.. autoclass:: birdwatcher.BackgroundSubtractorKNN
-   :members:
-   :inherited-members:
-
-LSBP
-----
-
-.. autoclass:: birdwatcher.BackgroundSubtractorLSBP
-   :members:
-   :inherited-members:
-
 Movement detection
 ==================
 
@@ -110,6 +83,34 @@ Coordinate Arrays
 .. autofunction:: open_archivedcoordinatedata
 
 .. autofunction:: create_coordarray
+
+
+
+Background subtraction
+======================
+
+.. automodule:: birdwatcher.backgroundsubtraction
+
+MOG2
+----
+
+.. autoclass:: birdwatcher.BackgroundSubtractorMOG2
+   :members:
+   :inherited-members:
+
+KNN
+---
+
+.. autoclass:: birdwatcher.BackgroundSubtractorKNN
+   :members:
+   :inherited-members:
+
+LSBP
+----
+
+.. autoclass:: birdwatcher.BackgroundSubtractorLSBP
+   :members:
+   :inherited-members:
 
 
 Plotting
