@@ -6,7 +6,6 @@ Birdwatcher
 |Github CI Status| |PyPi version| |Docs Status| |Repo Status|
 |Codecov status|
 
-
 .. raw:: html
 
     <div style="margin: 1em 0;">
@@ -18,7 +17,7 @@ Birdwatcher
         width="100%"
         style="border-radius: 12px;"
       >
-        <source src="_static/banner.mp4" type="video/mp4">
+        <source src="_static/banner.webm" type="video/webm">
       </video>
     </div>
 
