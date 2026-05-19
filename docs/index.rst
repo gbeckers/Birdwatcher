@@ -6,10 +6,21 @@ Birdwatcher
 |Github CI Status| |PyPi version| |Docs Status| |Repo Status|
 |Codecov status|
 
-.. figure:: images/banner.gif
-  :align: center
-  :width: 720
-  :class: custom-image
+
+.. raw:: html
+
+    <div style="margin: 1em 0;">
+      <video
+        autoplay
+        muted
+        loop
+        playsinline
+        width="100%"
+        style="border-radius: 12px;"
+      >
+        <source src="_static/banner.mp4" type="video/mp4">
+      </video>
+    </div>
 
 **Birdwatcher** is a Python computer vision library for analyzing animal
 behavior within a scientific computing environment.

@@ -2,6 +2,6 @@ from .video import *
 from .backgroundsubtraction import *
 from .coordinatearrays import *
 from .frames import *
-from .ffmpeg import supported_audio_codecs
+from .ffmpeg import supported_audio_codecs, supported_video_codecs
 
 __version__ = "0.6.0"

@@ -7,9 +7,10 @@ it is a good idea to look at OpenCV's documentation and examples if you want
 to understand the parameters in more depth.
 
 """
-
+import itertools
 from functools import wraps
 from pathlib import Path
+from typing import Generator
 
 import numpy as np
 import cv2 as cv
@@ -18,7 +19,7 @@ from .utils import peek_iterable
 
 
 __all__ = ['Frames', 'FramesColor', 'FramesGray', 'FramesNoise', 'framecolor',
-           'framegray', 'framenoise']
+           'framegray', 'framenoise', 'vstack_frames']
 
 
 def _check_writable(frame):
@@ -125,7 +126,7 @@ class Frames:
         firstframe, self._frames = peek_iterable(self._frames)
         return firstframe
         
-    def tovideo(self, filepath, framerate, crf=23, scale=None, format='mp4',
+    def tovideo(self, filepath, framerate, crf=23, scale=None, vformat='mp4',
                 codec='libopenh264', pixfmt='yuv420p', ffmpegpath='ffmpeg',
                 overwrite=False):
         """Writes frames to video file.
@@ -142,7 +143,7 @@ class Frames:
         scale : tuple, optional
             (width, height). The default (None) does not change width and    
             height.
-        format : str, default='mp4'
+        vformat : str, default='mp4'
             ffmpeg video format.
         codec : str, default='libopenh264'
             ffmpeg video codec.
@@ -161,7 +162,7 @@ class Frames:
         from .video import VideoFileStream
         filepath = arraytovideo(frames=self, filepath=filepath,
                                 framerate=framerate, crf=crf, scale=scale,
-                                vformat=format, codec=codec, pixfmt=pixfmt,
+                                vformat=vformat, codec=codec, pixfmt=pixfmt,
                                 ffmpegpath=ffmpegpath, overwrite=overwrite)
         return VideoFileStream(filepath)
 
@@ -817,6 +818,13 @@ class Frames:
             if cv.waitKey(waitkey) & 0xFF == ord('q'):
                 break
         cv.destroyAllWindows()
+
+@frameiterator
+def vstack_frames(frames1: Frames, frames2: Frames) -> Generator[Frames, None, None]:
+    """Stacks two Frames objects vertically."""
+    for f1, f2 in zip(frames1._frames, frames2._frames):
+        yield np.vstack((f1, f2))
+
 
 
 class FramesColor(Frames):

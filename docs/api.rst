@@ -1,11 +1,15 @@
-########
-API Docs
-########
+###
+API
+###
 
 Video input from file
 =====================
 
 .. automodule:: birdwatcher.video
+
+.. autoclass:: birdwatcher.VideoFile
+   :members:
+   :inherited-members:
 
 .. autoclass:: birdwatcher.VideoFileStream
    :members:

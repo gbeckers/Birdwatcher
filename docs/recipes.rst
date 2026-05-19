@@ -2,7 +2,7 @@ Recipes
 =======
 
 A collection of short howto's. For more eleborate explanation, use
-the tutorials notebooks in the `jupyter notebook directory <https://github
+the tutorial notebooks in the `jupyter notebook directory <https://github
 .com/gbeckers/Birdwatcher/tree/master/notebooks>`__ on Github.
 
 

@@ -18,6 +18,8 @@ Commits by Gabriel Beckers.
 - refactored ffmpeg module: a.o. better error handling
 - implemented a VideoFile class
 - improved stream awareness (files can have multiple video and audio streams)
+- started type hinting code
+- seriously extended documentation with Recipes (short howtos).
 
 
 Version 0.5
