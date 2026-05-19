@@ -303,7 +303,6 @@ def iterread_videofile(filepath: str | Path, startat: str | None = None,
     args += ['-c:v', 'rawvideo', '-pix_fmt', frameproperties.pix_fmt,
              '-f', 'rawvideo', 'pipe:1']
 
-    print(args)
     p = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     try:
         frameno = 0
