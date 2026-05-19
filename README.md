@@ -6,7 +6,7 @@
 [![Repo Status](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
 [![Codecov status](https://codecov.io/gh/gbeckers/Birdwatcher/branch/master/graph/badge.svg?token=829BH0NSVM)](https://codecov.io/gh/gbeckers/Birdwatcher)
 
-<p align="center">
+<p align="left">
   <img src="https://github.com/gbeckers/Birdwatcher/blob/develop/videos/banner.gif" width="600">
 </p>
 
