@@ -55,7 +55,7 @@ It is developed by Gabriel Beckers and Carien Mol, at Experimental Psychology,
 Utrecht University. It is open source, freely available under the `New BSD License
 <https://opensource.org/licenses/BSD-3-Clause>`__ terms. Despite its name,
 Birdwatcher is not just for birds! We've used it successfully to analyze dog
-behavior and it can work for any moving subject.
+behavior and works on any moving subject.
 
 Code can be found on GitHub: https://github.com/gbeckers/Birdwatcher .
 
