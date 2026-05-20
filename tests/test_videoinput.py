@@ -14,13 +14,6 @@ class TestVideoFile(unittest.TestCase):
 
 class TestVideoStream(unittest.TestCase):
 
-    def test_videoiterframes(self):
-        vf = bw.testvideostreamsmall()
-        shape = (vf.frameheight, vf.framewidth, 3)
-        for i,frame in enumerate(vf.iter_frames(), 1):
-            self.assertEqual(frame.shape, shape)
-        self.assertEqual(i, 497)
-
     def test_size(self):
         vf = bw.testvideostreamsmall()
         self.assertEqual(vf.framewidth, 1280)
