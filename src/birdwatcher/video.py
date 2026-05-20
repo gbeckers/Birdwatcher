@@ -359,7 +359,7 @@ class VideoFileStream:
 
     @frameiterator
     def iter_frames(self, startat: str | None = None, startframe: int | None = None,
-                    nframes: int | None = None,
+                    nframes: int | None = None, stepsize: int | None = None,
                     color: bool = True, ffmpegpath: str | Path = 'ffmpeg',
                     reportprogress: bool = False, loglevel: str = 'quiet'):
         """Iterate over frames in video.
@@ -370,6 +370,11 @@ class VideoFileStream:
             If specified, start at this time point in the video file. You
             can use two different time unit formats: sexagesimal
             (HOURS:MM:SS.MILLISECONDS, as in 01:23:45.678), or in seconds.
+        startframe: int, optional
+            If specified, start at this frame number. This parameter takes
+            priority over `startat`.
+        stepsize: int, optional
+            Number of frames to advance per iteration.
         nframes  : int, optional
             Read a specified number of frames.
         color : bool, default=True
@@ -400,7 +405,8 @@ class VideoFileStream:
                                                     loglevel=loglevel)):
             if reportprogress:
                 progress(i, self.nframes)
-            yield frame
+            if not stepsize or (i % stepsize) == 0:
+                yield frame
 
     def get_frame(self, framenumber, color=True, ffmpegpath='ffmpeg'):
         """Get frame specified by frame sequence number.
