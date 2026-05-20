@@ -3,8 +3,8 @@ Extracting audio from a video
 
 .. currentmodule:: birdwatcher
 
-In many cases, this is as simple as calling the :meth:`VideoFile.extract_audio`
-method on a :class:`VideoFile` object:
+In many cases, extracting audio is as simple as calling the
+:meth:`VideoFile.extract_audio` method on a :class:`VideoFile` object:
 
 .. code:: python
 
@@ -13,14 +13,17 @@ method on a :class:`VideoFile` object:
     >>> vf.extract_audio()
     PosixPath('myvideo.wav')
 
-The resulting file has the same name as the video, but with an audio extension.
-If you want to choose the audio file name yourself, it is best in most
-cases *not* to specify the file extension. If possible, Birdwatcher tries to
-*copy* the audio data from the video to the audio file without any recoding
-or resampling so that the audio data remains the same. This will only work
-with compatible audio file formats, and Birdwatcher will choose one that
-fits best. For example 'aac' encoded audio data is not compatible with a '
-.wav' (WAVE) file and will lead to an '.m4a' file:
+By default, the resulting file has the same name as the video file, but with
+an appropriate audio extension.
+
+If you want to choose the output filename yourself, it is usually best not
+to specify the file extension. When possible, Birdwatcher copies the audio
+stream directly from the video without re-encoding or resampling it, preserving
+the original audio data. This only works with compatible audio container
+formats, so Birdwatcher automatically selects the most suitable extension.
+
+For example, AAC-encoded audio is not compatible with the '.wav' container,
+so Birdwatcher chooses '.m4a' instead:
 
 .. code:: python
 
@@ -28,11 +31,14 @@ fits best. For example 'aac' encoded audio data is not compatible with a '
     >>> vf.extract_audio(outputpath='mysound')
     PosixPath('mysound.m4a')
 
-Copying data instead of recoding is often preferable, but it may be the best
-solution in all cases. For example, an '.m4a' audio file with the same'aac'
-encoding is fine for media players, but many sound analysis programs won't read
-it. In such cases you can specify the audio codec you want. In the general
-case, we recommend 'pcm_f32le' to avoid degradation of information:
+Copying the original audio stream is often preferable because it avoids quality
+loss and it is typically much faster because no decoding or encoding step is
+required. However, some analysis software does not support compressed formats
+such as AAC in an '.m4a' container.
+
+In such cases, you can explicitly specify the audio codec to use during
+conversion. In general, we recommend 'pcm_f32le' because it preserves audio
+information without lossy compression:
 
 .. code:: python
 
@@ -40,12 +46,11 @@ case, we recommend 'pcm_f32le' to avoid degradation of information:
     >>> vf.extract_audio(codec='pcm_f32le')
     PosixPath('myvideo_aac.wav')
 
-Birdwatcher chose the '.wav' file format because it is most compatible with
-32-bit float PCM encoding.
+Birdwatcher selects the '.wav' container here because it is widely compatible
+with 32-bit floating-point PCM audio.
 
-Supported audio codecs for writing audio files depend on the underlying
-'ffmpeg' version and can be retrieved with the :func:`supported_audio_codecs`
-function:
+Supported audio codecs depend on the installed version of ffmpeg and can
+be retrieved with the :func:`supported_audio_codecs` function:
 
 .. code:: python
 
@@ -64,8 +69,8 @@ function:
     'pcm_u32be', 'pcm_u32le', 'pcm_u8', 'pcm_vidc', 'real_144', 'roq_dpcm',
     's302m', 'sbc', 'truehd', 'tta', 'vorbis', 'wavpack', 'wmav1', 'wmav2'}
 
-If you know what you are doing, you can specify both the audio codec *and* the
-output extension (which need to be compatible):
+If needed, you can explicitly specify both the output filename and the codec,
+provided the container format and codec are compatible:
 
 .. code:: python
 
