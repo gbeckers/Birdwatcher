@@ -11,42 +11,45 @@
 </p>
 
 **Birdwatcher** is a Python computer vision library for analyzing animal
-behavior within a Python scientific computing environment. It aims to get you
-up and running quickly when building analysis code or tools for specific
-measurements.
+behavior within a scientific Python workflow. It is designed to help researchers
+quickly build analysis pipelines and measurement tools for behavioral data.
 
-Birdwatcher offers both high-level and lower-level tools for behavioral analysis.
-Currently, higher level functionality is focused on **single-animal movement
-and location detection**. This is based on machine learning (background
-subtraction algorithms). Birdwatcher focuses on lower level deterministic
-algorithms that yield predictable output on the basis of transformations and
-decisions that can be understood by the researcher, and that don't require
-the extensive training and testing of neural network models. This makes
-Birdwatcher a nice alterative to deep-learning approaches for exploration of
-data, and robust measurements that don't require the complexity
+Birdwatcher provides both high-level and low-level functionality for behavioral
+analysis. Current high-level features focus on **single-animal movement and
+location detection** using machine-learning-based background subtraction
+algorithms.
 
-Furthermore, to build your own high-level tools, Birdwatcher offers lower-level
-functionality such as:
+A key design goal of Birdwatcher is to emphasize deterministic, interpretable
+algorithms that produce predictable results through transformations and decision
+steps that can be understood by the researcher. Unlike many deep-learning
+approaches, these methods do not require extensive training datasets or model
+optimization. This makes Birdwatcher well suited for exploratory analysis,
+rapid prototyping, and robust measurements when neural networks would add
+unnecessary complexity.
 
-- Easy reading and writing videos as NumPy arrays
-- Applying processing algorithms like background subtraction
+To support custom workflows and higher-level tools, Birdwatcher also includes
+lower-level functionality such as:
+
+- Reading and writing videos as NumPy arrays
+- Background subtraction and related image-processing algorithms
 - Morphological transformations, resizing, and frame annotation
-- Writing lower-level data output to disk-based ragged-arrays for futher analyses
+- Storing lower-level output in disk-based ragged arrays for further analysis
 
-[Tutorial notebooks](https://github.com/gbeckers/Birdwatcher/tree/master/notebooks)
-on Github help to learn using Birdwatcher. There are also shorter 
-[recipes](https://birdwatcher.readthedocs.io/en/develop/recipes.html) providing 
-hands-on examples in the [documentation](https://birdwatcher.readthedocs.io/en/develop/).
+To get started, see the [Tutorial notebooks](https://github.com/gbeckers/Birdwatcher/tree/master/notebooks)
+on Github. The [documentation](https://birdwatcher.readthedocs.io/en/develop/) 
+also includes short [recipes](https://birdwatcher.readthedocs.io/en/develop/recipes.html) with 
+hands-on examples.
 
 Birdwatcher is based on [FFmpeg](https://www.ffmpeg.org/) and [OpenCV](https://opencv.org/).
 
-It is developed by Gabriel Beckers and Carien Mol, at Experimental Psychology,
-Utrecht University. It is open source, freely available under the [New BSD 
-License](https://opensource.org/licenses/BSD-3-Clause) terms. Despite its name,
-Birdwatcher is not just for birds! We've used it successfully to analyze dog
-behavior and it can work for any moving subject.
+This project is developed by Gabriel Beckers and Carien Mol, at Experimental Psychology,
+Utrecht University. Birdwatcher is open source and freely available
+under the terms of the terms of the [New BSD 
+License](https://opensource.org/licenses/BSD-3-Clause). Despite its name, Birdwatcher 
+is not limited to birds — it has also been used  successfully to analyze dog behavior 
+and can be applied to any moving subject.
 
-Code can be found on GitHub: https://github.com/gbeckers/Birdwatcher .
+Source code: https://github.com/gbeckers/Birdwatcher .
 
 
 ## Installation Birdwatcher package
