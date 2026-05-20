@@ -40,3 +40,9 @@ class TestVideoStreamIteration(unittest.TestCase):
             pass
         self.assertEqual(i, 497-300)
 
+    def test_stepsizeparameter(self):
+        vfs = bw.testvideostreamsmall()
+        for i, _ in enumerate(vfs.iter_frames(stepsize=2)):
+            pass
+        self.assertEqual(i, 497//2)
+
