@@ -12,7 +12,7 @@ the :meth:`Frames.draw_framenumbers` method on a :class:`Frames` object:
     >>> vfs = bw.VideoFileStream('myvideo.mp4')
     >>> (vfs.iter_frames()
     ...    .draw_framenumbers()
-    ...    .tovideo('myvideo_resized', framerate=vfs.avgframerate))
+    ...    .tovideo('myvideo_numberedframes', framerate=vfs.avgframerate))
 
 See :doc:`resizevideo` for some explanation on the
 :meth:`VideoFileStream.iter_frames` method. For even more explanation see our

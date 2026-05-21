@@ -18,3 +18,5 @@ the `tutorial notebooks <https://github.com/gbeckers/Birdwatcher/tree/master/not
 
 #. :doc:`recipes/concatenatingtransformations`
 
+#. :doc:`recipes/archivecoordinatedata`
+
