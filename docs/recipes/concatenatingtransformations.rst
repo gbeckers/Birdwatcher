@@ -17,10 +17,12 @@ concatenate them on a :class:`Frames` object:
     ...    .draw_framenumbers()
     ...    .tovideo('myvideo_resized', framerate=vfs.avgframerate))
 
-This 1) decodes the video (``iter_frames``), 2) resizes the video (``resize``)
+The 1) decodes the video (``iter_frames``), 2) resizes the video (``resize``)
 , 3) converts color to gray values (``togray``), 4) blurs frame images
 (``blur``), 5) draws frame numbers on frames (``draw_framenumbers``), and 6)
 encodes and saves the video (``tovideo``).
 
-Concatenation avoids decoding and encoding a video multiple times, which is computationally
-intensive. In addition, multiple decoding-transformation-encoding rounds would lead to more loss of information as most video codecs apply lossy compression.
+Concatenation avoids repeated decoding and encoding a video, which is
+computationally intensive. Also, multiple decoding-transformation-re-encoding
+rounds would lead to more loss of information as most video codecs apply lossy
+compression.

@@ -3,7 +3,7 @@ Add frame numbers
 
 .. currentmodule:: birdwatcher
 
-Adding frame numbers to video frames can be handy for precise reference. Use
+Adding frame numbers to video frames can be useful for precise reference. Use
 the :meth:`Frames.draw_framenumbers` method on a :class:`Frames` object:
 
 .. code:: python

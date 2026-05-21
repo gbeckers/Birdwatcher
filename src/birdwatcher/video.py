@@ -8,7 +8,6 @@ from pathlib import Path
 from typing import Tuple, Dict, Optional
 
 import numpy as np
-import cv2 as cv
 
 from .ffmpeg import videofileinfo, iterread_videofile, count_frames, \
     get_frame, get_frameat, extract_audio, detect_audio_codec
