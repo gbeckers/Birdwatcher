@@ -67,7 +67,7 @@ and the rest has the value 0. This way we can plot them as an image:
     >>> from birdwatcher.plotting import imshow_frame
     >>> imshow_frame(coords.get_frame(157))
 
-.. figure:: recipes/images/flyingbirdcoords.png
+.. figure:: /recipes/images/flyingbirdcoords.png
   :align: center
   :width: 720
   :class: custom-image
@@ -80,7 +80,7 @@ There is a blob of positive pixels roughly around x: 700 to 800 and y: 350 to
     >>> from birdwatcher.plotting import imshow_frame
     >>> imshow_frame(coords.get_frame(157))
 
-.. figure:: recipes/images/flyingbirdframe.png
+.. figure:: /recipes/images/flyingbirdframe.png
   :align: center
   :width: 720
   :class: custom-image
@@ -105,7 +105,7 @@ count for all frames:
     >>> plt.xlabel('frame number'); plt.ylabel('number of positive pixels')
 
 
-.. figure:: recipes/images/birdcoordscount.png
+.. figure:: /recipes/images/birdcoordscount.png
   :align: center
   :width: 720
   :class: custom-image
@@ -120,7 +120,7 @@ returned by the :func:`detect_movement` function :
     >>> plt.plot(coordsmean)
     >>> plt.xlabel('frame number'); plt.ylabel('mean'); plt.legend(['x','y' ])
 
-.. figure:: recipes/images/birdcoordsmean.png
+.. figure:: /recipes/images/birdcoordsmean.png
   :align: center
   :width: 720
   :class: custom-image
