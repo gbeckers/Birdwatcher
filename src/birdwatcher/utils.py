@@ -5,7 +5,12 @@ import shutil
 import tempfile
 import time
 from contextlib import contextmanager
+from typing import Tuple, List
 
+
+def roi_to_npindex(roi: Tuple[int,int,int,int] | List[int,int,int,int]) -> Tuple[slice, slice]:
+    """Convert a region of interest (roi) to a numpy index tuple."""
+    return (slice(roi[0], roi[1]), slice(roi[2], roi[3]))
 
 def datetimestring():
     return time.strftime('%Y%m%d%H%M%S')
