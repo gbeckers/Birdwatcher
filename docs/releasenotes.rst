@@ -22,6 +22,7 @@ Commits by Gabriel Beckers.
 - seriously extended documentation with Recipes (short howtos)
 - added vstack_frames function
 - improved banner docs and github
+- Frames.draw_rectangle points format now consistent with other methods and functions
 
 
 Version 0.5

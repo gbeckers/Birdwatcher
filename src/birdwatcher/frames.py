@@ -274,9 +274,8 @@ class Frames:
         Parameters
         ----------
         points : iterable
-            Iterable that generates sequences of rectangle corners ((x1, y1),
-            (x2, y2)) per frame, where the coordinates specify opposite
-            corners (e.g. top-left and bottom-right).
+            Iterable that generates sequences of rectangle corners h1, h2, w1, w2
+            ((x1, y1), (x2, y2)) per frame. Origin is left top.
         color : tuple of ints, optional
             Color of rectangle (BGR). The default (255, 100, 0) color is blue.
         thickness : int, default=2
@@ -292,7 +291,8 @@ class Frames:
             frame = _check_writable(frame)
             framepoints = np.asanyarray(framepoints)
             if not np.isnan(framepoints).any():
-                (pt1, pt2) = framepoints.astype('int16')
+                h1, h2, w1, w2 = framepoints.astype('int16')
+                pt1, pt2 = ((w1, h2), (w2, h1))
                 yield cv.rectangle(frame, pt1=pt1, pt2=pt2, color=color, thickness=thickness)
             else:
                 yield frame
