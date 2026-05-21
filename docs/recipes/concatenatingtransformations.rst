@@ -22,7 +22,7 @@ The 1) decodes the video (``iter_frames``), 2) resizes the video (``resize``)
 (``blur``), 5) draws frame numbers on frames (``draw_framenumbers``), and 6)
 encodes and saves the video (``tovideo``).
 
-Concatenation avoids decoding and encoding a video, which is computationally
-intensive, multiple times. Also multiple decoding-transformation-encording
+Concatenation avoids repeated decoding and encoding a video, which is
+computationally intensive. Also, multiple decoding-transformation-re-encoding
 rounds would lead to more loss of information as most video codecs apply lossy
 compression.
