@@ -5,8 +5,8 @@ Detecting movement dynamically
 
 In many lab situations (static camera and static scene, except for animal),
 'movement' can be captured based on detecting pixels in video frames that
-changed statistically significantly with respect to recently preceding frames.
-The high-level function :func:`detect_movement` does this, based on a machine
+changed statistically significantly with respect to recent frames. The
+high-level function :func:`detect_movement` does this, based on a machine
 learning technique called background substraction.
 
 .. code:: python
@@ -95,8 +95,9 @@ movement in the frame by counting the number of detected pixels:
     821
 
 The pixel count for every frame is provided by the ``coordscount`` variable
-in the :func:`detect_movement` function that we used above. We can plot the
-count for all frames:
+in the :func:`detect_movement` function that we used above. We can thus plot the
+count of positive pixels (i.e. where change took place ) for each frames in
+the video:
 
 .. code-block:: python
 
@@ -110,9 +111,8 @@ count for all frames:
   :width: 720
   :class: custom-image
 
-Frame number is on the x-axis, count on the y-axis. Similarly, we can look at
-the means of the x- and y-coordinates based on the ``coordsmean`` variable
-returned by the :func:`detect_movement` function :
+Similarly, we can look at the means of the x- and y-coordinates based on the
+``coordsmean`` variable returned by the :func:`detect_movement` function :
 
 .. code-block:: python
 
@@ -125,8 +125,8 @@ returned by the :func:`detect_movement` function :
   :width: 720
   :class: custom-image
 
-Frame number is on the x-axis, space on the y-axis. Blue is the x-coordinate,
-orange the y-coordinate. Without having watched the video, we conclude that the
-bird sat on perch #3, jumped to perch #4 (on equal height), jumped back, and
-then jumped to the higher perch #1. If we know the framerate of the video, we
-can calculate exactly when the bird was doing this.
+Without having watched the video, we conclude that the
+bird sat on perch #3, jumped to perch #4 (on equal height, x changed, y did
+not), jumped back, and then jumped to the higher perch #1. If we know the
+framerate of the video, we can calculate exactly when the bird was doing this
+. Note that the origin of coordinates in the video is top left.
