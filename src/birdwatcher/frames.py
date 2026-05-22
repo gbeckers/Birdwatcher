@@ -408,7 +408,7 @@ class Frames:
                              color=color, thickness=thickness,
                              lineType=linetype)
         
-    def save_nonzero(self, filepath, metadata, ignore_firstnframes=10, 
+    def save_nonzero(self, filepath, metadata, ignore_firstnframes=0,
                      overwrite=True):
         """Save nonzero pixel coordinates (i.e. foreground) as Coordinate 
         Arrays object.
@@ -482,8 +482,7 @@ class Frames:
 
         Parameters
         ----------
-        morphtype : {'open', 'erode', 'dilate, 'close', 'gradient', 'tophat',
-        'blackhat'}
+        morphtype : {'open', 'erode', 'dilate, 'close', 'gradient', 'tophat', 'blackhat'}
             Type of transformation. Default is 'open', which is an erosion
             followed by a dilation.
         kernelsize : int, default=2
