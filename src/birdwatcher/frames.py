@@ -436,7 +436,7 @@ class Frames:
         from .coordinatearrays import create_coordarray
         
         if Path(filepath).suffix != '.darr':
-            filepath = filepath + '.darr'
+            filepath = Path(filepath).with_suffix('.darr')
         Path(filepath).parent.mkdir(parents=True, exist_ok=True)
         
         coordsarray = create_coordarray(filepath,
