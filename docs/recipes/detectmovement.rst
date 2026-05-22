@@ -3,11 +3,11 @@ Detecting movement dynamically
 
 .. currentmodule:: birdwatcher.movementdetection
 
-In many lab situations (static camera and static scene, except for animal),
-'movement' can be captured based on detecting pixels in video frames that
-changed statistically significantly with respect to recent frames. The
-high-level function :func:`detect_movement` does this, based on a machine
-learning technique called background substraction.
+In many lab situations, 'movement' can be captured based on detecting pixels in a video frame that changed with respect to a reference, the 'background'. Think of a static camera and static scene (a bird cage), except for an animal that moves around (the object of interest). There are many 'background subtraction' algorithms that estimate the difference between the current frame and the reference ('backround', i.e. scene without object of interest.
+
+Here we apply an 'adaptive' background subtraction method, which is a useful approach when dealing with a static camera but potentially slowly changing background (e.g., changing weather, lighting). Adaptive subtractors continuously update the reference frame based on recent frames, to prevent false detections.
+
+The high-level function :func:`detect_movement` implements this:
 
 .. code:: python
 
