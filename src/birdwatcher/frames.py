@@ -15,7 +15,6 @@ from typing import Generator
 import numpy as np
 import cv2 as cv
 
-from . import CoordinateArrays
 from .utils import peek_iterable
 
 
@@ -410,7 +409,7 @@ class Frames:
                              lineType=linetype)
         
     def save_nonzero(self, filepath: str | Path, metadata: dict | None = None,
-                     ignore_firstnframes: int = 0, overwrite: bool = False) -> CoordinateArrays:
+                     ignore_firstnframes: int = 0, overwrite: bool = False) -> "CoordinateArrays":
 
         """Save nonzero pixel coordinates (i.e. foreground) as Coordinate 
         Arrays object.
