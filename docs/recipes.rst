@@ -11,9 +11,9 @@ the `tutorial notebooks <https://github.com/gbeckers/Birdwatcher/tree/master/not
 
     recipes/detectmovement
     recipes/loadingdetectionresults
-    recipes/extractaudio
     recipes/resizevideo
     recipes/addframenumbers
     recipes/concatenatingtransformations
+    recipes/extractaudio
     recipes/archivecoordinatedata
 
