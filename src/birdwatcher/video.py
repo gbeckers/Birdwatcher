@@ -308,12 +308,15 @@ class VideoFileStream:
         return (self.framewidth, self.frameheight)
 
     @property
-    def nframes(self):
+    def nframes(self) -> int | None:
         """Number of frames in video stream as reported in the metadata
         of the video file. Note that this may not be accurate. Use
         `count_frames` to measure the actual number (may take a lot of
-        time)."""
-        return int(self._streammetadata['nb_frames'])
+        time). This info may also not be available, in which case None is returned."""
+        nframes = self._streammetadata.get('nb_frames', None)
+        if nframes is not None:
+            nframes = int(nframes)
+        return nframes
 
     @property
     def videofile(self) -> VideoFile:
