@@ -8,31 +8,13 @@ Design
 
 Birdwatcher provides both low-level and high-level functionality.
 
-The low-level functionality is designed to be sufficiently low for users to design their own analysis pipeline for
-their particular behavioral experiment that hasn't been implemented at a higher level (yet). But not so low that they
-need to concern themselves with the intricacies of the underlying OpenCV and FFMpeg libraries, which saves a lot of
-time and avoids many potential bugs. A few lines of code enable you to loop over frames in a video file, perform an
-operation or measurement, and save the data in a way that allows for efficient further analyses. A reasonable
-proficiency in Python is required though.
+The low-level functionality is intended to be sufficiently flexible for users to design their own analysis pipeline for a particular behavioral experiment if this has not yet been implemented at a higher level. At the same time, it prevents users from having to deal with the intricacies of the underlying OpenCV and FFMpeg libraries, which saves considerable time and helps avoid many potential bugs. With only a few lines of code, users can loop over frames in a video file, perform operations or measurements, and save the resulting data in a format suitable for efficient further analysis. A reasonable level of proficiency in scientific Python is required, however.
 
-The high-level functionality is designed so that users don't have to code much to produce specific data for a useful
-analysis. Often, a few lines using high-level functions is sufficient. For example in movement detection. See
-`tutorial notebook <https://github.com/gbeckers/Birdwatcher/blob/develop/notebooks/5_movementdetection.ipynb>`__ on
-github or shorter :doc:`recipes`. Users do not always need a high level in Python because code and examples are
-self-explaining.
-
-For people who do not master any Python, there is no functionality in Birdwatcher yet. However, it would not be
-difficult to add a thin graphical interface layer for common analysis tasks, such as movement
-detection in preference tests, Morris water maze etc. Useful examples are planned for the next release.
-
+The high-level functionality is designed so that users can perform useful analyses with minimal coding. Often, only a few lines of code using high-level functions are sufficient. One example is movement detection; see the `tutorial notebook <https://github.com/gbeckers/Birdwatcher/blob/develop/notebooks/5_movementdetection.ipynb>`__ on
+GitHub or the shorter :doc:`recipes` in the documentation. Users do not necessarily need advanced Python skills, because the code examples are intended to be self-explanatory and easy to adapt to specific situations.
 
 **Quality and usability considerations**
 
-Birdwatcher is open and free. Quality of the code is be continuously monitored through its automated testing
-framework. Furthermore, we aim for functions and classes to be well-documented. Users are invited to report bugs or
-other problems using `GitHub's issue tracker <https://github.com/gbeckers/Birdwatcher/issues>`__. That is, users should
-expect a tested and documented tool that can be easily installed based on provided instructions. The code architecture
-is designed so as to enable rapid identification and fixing of potential problems, or to expand functionality.
-
+Birdwatcher is open-source and freely available. Code quality is continuously monitored through an automated testing framework. In addition, we aim to provide thorough documentation for all functions and classes. Users are encouraged to report bugs or other issues using `GitHub's issue tracker <https://github.com/gbeckers/Birdwatcher/issues>`__. Users should therefore expect a well-tested and well-documented tool that can be installed easily by following the provided instructions. The code architecture is designed to facilitate rapid identification and resolution of potential problems, as well as future expansion of functionality.
 
 

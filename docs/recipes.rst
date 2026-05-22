@@ -9,6 +9,7 @@ the `tutorial notebooks <https://github.com/gbeckers/Birdwatcher/tree/master/not
 .. toctree::
     :maxdepth: 2
 
+    recipes/videofileproperties
     recipes/detectmovement
     recipes/loadingdetectionresults
     recipes/resizevideo

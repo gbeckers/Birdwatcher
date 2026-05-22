@@ -3,7 +3,7 @@ Detecting movement dynamically
 
 .. currentmodule:: birdwatcher.movementdetection
 
-In many lab situations, 'movement' can be captured based on detecting pixels in a video frame that changed with respect to a reference, the 'background'. Think of a static camera and static scene (a bird cage), except for an animal that moves around (the object of interest). There are many 'background subtraction' algorithms that estimate the difference between the current frame and the reference ('backround', i.e. scene without object of interest.
+In many lab situations, 'movement' can be captured based on detecting video frame pixels that changed with respect to those in a reference frame, the 'background'. Think of a static scene, a bird cage filmed, in which a bird moves around. There are many 'background subtraction' algorithms that estimate which pixels change when movement takes place.
 
 Here we apply an 'adaptive' background subtraction method, which is a useful approach when dealing with a static camera but potentially slowly changing background (e.g., changing weather, lighting). Adaptive subtractors continuously update the reference frame based on recent frames, to prevent false detections.
 
