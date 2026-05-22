@@ -7,7 +7,10 @@ it is a good idea to look at OpenCV's documentation and examples if you want
 to understand the parameters in more depth.
 
 """
-import itertools
+from __future__ import annotations
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from .coordinatearrays import CoordinateArrays
 from functools import wraps
 from pathlib import Path
 from typing import Generator
@@ -409,7 +412,7 @@ class Frames:
                              lineType=linetype)
         
     def save_nonzero(self, filepath: str | Path, metadata: dict | None = None,
-                     ignore_firstnframes: int = 0, overwrite: bool = False) -> "CoordinateArrays":
+                     ignore_firstnframes: int = 0, overwrite: bool = False) -> CoordinateArrays:
 
         """Save nonzero pixel coordinates (i.e. foreground) as Coordinate 
         Arrays object.
