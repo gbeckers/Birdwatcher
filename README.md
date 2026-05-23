@@ -36,8 +36,8 @@ lower-level functionality such as:
 - Storing lower-level output in disk-based ragged arrays for further analysis
 
 To get started, see the [Tutorial notebooks](https://github.com/gbeckers/Birdwatcher/tree/master/notebooks)
-on Github. The [documentation](https://birdwatcher.readthedocs.io/en/develop/) 
-also includes short [recipes](https://birdwatcher.readthedocs.io/en/develop/recipes.html) with 
+on Github. The [documentation](https://birdwatcher.readthedocs.io/en/latest/) 
+also includes short [recipes](https://birdwatcher.readthedocs.io/en/latest/recipes.html) with 
 hands-on examples.
 
 Birdwatcher is based on [FFmpeg](https://www.ffmpeg.org/) and [OpenCV](https://opencv.org/).
