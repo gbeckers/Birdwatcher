@@ -2,9 +2,11 @@
 depends on FFmpeg.
 
 """
+from __future__ import annotations
 
 from pathlib import Path
-from typing import Tuple, Dict, Optional
+from typing import Iterator, Any
+import numpy.typing as npt
 
 import numpy as np
 
@@ -67,16 +69,16 @@ class VideoFile:
         return self._filepath
 
     @property
-    def formatinfo(self) -> Dict:
+    def formatinfo(self) -> dict:
         """Metadata of video file format as provided by ffprobe."""
         return self._formatinfo
 
     @property
     def duration(self) -> float:
-        return self._formatinfo["duration"]
+        return float(self._formatinfo["duration"])
 
     @property
-    def streamsinfo(self) -> Tuple[Dict]:
+    def streamsinfo(self) -> tuple[dict]:
         """Metadata of video streams as provided by ffprobe."""
         return self._streamsinfo
 
@@ -96,12 +98,12 @@ class VideoFile:
         return self._audiostreams
 
     @property
-    def videostreamsinfo(self) -> Tuple[Dict]:
+    def videostreamsinfo(self) -> tuple[dict]:
         """List of metadata of video streams in video file."""
         return self._videostreamsinfo
 
     @property
-    def audiostreamsinfo(self) -> Tuple[Dict]:
+    def audiostreamsinfo(self) -> tuple[dict]:
         """List of metadata of audio streams in video file."""
         return self._audiostreamsinfo
 
@@ -115,10 +117,10 @@ class VideoFile:
     #     """List of indices of audio streams in video file."""
     #     return self._audiostreamindices
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"{self.__class__.__name__}('{self.filepath}')"
 
-    def __str__(self):
+    def __str__(self) -> str:
         s = self.__repr__()
         s += f"\n    duration: {self.duration}"
         s += f"\n    number of video streams: {self._nvideostreams}"
@@ -147,7 +149,7 @@ class VideoFile:
         """
         return VideoFileStream(self._filepath, streamnumber=streamnumber)
 
-    def get_audiocodec(self, streamnumber: int = 0) -> str:
+    def get_audiocodec(self, streamnumber: int = 0) -> str | None:
         """
 
         Parameters
@@ -175,7 +177,7 @@ class VideoFile:
         ffmpegpath: str | Path = "ffmpeg",
         loglevel: str = "quiet",
         streamnumber: int = 0,
-    ):
+    ) -> Path:
         """Extract audio to audio file.
 
         Parameters
@@ -250,7 +252,7 @@ class VideoFileStream:
 
     """
 
-    def __init__(self, filepath: str | Path, streamnumber: int = 0):
+    def __init__(self, filepath: str | Path, streamnumber: int = 0) -> None:
         self._filepath = fp = Path(filepath)
         if not fp.exists():
             raise FileNotFoundError(f'"{filepath}" does not exist')
@@ -265,10 +267,10 @@ class VideoFileStream:
         self._streamnumber = streamnumber
         self._streammetadata = self._videofile.videostreamsinfo[streamnumber]
 
-    def __iter__(self):
+    def __iter__(self) -> Iterator[npt.NDArray[np.uint8]]:
         return self.iter_frames()
 
-    def get_info(self):
+    def get_info(self) -> dict[str, Any]:
         """Provides a dictionary will all kinds of video info.
 
         Much of it is provided by ffprobe.
@@ -294,21 +296,28 @@ class VideoFileStream:
         return self._filepath
 
     @property
-    def avgframerate(self):
+    def avgframerate(self) -> float | None:
         """Average frame rate of video stream, as reported in the metadata
         of the video file."""
-        ar = self._streammetadata["avg_frame_rate"]
-        return np.divide(*map(int, ar.split("/")))
+        fr = self._streammetadata.get("avg_frame_rate", None)
+        if fr is None:
+            fr = self._streammetadata.get("r_frame_rate", None)
+        if fr is not None:
+            return float(np.divide(*map(int, fr.split("/"))))
+        return fr
 
     @property
-    def codec(self):
+    def codec(self) -> str:
         return self._streammetadata["codec_name"]
 
     @property
-    def duration(self):
+    def duration(self) -> float | None:
         """Duration of video stream in seconds, as reported in the metadata
         of the video file."""
-        return float(self._streammetadata["duration"])
+        d = self._streammetadata.get("duration", None)
+        if d is not None:
+            return float(d)
+        return d
 
     @property
     def streammetadata(self):
@@ -345,12 +354,12 @@ class VideoFileStream:
     def videofile(self) -> VideoFile:
         return self._videofile
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return (
             f"{self.__class__.__name__}('{self.filepath}', stream={self._streamnumber})"
         )
 
-    def __str__(self):
+    def __str__(self) -> str:
         s = self.__repr__()
         s += f"\n    codec: {self.streammetadata['codec_name']}"
         s += f"\n    avgframerate: {self.avgframerate}"
@@ -359,7 +368,7 @@ class VideoFileStream:
         s += f"\n    framesize: {self.framesize}"
         return s
 
-    def count_frames(self, threads=8, ffprobepath="ffprobe"):
+    def count_frames(self, threads=8, ffprobepath="ffprobe") -> int:
         """Count the number of frames in video file stream.
 
         This can be necessary as the number of frames reported in the
@@ -398,7 +407,7 @@ class VideoFileStream:
         ffmpegpath: str | Path = "ffmpeg",
         reportprogress: bool = False,
         loglevel: str = "quiet",
-    ):
+    ) -> Iterator[npt.NDArray[np.uint8]]:
         """Iterate over frames in video.
 
         Parameters
@@ -449,7 +458,8 @@ class VideoFileStream:
             if not stepsize or (i % stepsize) == 0:
                 yield frame
 
-    def get_frame(self, framenumber, color=True, ffmpegpath="ffmpeg"):
+    def get_frame(self, framenumber:int, color: bool = True,
+                  ffmpegpath: str | Path ="ffmpeg") -> npt.NDArray[np.uint8]:
         """Get frame specified by frame sequence number.
 
         Note that this can take a lot of processing because the video
@@ -483,7 +493,8 @@ class VideoFileStream:
             self.filepath, framenumber=framenumber, color=color, ffmpegpath=ffmpegpath
         )
 
-    def get_frameat(self, time, color=True, ffmpegpath="ffmpeg"):
+    def get_frameat(self, time: str, color: bool = True,
+                    ffmpegpath: str | Path = "ffmpeg") -> npt.NDArray[np.uint8]:
         """Get frame at specified time.
 
         Parameters
@@ -520,7 +531,8 @@ class VideoFileStream:
             ffmpegpath=ffmpegpath,
         )
 
-    def show(self, startat=None, nframes=None, framerate=None):
+    def show(self, startat: str | None = None, nframes: int | None = None,
+             framerate: int | None = None):
         """Shows frames in a video window.
 
         The frames of a VideoFileStream are displayed in a seperate window.
@@ -545,7 +557,7 @@ class VideoFileStream:
         return f.show(framerate=framerate)
 
 
-def testvideostreamsmall():
+def testvideostreamsmall() -> VideoFileStream:
     """A 20-s video of a zebra finch for testing purposes.
 
     Returns
@@ -559,7 +571,7 @@ def testvideostreamsmall():
     return VideoFileStream(path)
 
 
-def walk_videofiles(dirpath, extension=".avi"):
+def walk_videofiles(dirpath: str | Path, extension: str = ".avi") -> Iterator[Path]:
     """Walks recursively over contents of `dirpath` and yield pathlib Path
     objects of videofiles, as defined by their `extension`.
 

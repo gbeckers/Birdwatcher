@@ -17,8 +17,8 @@ import warnings
 import functools
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Generator
-from numpy.typing import NDArray
+from typing import Iterator, Any
+import numpy.typing as npt
 
 import numpy as np
 
@@ -38,6 +38,7 @@ AUDIOCODEC_TO_EXTENSION = {
     "pcm_s24le": ".wav",
     "pcm_s32le": ".wav",
     "pcm_f32le": ".wav",
+    "pcm_f64le": ".wav",
     "pcm_alaw": ".wav",
     "pcm_mulaw": ".wav",
     "alac": ".m4a",
@@ -52,7 +53,8 @@ AUDIOCODEC_TO_EXTENSION = {
 
 
 class FFmpegError(RuntimeError):
-    def __init__(self, cmd, returncode, stdout="", stderr=""):
+    def __init__(self, cmd: list[str], returncode: int, stdout: str = "",
+                 stderr: str = "") -> None:
         self.cmd = cmd
         self.returncode = returncode
         self.stdout = stdout
@@ -73,7 +75,7 @@ class NoAudioStreamError(ValueError):
     pass
 
 
-def run_ffmpeg(args: list, **kwargs) -> subprocess.CompletedProcess:
+def run_ffmpeg(args: list[str], **kwargs) -> subprocess.CompletedProcess:
     result = subprocess.run(args, capture_output=True, text=True, **kwargs)
 
     if result.returncode != 0:
@@ -87,7 +89,7 @@ def run_ffmpeg(args: list, **kwargs) -> subprocess.CompletedProcess:
     return result
 
 
-def run_ffprobe_json(args: list) -> dict:
+def run_ffprobe_json(args: list[str]) -> dict[str, Any]:
     result = subprocess.run(
         args,
         capture_output=True,
@@ -239,7 +241,8 @@ def arraytovideo(
     return Path(filepath)
 
 
-def videofileinfo(filepath: str | Path, ffprobepath: str | Path = "ffprobe") -> dict:
+def videofileinfo(filepath: str | Path, ffprobepath: str | Path = "ffprobe") -> \
+dict[str, Any]:
     args = [
         str(ffprobepath),
         "-print_format",
@@ -262,8 +265,7 @@ def ffmpegversion(ffmpegpath: str | Path = "ffmpeg") -> str | None:
         return None
 
 
-## FIXME inform before raising StopIteration that file has no frames
-## FIXME startat can be precise or not
+## FIXME startat: choice to be precise or not
 def iterread_videofile(
     filepath: str | Path,
     startat: str | None = None,
@@ -273,7 +275,7 @@ def iterread_videofile(
     streamnumber: int = 0,
     ffmpegpath: str | Path = "ffmpeg",
     loglevel: str = "quiet",
-) -> Generator[NDArray, None, None]:
+) -> Iterator[npt.NDArray[np.uint8]]:
     """
     Parameters
     ----------
@@ -293,8 +295,13 @@ def iterread_videofile(
       ‘0.2’ means 0.2 seconds, ‘200ms’ means 200 milliseconds,
       ‘200000us’ means 200000 microseconds, ‘12:03:45’ means 12 hours,
       03 minutes and 45 seconds, ‘23.189’ means 23.189 seconds.
+    startframe : int or None, default=None
+      If specified, overrides startat.
     nframes : int
     color : bool, default=True
+      Return color frames (True) or gray frames (False).
+    streamnumber : int, default=0
+      Which video stream to read.
     ffmpegpath : str or pathlib.Path, optional
         Path to ffmpeg executable. Default is `ffmpeg`, which means it
         should be in the system path.
@@ -374,7 +381,7 @@ def count_frames(
 ) -> int:
     args = [
         str(ffprobepath),
-        "-threads:0",
+        f"-threads:{threads}",
         str(threads),
         "-count_frames",
         "-select_streams",
@@ -396,7 +403,7 @@ def get_frame(
     streamnumber: int = 0,
     ffmpegpath: str | Path = "ffmpeg",
     loglevel: str = "quiet",
-) -> NDArray:
+) -> npt.NDArray[np.uint8]:
     _check_loglevelarg(loglevel)
     frameproperties = _get_frameproperties(filepath=filepath, color=color)
     args = [
@@ -434,7 +441,7 @@ def get_frameat(
     streamnumber: int = 0,
     ffmpegpath: str | Path = "ffmpeg",
     loglevel: str = "quiet",
-) -> NDArray:
+) -> npt.NDArray[np.uint8]:
     return next(
         iterread_videofile(
             filepath,
@@ -512,7 +519,7 @@ def detect_audio_codec(filepath: str | Path, streamnumber: int = 0) -> str | Non
         "-show_streams",
         "-select_streams",
         f"a:{streamnumber}",
-        filepath,
+        str(filepath),
     ]
     result = run_ffprobe_json(args)
     streams = result.get("streams", [])
@@ -579,6 +586,8 @@ def extract_audio(
 
     Parameters
     ----------
+    filepath : str or pathlib.Path
+      Name of the video file path.
     outputpath : str or pathlib.Path, optional
         Filename and path to write audio to. The default is None, which means
         the same directoy and name as the video file is used, but then with an
@@ -596,6 +605,8 @@ def extract_audio(
         you know what you are doing.
     channel : int, default=None
         Channel number to extract. The default None will extract all channels.
+    streamnumber : int, default=0
+        Which audio stream to extract.
     ffmpegpath : str or pathlib.Path, optional
         Path to ffmpeg executable. Default is `ffmpeg`, which means it should
         be in the system path.
@@ -617,20 +628,21 @@ def extract_audio(
             raise NoAudioStreamError(f'No audio stream in file "{filepath}"')
     if not codec in supported_audio_codecs(ffmpegpath=ffmpegpath):
         raise ValueError(f'ffmpeg does not support codec "{codec}"')
-    ext = AUDIOCODEC_TO_EXTENSION.get(codec)
     if outputpath is None:
-        outputpath = Path(filepath).with_suffix(ext)
-    else:
-        outputpath = Path(outputpath)
-    if Path(outputpath).suffix:
+        outputpath = Path(filepath).with_suffix('')
+    ext = AUDIOCODEC_TO_EXTENSION.get(codec)
+    outputpath = Path(outputpath)
+    if outputpath.suffix:
         if outputpath.suffix.lower() != ext:
             warnings.warn(
                 f'Specified audio extension ("{outputpath.suffix}") is '
                 f'not the same as the default ("{ext}") for this codec '
                 f'("{codec}"). Proceeding anyway.'
             )
-    else:
+    elif ext is not None:
         outputpath = outputpath.with_suffix(ext)
+    else:
+        outputpath = outputpath.with_suffix('.mkv') # fallback Matroska
     if outputpath.exists() and not overwrite:
         raise FileExistsError(
             f'"{outputpath}" already exists, use `overwrite` parameter'
@@ -652,5 +664,5 @@ def extract_audio(
     if channel is not None:
         args += ["-af", f"pan=mono|c0=c{channel - 1}"]
     args += [str(outputpath)]
-    result = run_ffmpeg(args)
+    run_ffmpeg(args)
     return outputpath
