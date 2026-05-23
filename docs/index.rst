@@ -49,7 +49,7 @@ lower-level functionality such as:
 To get started, see the `Tutorial notebooks <https://github
 .com/gbeckers/Birdwatcher/tree/master/notebooks>`__ on Github. The
 `documentation <https://birdwatcher.readthedocs.io/en/latest/>`__
-also includes short `recipes <https://birdwatcher.readthedocs .io/en/latest/recipes.html>`__
+also includes short `recipes <https://birdwatcher.readthedocs.io/en/latest/recipes.html>`__
 with hands-on examples.
 
 Birdwatcher is based on `FFmpeg <https://www.ffmpeg.org/>`__ and `OpenCV <https://opencv.org/>`__.
