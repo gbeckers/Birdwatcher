@@ -147,7 +147,7 @@ class VideoFile:
         """
         return VideoFileStream(self._filepath, streamnumber=streamnumber)
 
-    def get_audiocodec(self, streamnumber: int = 0) -> str:
+    def get_audiocodec(self, streamnumber: int = 0) -> str | None:
         """
 
         Parameters
