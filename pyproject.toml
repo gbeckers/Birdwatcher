@@ -57,3 +57,7 @@ python_version = "3.12"
 check_untyped_defs = true
 warn_return_any = true
 warn_unused_configs = true
+
+[tool.flake8]
+forward-refs = true
+max-line-length = 88
