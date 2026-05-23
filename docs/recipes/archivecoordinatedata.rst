@@ -14,6 +14,10 @@ Results from movement or location detection prodedures often yield a disk-based 
 
 Birdwatcher does not delete the original uncompressed ``myvideo/coords.darr`` data for your after compression. You should do this yourself.
 
+.. code:: python
+
+    >>> bw.delete_coordinatearray(ca)
+
 The archived data cannot be accessed directly from within Python. It first needs uncompressing.
 
 If you want to access your data again at a later time, there are two options. First, you can extract the orginal data from the archive using the :meth:`CoordinateArray.extract_archivedcoordinatedata` method, and use the :class:`CoordinateArray` as normal:
