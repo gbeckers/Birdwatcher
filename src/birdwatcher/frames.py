@@ -9,11 +9,11 @@ to understand the parameters in more depth.
 """
 
 from __future__ import annotations
-#from typing import TYPE_CHECKING, Generator
+from typing import TYPE_CHECKING, Generator
 
-# if TYPE_CHECKING:
-#     from .coordinatearrays import CoordinateArrays
-#     from .video import VideoFileStream
+if TYPE_CHECKING:
+    from .coordinatearrays import CoordinateArrays
+    from .video import VideoFileStream
 from functools import wraps
 from pathlib import Path
 from typing import Iterator, Callable, Any, Union, Iterable
@@ -166,7 +166,7 @@ class Frames:
             pixfmt: str = "yuv420p",
             ffmpegpath: str | Path = "ffmpeg",
             overwrite: bool = False,
-    ) -> "VideoFileStream":
+    ) -> VideoFileStream:
         """Writes frames to video file.
 
         Parameters
@@ -509,7 +509,7 @@ class Frames:
         metadata: dict | None = None,
         ignore_firstnframes: int = 0,
         overwrite: bool = False,
-    ) -> "CoordinateArrays":
+    ) -> CoordinateArrays:
         """Save nonzero pixel coordinates (i.e. foreground) as Coordinate
         Arrays object.
 
