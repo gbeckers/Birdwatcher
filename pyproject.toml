@@ -50,3 +50,9 @@ Documentation = "https://birdwatcher.readthedocs.io/en/latest/"
 pythonpath = [
   "src"
 ]
+
+[tool.mypy]
+python_version = "3.12"
+check_untyped_defs = true
+warn_return_any = true
+warn_unused_configs = true
