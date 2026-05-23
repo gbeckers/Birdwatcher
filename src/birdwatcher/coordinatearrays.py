@@ -27,9 +27,14 @@ from .frames import frameiterator
 __version__ = "0.6.0"
 
 
-__all__ = ['CoordinateArrays', 'create_coordarray', 
-           'open_archivedcoordinatedata', 'extract_archivedcoordinatedata', 
-           'delete_coordinatearray', 'move_coordinatearrays']
+__all__ = [
+    "CoordinateArrays",
+    "create_coordarray",
+    "open_archivedcoordinatedata",
+    "extract_archivedcoordinatedata",
+    "delete_coordinatearray",
+    "move_coordinatearrays",
+]
 
 
 def _archive(rar):
@@ -37,8 +42,7 @@ def _archive(rar):
     delete_raggedarray(rar)
 
 
-def _coordstoframe(coords, width, height, nchannels=None, dtype='uint8',
-                   value=1):
+def _coordstoframe(coords, width, height, nchannels=None, dtype="uint8", value=1):
     if nchannels is None:
         frame = np.zeros((height, width), dtype=dtype)
     else:
@@ -66,13 +70,13 @@ class CoordinateArrays(RaggedArray):
 
     """
 
-    def __init__(self, path, accessmode='r'):
+    def __init__(self, path, accessmode="r"):
         super().__init__(path=path, accessmode=accessmode)
         md = dict(self.metadata)
-        self.framewidth = md['framewidth']
-        self.frameheight = md['frameheight']
+        self.framewidth = md["framewidth"]
+        self.frameheight = md["frameheight"]
 
-    def get_frame(self, frameno, nchannels=None, dtype='uint8', value=1):
+    def get_frame(self, frameno, nchannels=None, dtype="uint8", value=1):
         """Get a frame based on a sequence number in the coordinate array.
 
         Parameters
@@ -92,13 +96,25 @@ class CoordinateArrays(RaggedArray):
         Numpy array
 
         """
-        return _coordstoframe(coords=self[frameno], width=self.framewidth,
-                              height=self.frameheight, nchannels=nchannels,
-                              dtype=dtype, value=value)
+        return _coordstoframe(
+            coords=self[frameno],
+            width=self.framewidth,
+            height=self.frameheight,
+            nchannels=nchannels,
+            dtype=dtype,
+            value=value,
+        )
 
     @frameiterator
-    def iter_frames(self, startframe=0, endframe=None, stepsize=1,
-                    nchannels=None, dtype='uint8', value=1):
+    def iter_frames(
+        self,
+        startframe=0,
+        endframe=None,
+        stepsize=1,
+        nchannels=None,
+        dtype="uint8",
+        value=1,
+    ):
         """Iterate over coordinate array and produce frames.
 
         Parameters
@@ -125,16 +141,33 @@ class CoordinateArrays(RaggedArray):
             Iterator that produces video frames based on the coordinates.
 
         """
-        for coords in self.iter_arrays(startindex=startframe,
-                                       endindex=endframe, stepsize=stepsize):
-            yield _coordstoframe(coords=coords, width=self.framewidth,
-                                 height=self.frameheight, nchannels=nchannels,
-                                 dtype=dtype, value=value)
+        for coords in self.iter_arrays(
+            startindex=startframe, endindex=endframe, stepsize=stepsize
+        ):
+            yield _coordstoframe(
+                coords=coords,
+                width=self.framewidth,
+                height=self.frameheight,
+                nchannels=nchannels,
+                dtype=dtype,
+                value=value,
+            )
 
-    def tovideo(self, filepath, startframe=0, endframe=None, stepsize=1,
-                framerate=None, crf=17, scale=None, format='mp4',
-                codec='libopenh264', pixfmt='yuv420p', ffmpegpath='ffmpeg',
-                overwrite=False):
+    def tovideo(
+        self,
+        filepath,
+        startframe=0,
+        endframe=None,
+        stepsize=1,
+        framerate=None,
+        crf=17,
+        scale=None,
+        format="mp4",
+        codec="libopenh264",
+        pixfmt="yuv420p",
+        ffmpegpath="ffmpeg",
+        overwrite=False,
+    ):
         """Writes frames based on coordinate info to a video file.
 
         Parameters
@@ -174,23 +207,43 @@ class CoordinateArrays(RaggedArray):
 
         """
         from .ffmpeg import arraytovideo
+
         if framerate is None:
             try:
-                framerate = self.metadata['avgframerate']
+                framerate = self.metadata["avgframerate"]
             except KeyError:
-                raise ValueError('Cannot find a frame rate, you need to '
-                                 'provide one with the `framerate` parameter')
-        arraytovideo(self.iter_frames(startframe=startframe,
-                                      endframe=endframe,
-                                      stepsize=stepsize, nchannels=3,
-                                      value=255,
-                                      dtype='uint8'),
-                     filepath, framerate=framerate, scale=scale, crf=crf,
-                     vformat=format, codec=codec, pixfmt=pixfmt,
-                     ffmpegpath=ffmpegpath, overwrite=overwrite)
+                raise ValueError(
+                    "Cannot find a frame rate, you need to "
+                    "provide one with the `framerate` parameter"
+                )
+        arraytovideo(
+            self.iter_frames(
+                startframe=startframe,
+                endframe=endframe,
+                stepsize=stepsize,
+                nchannels=3,
+                value=255,
+                dtype="uint8",
+            ),
+            filepath,
+            framerate=framerate,
+            scale=scale,
+            crf=crf,
+            vformat=format,
+            codec=codec,
+            pixfmt=pixfmt,
+            ffmpegpath=ffmpegpath,
+            overwrite=overwrite,
+        )
 
-    def show(self, startframe=0, endframe=None, stepsize=1, framerate=None,
-             draw_framenumbers=True):
+    def show(
+        self,
+        startframe=0,
+        endframe=None,
+        stepsize=1,
+        framerate=None,
+        draw_framenumbers=True,
+    ):
         """Shows coordinates frames in a video window.
 
         Turns each coordinate array into a frame and then plays video.
@@ -217,14 +270,21 @@ class CoordinateArrays(RaggedArray):
         """
         if framerate is None:
             try:
-                framerate = self.metadata['avgframerate']
+                framerate = self.metadata["avgframerate"]
             except KeyError:
-                raise ValueError('Cannot find a frame rate, you need to '
-                                 'provide one with the `framerate` parameter')
+                raise ValueError(
+                    "Cannot find a frame rate, you need to "
+                    "provide one with the `framerate` parameter"
+                )
 
-        f = self.iter_frames(startframe=startframe, endframe=endframe,
-                         stepsize=stepsize, nchannels=3, value=255,
-                         dtype='uint8')
+        f = self.iter_frames(
+            startframe=startframe,
+            endframe=endframe,
+            stepsize=stepsize,
+            nchannels=3,
+            value=255,
+            dtype="uint8",
+        )
         if draw_framenumbers:
             f = f.draw_framenumbers()
         return f.show(framerate=framerate)
@@ -245,8 +305,7 @@ class CoordinateArrays(RaggedArray):
             Sequence of numbers, each with a coordinate count.
 
         """
-        coordgen = self.iter_arrays(startindex=startframeno,
-                                    endindex=endframeno)
+        coordgen = self.iter_arrays(startindex=startframeno, endindex=endframeno)
         return np.array([c.shape[0] for c in coordgen])
 
     def get_coordmean(self, startframeno=0, endframeno=None):
@@ -265,10 +324,10 @@ class CoordinateArrays(RaggedArray):
             Sequence of numbers, each with a coordinate mean.
 
         """
-        coordgen = self.iter_arrays(startindex=startframeno,
-                                    endindex=endframeno)
-        return np.array([c.mean(0) if c.size>0 else (np.nan, np.nan)
-                         for c in coordgen])
+        coordgen = self.iter_arrays(startindex=startframeno, endindex=endframeno)
+        return np.array(
+            [c.mean(0) if c.size > 0 else (np.nan, np.nan) for c in coordgen]
+        )
 
     def get_coordmedian(self, startframeno=0, endframeno=None):
         """Get the median of the coordinates per frame.
@@ -286,14 +345,13 @@ class CoordinateArrays(RaggedArray):
             Sequence of numbers, each with a coordinate median.
 
         """
-        coordgen = self.iter_arrays(startindex=startframeno,
-                                    endindex=endframeno)
-        return np.array([np.median(c,0) if c.size>0 else (np.nan, np.nan)
-                         for c in coordgen])
+        coordgen = self.iter_arrays(startindex=startframeno, endindex=endframeno)
+        return np.array(
+            [np.median(c, 0) if c.size > 0 else (np.nan, np.nan) for c in coordgen]
+        )
 
 
-def create_coordarray(path, framewidth, frameheight, metadata=None,
-                      overwrite=True):
+def create_coordarray(path, framewidth, frameheight, metadata=None, overwrite=True):
     """Creates an empty Coordinate Arrays object.
 
     Parameters
@@ -314,18 +372,23 @@ def create_coordarray(path, framewidth, frameheight, metadata=None,
     CoordinateArrays
 
     """
-    Path(path).parent.mkdir(parents=True, exist_ok=True)   
+    Path(path).parent.mkdir(parents=True, exist_ok=True)
     if metadata is None:
         metadata = {}
-    metadata.update({'framewidth': framewidth,
-                     'frameheight': frameheight,
-                     'birdwatcher_version': __version__})
-    coords = create_raggedarray(path, atom=(2,), metadata=metadata,
-                                overwrite=overwrite, dtype='uint16')
-    return CoordinateArrays(coords.path, accessmode='r+')
+    metadata.update(
+        {
+            "framewidth": framewidth,
+            "frameheight": frameheight,
+            "birdwatcher_version": __version__,
+        }
+    )
+    coords = create_raggedarray(
+        path, atom=(2,), metadata=metadata, overwrite=overwrite, dtype="uint16"
+    )
+    return CoordinateArrays(coords.path, accessmode="r+")
 
 
-@ contextmanager
+@contextmanager
 def open_archivedcoordinatedata(path, temppath=None):
     """A context manager that temporarily decompresses coordinate
     data to work with coordinate array.
@@ -347,14 +410,14 @@ def open_archivedcoordinatedata(path, temppath=None):
 
     """
     path = Path(path)
-    if not path.suffix == '.xz':
-        raise OSError(f'{path} does not seem to be archived coordinate data')
+    if not path.suffix == ".xz":
+        raise OSError(f"{path} does not seem to be archived coordinate data")
 
     with tempdir(dirname=temppath) as dirname:
         tar = tarfile.open(path)
-        tar.extractall(path=dirname, filter='data')
+        tar.extractall(path=dirname, filter="data")
         tar.close()
-        capath = list(dirname.glob('*'))[0]
+        capath = list(dirname.glob("*"))[0]
         yield CoordinateArrays(capath)
 
 
@@ -372,15 +435,15 @@ def extract_archivedcoordinatedata(path):
 
     """
     path = Path(path)
-    if not path.suffix == '.xz':
-        raise OSError(f'{path} does not seem to be archived coordinate data')
+    if not path.suffix == ".xz":
+        raise OSError(f"{path} does not seem to be archived coordinate data")
 
     tar = tarfile.open(path)
     tar.extractall(path=path.parent)
     tar.close()
-    
-    while path.suffix in {'.tar', '.xz'}: # remove extensions
-        path = path.with_suffix('')
+
+    while path.suffix in {".tar", ".xz"}:  # remove extensions
+        path = path.with_suffix("")
 
     return CoordinateArrays(path)
 
@@ -406,7 +469,7 @@ def move_coordinatearrays(sourcedirpath, targetdirpath):
     tdir = Path(targetdirpath)
     for root, dirs, files in os.walk(sourcedirpath):
         for dname in dirs:
-            if dname.endswith('.darr'):
+            if dname.endswith(".darr"):
                 d = Path(dname)
                 newdir = tdir / Path(root).relative_to(sourcedirpath)
                 Path(newdir).mkdir(parents=True, exist_ok=True)

@@ -7,8 +7,10 @@ it is a good idea to look at OpenCV's documentation and examples if you want
 to understand the parameters in more depth.
 
 """
+
 from __future__ import annotations
 from typing import TYPE_CHECKING
+
 if TYPE_CHECKING:
     from .coordinatearrays import CoordinateArrays
 from functools import wraps
@@ -21,8 +23,16 @@ import cv2 as cv
 from .utils import peek_iterable
 
 
-__all__ = ['Frames', 'FramesColor', 'FramesGray', 'FramesNoise', 'framecolor',
-           'framegray', 'framenoise', 'vstack_frames']
+__all__ = [
+    "Frames",
+    "FramesColor",
+    "FramesGray",
+    "FramesNoise",
+    "framecolor",
+    "framegray",
+    "framenoise",
+    "vstack_frames",
+]
 
 
 def _check_writable(frame):
@@ -37,15 +47,21 @@ def frameiterator(func):
     def wrapper(*args, **kwargs):
         processingdata = []
         self = args[0]
-        if hasattr(self, 'get_info'):
-            processingdata = self.get_info().get('processingdata') or []
-        processingdata.append({'methodname': func.__name__,
-                               'methodargs': [str(arg) for arg in args],
-                               'methodkwargs': dict((str(key),str(item))
-                                                    for (key, item)
-                                                    in kwargs.items())})
+        if hasattr(self, "get_info"):
+            processingdata = self.get_info().get("processingdata") or []
+        processingdata.append(
+            {
+                "methodname": func.__name__,
+                "methodargs": [str(arg) for arg in args],
+                "methodkwargs": dict(
+                    (str(key), str(item)) for (key, item) in kwargs.items()
+                ),
+            }
+        )
         return Frames(func(*args, **kwargs), processingdata=processingdata)
+
     return wrapper
+
 
 class Frames:
     """An iterator of video frames with useful methods.
@@ -113,14 +129,16 @@ class Frames:
         return self._dtype
 
     def get_info(self):
-        return {'classname': self.__class__.__name__,
-                'framewidth': self.framewidth,
-                'frameheight': self.frameheight,
-                'processingdata': self.processingdata}
-    
+        return {
+            "classname": self.__class__.__name__,
+            "framewidth": self.framewidth,
+            "frameheight": self.frameheight,
+            "processingdata": self.processingdata,
+        }
+
     def peek_frame(self):
         """Returns first frame without removing it.
-        
+
         Returns
         -------
         numpy ndarray
@@ -128,10 +146,19 @@ class Frames:
         """
         firstframe, self._frames = peek_iterable(self._frames)
         return firstframe
-        
-    def tovideo(self, filepath, framerate, crf=23, scale=None, vformat='mp4',
-                codec='libopenh264', pixfmt='yuv420p', ffmpegpath='ffmpeg',
-                overwrite=False):
+
+    def tovideo(
+        self,
+        filepath,
+        framerate,
+        crf=23,
+        scale=None,
+        vformat="mp4",
+        codec="libopenh264",
+        pixfmt="yuv420p",
+        ffmpegpath="ffmpeg",
+        overwrite=False,
+    ):
         """Writes frames to video file.
 
         Parameters
@@ -144,7 +171,7 @@ class Frames:
             Value determines quality of video. The default 23 is good quality.
             Use 17 for high quality.
         scale : tuple, optional
-            (width, height). The default (None) does not change width and    
+            (width, height). The default (None) does not change width and
             height.
         vformat : str, default='mp4'
             ffmpeg video format.
@@ -163,14 +190,23 @@ class Frames:
         """
         from .ffmpeg import arraytovideo
         from .video import VideoFileStream
-        filepath = arraytovideo(frames=self, filepath=filepath,
-                                framerate=framerate, crf=crf, scale=scale,
-                                vformat=vformat, codec=codec, pixfmt=pixfmt,
-                                ffmpegpath=ffmpegpath, overwrite=overwrite)
+
+        filepath = arraytovideo(
+            frames=self,
+            filepath=filepath,
+            framerate=framerate,
+            crf=crf,
+            scale=scale,
+            vformat=vformat,
+            codec=codec,
+            pixfmt=pixfmt,
+            ffmpegpath=ffmpegpath,
+            overwrite=overwrite,
+        )
         return VideoFileStream(filepath)
 
     @frameiterator
-    def blur(self, ksize, anchor=(-1,-1), borderType=cv.BORDER_DEFAULT):
+    def blur(self, ksize, anchor=(-1, -1), borderType=cv.BORDER_DEFAULT):
         """Blurs frames using the normalized box filter.
 
         Parameters
@@ -197,8 +233,7 @@ class Frames:
 
         """
         for frame in self._frames:
-            yield cv.blur(frame, ksize=ksize, anchor=anchor,
-                          borderType=borderType)
+            yield cv.blur(frame, ksize=ksize, anchor=anchor, borderType=borderType)
 
     @frameiterator
     def edge_detection(self, minval=80, maxval=150):
@@ -226,8 +261,15 @@ class Frames:
 
     # FIXME multiple circles per frame?
     @frameiterator
-    def draw_circles(self, centers, radius=6, color=(255, 100, 0),
-                     thickness=2, linetype=cv.LINE_AA, shift=0):
+    def draw_circles(
+        self,
+        centers,
+        radius=6,
+        color=(255, 100, 0),
+        thickness=2,
+        linetype=cv.LINE_AA,
+        shift=0,
+    ):
         """Draws circles on frames.
 
         Centers should be an iterable that has a length that corresponds to
@@ -259,11 +301,16 @@ class Frames:
             frame = _check_writable(frame)
             center = np.asanyarray(center)
             if not np.isnan(center).any():
-                (x, y) = center.astype('int16')
-                yield cv.circle(frame, center=(x, y), radius=radius,
-                                color=color,
-                                thickness=thickness, lineType=linetype,
-                                shift=shift)
+                (x, y) = center.astype("int16")
+                yield cv.circle(
+                    frame,
+                    center=(x, y),
+                    radius=radius,
+                    color=color,
+                    thickness=thickness,
+                    lineType=linetype,
+                    shift=shift,
+                )
             else:
                 yield frame
 
@@ -294,9 +341,11 @@ class Frames:
             frame = _check_writable(frame)
             framepoints = np.asanyarray(framepoints)
             if not np.isnan(framepoints).any():
-                h1, h2, w1, w2 = framepoints.astype('int16')
+                h1, h2, w1, w2 = framepoints.astype("int16")
                 pt1, pt2 = ((w1, h2), (w2, h1))
-                yield cv.rectangle(frame, pt1=pt1, pt2=pt2, color=color, thickness=thickness)
+                yield cv.rectangle(
+                    frame, pt1=pt1, pt2=pt2, color=color, thickness=thickness
+                )
             else:
                 yield frame
 
@@ -333,10 +382,16 @@ class Frames:
                 yield frame
 
     @frameiterator
-    def draw_framenumbers(self, startat=0, org=(2, 25),
-                          fontface=cv.FONT_HERSHEY_SIMPLEX,
-                          fontscale=1, color=(200, 200, 200), thickness=2,
-                          linetype=cv.LINE_AA):
+    def draw_framenumbers(
+        self,
+        startat=0,
+        org=(2, 25),
+        fontface=cv.FONT_HERSHEY_SIMPLEX,
+        fontscale=1,
+        color=(200, 200, 200),
+        thickness=2,
+        linetype=cv.LINE_AA,
+    ):
         """Draws the frame number on frames.
 
         Parameters
@@ -366,55 +421,78 @@ class Frames:
         """
         for frameno, frame in enumerate(self._frames):
             frame = _check_writable(frame)
-            yield cv.putText(frame, str(frameno + startat), org=org,
-                             fontFace=fontface, fontScale=fontscale,
-                             color=color, thickness=thickness,
-                             lineType=linetype)
+            yield cv.putText(
+                frame,
+                str(frameno + startat),
+                org=org,
+                fontFace=fontface,
+                fontScale=fontscale,
+                color=color,
+                thickness=thickness,
+                lineType=linetype,
+            )
 
     @frameiterator
-    def draw_text(self, textiterator, org=(2, 25),
-                  fontface=cv.FONT_HERSHEY_SIMPLEX, fontscale=1,
-                  color=(200, 200, 200), thickness=2, linetype=cv.LINE_AA):
+    def draw_text(
+        self,
+        textiterator,
+        org=(2, 25),
+        fontface=cv.FONT_HERSHEY_SIMPLEX,
+        fontscale=1,
+        color=(200, 200, 200),
+        thickness=2,
+        linetype=cv.LINE_AA,
+    ):
         """Draws text on frames.
 
-            Parameters
-            ----------
-            textiterator : iterable
-                Something that you can iterate over and that produces text
-                for each frame.
-            org : (int, int), optional
-                A tuple of ints (horizontal coordinate value, vertical
-                coordinate value) indicates where to draw the text. The
-                default (2, 25) draws text in the top left corner of the
-                image.
-            fontface : OpenCV font type, default=cv.FONT_HERSHEY_SIMPLEX
-            fontscale : float, optional
-                Font scale factor that is multiplied by the font-specific base
-                size.
-            color : (int, int, int), optional
-                Font color (BGR). The default color (200, 200, 200) is gray.
-            thickness : int, default=2
-                Line thickness.
-            linetype : int, default=cv2.LINE_AA
-                OpenCV line type.
+        Parameters
+        ----------
+        textiterator : iterable
+            Something that you can iterate over and that produces text
+            for each frame.
+        org : (int, int), optional
+            A tuple of ints (horizontal coordinate value, vertical
+            coordinate value) indicates where to draw the text. The
+            default (2, 25) draws text in the top left corner of the
+            image.
+        fontface : OpenCV font type, default=cv.FONT_HERSHEY_SIMPLEX
+        fontscale : float, optional
+            Font scale factor that is multiplied by the font-specific base
+            size.
+        color : (int, int, int), optional
+            Font color (BGR). The default color (200, 200, 200) is gray.
+        thickness : int, default=2
+            Line thickness.
+        linetype : int, default=cv2.LINE_AA
+            OpenCV line type.
 
-            Yields
-            ------
-            Frames
-                Iterator that generates frames with text.
+        Yields
+        ------
+        Frames
+            Iterator that generates frames with text.
 
         """
         for frame, text in zip(self._frames, textiterator):
             frame = _check_writable(frame)
-            yield cv.putText(frame, str(text), org=org,
-                             fontFace=fontface, fontScale=fontscale,
-                             color=color, thickness=thickness,
-                             lineType=linetype)
-        
-    def save_nonzero(self, filepath: str | Path, metadata: dict | None = None,
-                     ignore_firstnframes: int = 0, overwrite: bool = False) -> CoordinateArrays:
+            yield cv.putText(
+                frame,
+                str(text),
+                org=org,
+                fontFace=fontface,
+                fontScale=fontscale,
+                color=color,
+                thickness=thickness,
+                lineType=linetype,
+            )
 
-        """Save nonzero pixel coordinates (i.e. foreground) as Coordinate 
+    def save_nonzero(
+        self,
+        filepath: str | Path,
+        metadata: dict | None = None,
+        ignore_firstnframes: int = 0,
+        overwrite: bool = False,
+    ) -> CoordinateArrays:
+        """Save nonzero pixel coordinates (i.e. foreground) as Coordinate
         Arrays object.
 
         Parameters
@@ -423,33 +501,37 @@ class Frames:
             Name of the filepath that should be written to.
         metadata : dict, optional
         ignore_firstnframes : int, default=10
-            Do not provide coordinates for the first n frames. These often 
+            Do not provide coordinates for the first n frames. These often
             have a lot of false positives.
         overwrite : bool, default=True
              Overwrite existing CoordinateArrays or not.
-        
+
         Returns
         -------
-        CoordinateArrays  
-        
+        CoordinateArrays
+
         """
         from .coordinatearrays import create_coordarray
-        
-        if Path(filepath).suffix != '.darr':
-            filepath = Path(filepath).with_suffix('.darr')
+
+        if Path(filepath).suffix != ".darr":
+            filepath = Path(filepath).with_suffix(".darr")
         Path(filepath).parent.mkdir(parents=True, exist_ok=True)
-        
-        coordsarray = create_coordarray(filepath,
-                                        framewidth=self._framewidth,
-                                        frameheight=self._frameheight,
-                                        metadata=metadata,
-                                        overwrite=overwrite)
-        
-        empty = np.zeros((0,2), dtype=np.uint16)
-        coords = (c if i >= ignore_firstnframes else empty for i,c in
-                  enumerate(self.find_nonzero()))
+
+        coordsarray = create_coordarray(
+            filepath,
+            framewidth=self._framewidth,
+            frameheight=self._frameheight,
+            metadata=metadata,
+            overwrite=overwrite,
+        )
+
+        empty = np.zeros((0, 2), dtype=np.uint16)
+        coords = (
+            c if i >= ignore_firstnframes else empty
+            for i, c in enumerate(self.find_nonzero())
+        )
         coordsarray.iterappend(coords)
-        
+
         return coordsarray
 
     def find_nonzero(self):
@@ -466,16 +548,16 @@ class Frames:
         """
         for frame in self._frames:
             if frame.ndim == 3:
-                frame = (frame!=0).sum(axis=2, dtype=frame.dtype)
+                frame = (frame != 0).sum(axis=2, dtype=frame.dtype)
             idx = cv.findNonZero(frame)
             if idx is None:
-                idx = np.zeros((0,2), dtype=np.uint16)
+                idx = np.zeros((0, 2), dtype=np.uint16)
             else:
                 idx = idx[:, 0, :]
             yield idx
 
     @frameiterator
-    def morphologyex(self, morphtype='open', kernelsize=2, iterations=1):
+    def morphologyex(self, morphtype="open", kernelsize=2, iterations=1):
         """Performs advanced morphological transformations on frames.
 
         Can perform advanced morphological transformations using an erosion
@@ -500,20 +582,21 @@ class Frames:
             Iterator that generates transformed image frames.
 
         """
-        morphtypes={'erode': cv.MORPH_ERODE,
-                    'dilate': cv.MORPH_DILATE,
-                    'open': cv.MORPH_OPEN,
-                    'close': cv.MORPH_CLOSE,
-                    'gradient': cv.MORPH_GRADIENT,
-                    'tophat': cv.MORPH_TOPHAT,
-                    'blackhat': cv.MORPH_BLACKHAT}
+        morphtypes = {
+            "erode": cv.MORPH_ERODE,
+            "dilate": cv.MORPH_DILATE,
+            "open": cv.MORPH_OPEN,
+            "close": cv.MORPH_CLOSE,
+            "gradient": cv.MORPH_GRADIENT,
+            "tophat": cv.MORPH_TOPHAT,
+            "blackhat": cv.MORPH_BLACKHAT,
+        }
         morphnum = morphtypes.get(morphtype, None)
         if morphnum is None:
-            raise ValueError(f'`{morphtype}` is not a valid morphtype')
+            raise ValueError(f"`{morphtype}` is not a valid morphtype")
         kernel = np.ones((kernelsize, kernelsize), np.uint8)
         for frame in self._frames:
-            yield cv.morphologyEx(frame, morphnum, kernel,
-                                  iterations=iterations)
+            yield cv.morphologyEx(frame, morphnum, kernel, iterations=iterations)
 
     @frameiterator
     def add_weighted(self, alpha, frames, beta, gamma=0):
@@ -539,12 +622,14 @@ class Frames:
 
         """
         for frame1, frame2 in zip(self._frames, frames):
-            yield cv.addWeighted(src1=frame1, alpha=alpha, src2=frame2,
-                                 beta=beta, gamma=gamma)
+            yield cv.addWeighted(
+                src1=frame1, alpha=alpha, src2=frame2, beta=beta, gamma=gamma
+            )
 
     @frameiterator
-    def apply_backgroundsegmenter(self, bgs, fgmask=None, learningRate=-1.0,
-                                  roi=None, nroi=None):
+    def apply_backgroundsegmenter(
+        self, bgs, fgmask=None, learningRate=-1.0, roi=None, nroi=None
+    ):
         """Compute foreground masks based on input sequence of frames.
 
         Parameters
@@ -576,19 +661,19 @@ class Frames:
         """
         if roi is not None:
             firstframe = self.peek_frame()
-            completeframe = np.zeros((firstframe.shape[0],
-                                      firstframe.shape[1]), dtype=np.uint8)
+            completeframe = np.zeros(
+                (firstframe.shape[0], firstframe.shape[1]), dtype=np.uint8
+            )
         for frame in self._frames:
             if roi is not None:
-                h1,h2,w1,w2 = roi
+                h1, h2, w1, w2 = roi
                 frame = frame[h1:h2, w1:w2]
-            mask = bgs.apply(frame=frame, fgmask=fgmask,
-                             learningRate=learningRate)
+            mask = bgs.apply(frame=frame, fgmask=fgmask, learningRate=learningRate)
             if roi is not None:
                 completeframe[h1:h2, w1:w2] = mask
                 mask = completeframe
             if nroi is not None:
-                h1,h2,w1,w2 = nroi
+                h1, h2, w1, w2 = nroi
                 mask[h1:h2, w1:w2] = 0
             yield mask
 
@@ -636,7 +721,7 @@ class Frames:
             yield cv.absdiff(frame_self, frame)
 
     @frameiterator
-    def threshold(self, thresh,	maxval=255,	threshtype='tozero'):
+    def threshold(self, thresh, maxval=255, threshtype="tozero"):
         """Thresholds frames at value `thresh`.
 
         Parameters
@@ -644,7 +729,7 @@ class Frames:
         thresh : int
             Threshold value.
         maxval : int, default=255
-        	Maximum value to use with the THRESH_BINARY and THRESH_BINARY_INV
+                Maximum value to use with the THRESH_BINARY and THRESH_BINARY_INV
             thresholding types.
         threshtype : {'tozero', 'tozero_inv', 'binary', 'binary_inv', 'trunc',
                      'mask', 'otsu', 'triangle'}, optional
@@ -658,22 +743,23 @@ class Frames:
 
         """
         threshtypes = {
-        'binary': cv.THRESH_BINARY,
-        'binary_inv': cv.THRESH_BINARY_INV,
-        'trunc': cv.THRESH_TRUNC,
-        'tozero': cv.THRESH_TOZERO,
-        'tozero_inv': cv.THRESH_TOZERO_INV,
-        'mask': cv.THRESH_MASK,
-        'otsu': cv.THRESH_OTSU,
-        'triangle': cv.THRESH_TRIANGLE
+            "binary": cv.THRESH_BINARY,
+            "binary_inv": cv.THRESH_BINARY_INV,
+            "trunc": cv.THRESH_TRUNC,
+            "tozero": cv.THRESH_TOZERO,
+            "tozero_inv": cv.THRESH_TOZERO_INV,
+            "mask": cv.THRESH_MASK,
+            "otsu": cv.THRESH_OTSU,
+            "triangle": cv.THRESH_TRIANGLE,
         }
         threshtype = threshtypes[threshtype]
         for frame in self._frames:
-            yield cv.threshold(src=frame, thresh=thresh,
-                               maxval=maxval, type=threshtype)[1]
+            yield cv.threshold(
+                src=frame, thresh=thresh, maxval=maxval, type=threshtype
+            )[1]
 
     @frameiterator
-    def resize(self, dsize, interpolation='linear'):
+    def resize(self, dsize, interpolation="linear"):
         """Resizes frames.
 
         Parameters
@@ -699,19 +785,20 @@ class Frames:
 
         """
         interptypes = {
-            'nearest': cv.INTER_NEAREST,
-            'linear': cv.INTER_LINEAR,
-            'area': cv.INTER_AREA,
-            'cubic': cv.INTER_CUBIC,
-            'lanczos4': cv.INTER_LANCZOS4
+            "nearest": cv.INTER_NEAREST,
+            "linear": cv.INTER_LINEAR,
+            "area": cv.INTER_AREA,
+            "cubic": cv.INTER_CUBIC,
+            "lanczos4": cv.INTER_LANCZOS4,
         }
         interpolation = interptypes[interpolation]
         for frame in self._frames:
-            yield cv.resize(src=frame, dsize=dsize, fx=0, fy=0,
-                            interpolation=interpolation)
+            yield cv.resize(
+                src=frame, dsize=dsize, fx=0, fy=0, interpolation=interpolation
+            )
 
     @frameiterator
-    def resizebyfactor(self, fx, fy, interpolation='linear'):
+    def resizebyfactor(self, fx, fy, interpolation="linear"):
         """Resizes frames by a specified factor.
 
         Parameters
@@ -739,19 +826,19 @@ class Frames:
 
         """
         interptypes = {
-            'nearest': cv.INTER_NEAREST,
-            'linear': cv.INTER_LINEAR,
-            'area': cv.INTER_AREA,
-            'cubic': cv.INTER_CUBIC,
-            'lanczos4': cv.INTER_LANCZOS4
+            "nearest": cv.INTER_NEAREST,
+            "linear": cv.INTER_LINEAR,
+            "area": cv.INTER_AREA,
+            "cubic": cv.INTER_CUBIC,
+            "lanczos4": cv.INTER_LANCZOS4,
         }
         interpolation = interptypes[interpolation]
         for frame in self._frames:
-            yield cv.resize(src=frame, dsize=(0,0), fx=fx, fy=fy,
-                            interpolation=interpolation)
+            yield cv.resize(
+                src=frame, dsize=(0, 0), fx=fx, fy=fy, interpolation=interpolation
+            )
 
-    def find_contours(self, retrmode='tree', apprmethod='simple',
-                      offset=(0, 0)):
+    def find_contours(self, retrmode="tree", apprmethod="simple", offset=(0, 0)):
         """Finds contours in frames.
 
         Contours can only be performed on gray frames. Use threshold or edge
@@ -771,29 +858,36 @@ class Frames:
             the parent-child relationship between contours.
 
         """
-        retrmode = {'tree': cv.RETR_TREE,
-                    'external': cv.RETR_EXTERNAL,
-                    'list': cv.RETR_LIST,
-                    'ccomp': cv.RETR_CCOMP,
-                    'floodfill': cv.RETR_FLOODFILL}[retrmode]
-        apprmethod = {'none': cv.CHAIN_APPROX_NONE,
-                      'simple': cv.CHAIN_APPROX_SIMPLE,
-                      'tc89_l1': cv.CHAIN_APPROX_TC89_L1,
-                      'tc89_kcos': cv.CHAIN_APPROX_TC89_KCOS}[apprmethod]
+        retrmode = {
+            "tree": cv.RETR_TREE,
+            "external": cv.RETR_EXTERNAL,
+            "list": cv.RETR_LIST,
+            "ccomp": cv.RETR_CCOMP,
+            "floodfill": cv.RETR_FLOODFILL,
+        }[retrmode]
+        apprmethod = {
+            "none": cv.CHAIN_APPROX_NONE,
+            "simple": cv.CHAIN_APPROX_SIMPLE,
+            "tc89_l1": cv.CHAIN_APPROX_TC89_L1,
+            "tc89_kcos": cv.CHAIN_APPROX_TC89_KCOS,
+        }[apprmethod]
         for frame in self._frames:
-            yield cv.findContours(frame, mode=retrmode, method=apprmethod, 
-                                  offset=offset)
+            yield cv.findContours(
+                frame, mode=retrmode, method=apprmethod, offset=offset
+            )
 
     def calc_meanframe(self, dtype=None):
         if self.nchannels == 1:
-            meanframe = framegray(self.frameheight, self.framewidth, value=0,
-                                  dtype='float64')
+            meanframe = framegray(
+                self.frameheight, self.framewidth, value=0, dtype="float64"
+            )
         else:
-            meanframe = framecolor(self.frameheight, self.framewidth, color=
-                                   (0, 0, 0), dtype='float64')
+            meanframe = framecolor(
+                self.frameheight, self.framewidth, color=(0, 0, 0), dtype="float64"
+            )
         for i, frame in enumerate(self._frames):
             meanframe += frame
-        meanframe /= (i+1)
+        meanframe /= i + 1
         if dtype is None:
             dtype = self._dtype
         return meanframe.astype(dtype)
@@ -817,17 +911,17 @@ class Frames:
         """
         waitkey = int(round(1000 / framerate))
         for frame in self._frames:
-            cv.imshow('frame', frame)
-            if cv.waitKey(waitkey) & 0xFF == ord('q'):
+            cv.imshow("frame", frame)
+            if cv.waitKey(waitkey) & 0xFF == ord("q"):
                 break
         cv.destroyAllWindows()
+
 
 @frameiterator
 def vstack_frames(frames1: Frames, frames2: Frames) -> Generator[Frames, None, None]:
     """Stacks two Frames objects vertically."""
     for f1, f2 in zip(frames1._frames, frames2._frames):
         yield np.vstack((f1, f2))
-
 
 
 class FramesColor(Frames):
@@ -837,8 +931,7 @@ class FramesColor(Frames):
 
     """
 
-    def __init__(self, nframes, height, width, color=(0, 0, 0), 
-                 dtype='uint8'):
+    def __init__(self, nframes, height, width, color=(0, 0, 0), dtype="uint8"):
         """Creates an iterator that yields color frames.
 
         Parameters
@@ -860,8 +953,7 @@ class FramesColor(Frames):
         Iterator of numpy ndarrays
 
         """
-        frame = framecolor(height=height, width=width, color=color,
-                           dtype=dtype)
+        frame = framecolor(height=height, width=width, color=color, dtype=dtype)
         frames = (frame.copy() for _ in range(nframes))
         super().__init__(frames=frames)
 
@@ -873,7 +965,7 @@ class FramesGray(Frames):
 
     """
 
-    def __init__(self, nframes, height, width, value=0, dtype='uint8'):
+    def __init__(self, nframes, height, width, value=0, dtype="uint8"):
         """Creates an iterator that yields gray frames.
 
         Parameters
@@ -895,8 +987,7 @@ class FramesGray(Frames):
 
         """
 
-        frame = framegray(height=height, width=width, value=value,
-                          dtype=dtype)
+        frame = framegray(height=height, width=width, value=value, dtype=dtype)
         frames = (frame.copy() for _ in range(nframes))
         super().__init__(frames=frames)
 
@@ -908,7 +999,7 @@ class FramesNoise(Frames):
 
     """
 
-    def __init__(self, nframes, height, width, dtype='uint8'):
+    def __init__(self, nframes, height, width, dtype="uint8"):
         """Creates an iterator that yields gray frames.
 
         Parameters
@@ -928,12 +1019,13 @@ class FramesNoise(Frames):
 
         """
 
-        frames = (framenoise(height=height, width=width, dtype=dtype)
-                  for _ in range(nframes))
+        frames = (
+            framenoise(height=height, width=width, dtype=dtype) for _ in range(nframes)
+        )
         super().__init__(frames=frames)
 
 
-def framegray(height, width, value=0, dtype='uint8'):
+def framegray(height, width, value=0, dtype="uint8"):
     """Creates a gray frame.
 
     Parameters
@@ -955,7 +1047,7 @@ def framegray(height, width, value=0, dtype='uint8'):
     return np.ones((height, width), dtype=dtype) * value
 
 
-def framecolor(height, width, color=(0, 0, 0), dtype='uint8'):
+def framecolor(height, width, color=(0, 0, 0), dtype="uint8"):
     """Creates a color frame.
 
     Parameters
@@ -977,7 +1069,7 @@ def framecolor(height, width, color=(0, 0, 0), dtype='uint8'):
     return np.ones((height, width, 3), dtype=dtype) * np.asanyarray(color, dtype=dtype)
 
 
-def framenoise(height, width, dtype='uint8'):
+def framenoise(height, width, dtype="uint8"):
     """Creates a noise frame.
 
     Parameters
@@ -997,14 +1089,26 @@ def framenoise(height, width, dtype='uint8'):
     return np.random.randint(0, 255, (height, width, 3), dtype=dtype)
 
 
-def create_frameswithmovingcircle(nframes, width, height,
-                                  framecolor=(0, 0, 0),
-                                  circlecolor=(255, 100, 0), radius=6,
-                                  thickness=2, linetype=8, dtype='uint8'):
+def create_frameswithmovingcircle(
+    nframes,
+    width,
+    height,
+    framecolor=(0, 0, 0),
+    circlecolor=(255, 100, 0),
+    radius=6,
+    thickness=2,
+    linetype=8,
+    dtype="uint8",
+):
 
-    frames = FramesColor(nframes=nframes,  width=width, height=height,
-                         color=framecolor, dtype=dtype)
-    centers = zip(np.linspace(0, width, nframes),
-                  np.linspace(0, height, nframes))
-    return frames.draw_circles(centers, color=circlecolor, radius=radius,
-                               thickness=thickness, linetype=linetype)
+    frames = FramesColor(
+        nframes=nframes, width=width, height=height, color=framecolor, dtype=dtype
+    )
+    centers = zip(np.linspace(0, width, nframes), np.linspace(0, height, nframes))
+    return frames.draw_circles(
+        centers,
+        color=circlecolor,
+        radius=radius,
+        thickness=thickness,
+        linetype=linetype,
+    )

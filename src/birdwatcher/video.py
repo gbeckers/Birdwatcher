@@ -3,19 +3,25 @@ depends on FFmpeg.
 
 """
 
-
 from pathlib import Path
 from typing import Tuple, Dict, Optional
 
 import numpy as np
 
-from .ffmpeg import videofileinfo, iterread_videofile, count_frames, \
-    get_frame, get_frameat, extract_audio, detect_audio_codec
+from .ffmpeg import (
+    videofileinfo,
+    iterread_videofile,
+    count_frames,
+    get_frame,
+    get_frameat,
+    extract_audio,
+    detect_audio_codec,
+)
 from .frames import frameiterator
 from .utils import progress
 
 
-__all__ = ['VideoFile', 'VideoFileStream', 'testvideostreamsmall']
+__all__ = ["VideoFile", "VideoFileStream", "testvideostreamsmall"]
 
 
 class VideoFile:
@@ -41,14 +47,16 @@ class VideoFile:
     def __init__(self, filepath: str | Path) -> None:
         self._filepath = fp = Path(filepath)
         info = videofileinfo(fp)
-        self._formatinfo = info['format']
-        self._streamsinfo = tuple(info['streams'])
+        self._formatinfo = info["format"]
+        self._streamsinfo = tuple(info["streams"])
         self._nstreams = len(self._streamsinfo)
-        self._videostreamsinfo = tuple(stream for stream in self._streamsinfo
-                                       if stream['codec_type'] == 'video')
+        self._videostreamsinfo = tuple(
+            stream for stream in self._streamsinfo if stream["codec_type"] == "video"
+        )
         self._nvideostreams = len(self._videostreamsinfo)
-        self._audiostreamsinfo = tuple(stream for stream in self._streamsinfo
-                                       if stream['codec_type'] == 'audio')
+        self._audiostreamsinfo = tuple(
+            stream for stream in self._streamsinfo if stream["codec_type"] == "audio"
+        )
         self._audiostreams = len(self._audiostreamsinfo)
         # self._videostreamindices = tuple(s['index'] for s in self._videostreamsinfo)
         # self._audiostreamindices = tuple(s['index'] for s in self._audiostreamsinfo)
@@ -65,7 +73,7 @@ class VideoFile:
 
     @property
     def duration(self) -> float:
-        return self._formatinfo['duration']
+        return self._formatinfo["duration"]
 
     @property
     def streamsinfo(self) -> Tuple[Dict]:
@@ -139,7 +147,6 @@ class VideoFile:
         """
         return VideoFileStream(self._filepath, streamnumber=streamnumber)
 
-
     def get_audiocodec(self, streamnumber: int = 0) -> str:
         """
 
@@ -159,11 +166,16 @@ class VideoFile:
         """
         return detect_audio_codec(str(self._filepath), streamnumber=streamnumber)
 
-    def extract_audio(self, outputpath: str | Path | None=None,
-                      overwrite: bool = False, codec: str = 'copy',
-                      channel: int | None = None,
-                      ffmpegpath: str | Path ='ffmpeg', loglevel: str = 'quiet',
-                      streamnumber: int = 0):
+    def extract_audio(
+        self,
+        outputpath: str | Path | None = None,
+        overwrite: bool = False,
+        codec: str = "copy",
+        channel: int | None = None,
+        ffmpegpath: str | Path = "ffmpeg",
+        loglevel: str = "quiet",
+        streamnumber: int = 0,
+    ):
         """Extract audio to audio file.
 
         Parameters
@@ -202,10 +214,16 @@ class VideoFile:
 
         """
         filepath = self._filepath
-        return extract_audio(filepath=filepath, outputpath=outputpath,
-                             overwrite=overwrite, codec=codec,
-                             channel=channel, ffmpegpath=ffmpegpath,
-                             loglevel=loglevel, streamnumber=streamnumber)
+        return extract_audio(
+            filepath=filepath,
+            outputpath=outputpath,
+            overwrite=overwrite,
+            codec=codec,
+            channel=channel,
+            ffmpegpath=ffmpegpath,
+            loglevel=loglevel,
+            streamnumber=streamnumber,
+        )
 
 
 class VideoFileStream:
@@ -240,11 +258,12 @@ class VideoFileStream:
         if self._videofile.nvideostreams == 0:
             raise ValueError(f"No video streams found in file '{filepath}'")
         if streamnumber >= self._videofile.nvideostreams:
-            raise ValueError(f"Stream number {streamnumber} is out of range "
-                             f"(max={self._videofile.nvideostreams-1})")
+            raise ValueError(
+                f"Stream number {streamnumber} is out of range "
+                f"(max={self._videofile.nvideostreams - 1})"
+            )
         self._streamnumber = streamnumber
         self._streammetadata = self._videofile.videostreamsinfo[streamnumber]
-
 
     def __iter__(self):
         return self.iter_frames()
@@ -258,12 +277,16 @@ class VideoFileStream:
         -------
             Dictionary with info.
         """
-        return {'classname': self.__class__.__name__,
-                'classarguments': {'filepath': str(self.filepath),
-                                  'streamnumber': self._streamnumber},
-                'framewidth': self.framewidth,
-                'frameheight': self.frameheight,
-                'streammetadata': self.streammetadata}
+        return {
+            "classname": self.__class__.__name__,
+            "classarguments": {
+                "filepath": str(self.filepath),
+                "streamnumber": self._streamnumber,
+            },
+            "framewidth": self.framewidth,
+            "frameheight": self.frameheight,
+            "streammetadata": self.streammetadata,
+        }
 
     @property
     def filepath(self) -> Path:
@@ -274,18 +297,18 @@ class VideoFileStream:
     def avgframerate(self):
         """Average frame rate of video stream, as reported in the metadata
         of the video file."""
-        ar = self._streammetadata['avg_frame_rate']
-        return np.divide(*map(int, ar.split('/')))
+        ar = self._streammetadata["avg_frame_rate"]
+        return np.divide(*map(int, ar.split("/")))
 
     @property
     def codec(self):
-        return self._streammetadata['codec_name']
+        return self._streammetadata["codec_name"]
 
     @property
     def duration(self):
         """Duration of video stream in seconds, as reported in the metadata
         of the video file."""
-        return float(self._streammetadata['duration'])
+        return float(self._streammetadata["duration"])
 
     @property
     def streammetadata(self):
@@ -295,12 +318,12 @@ class VideoFileStream:
     @property
     def framewidth(self):
         """Width in pixels of frames in video stream."""
-        return self._streammetadata['width']
+        return self._streammetadata["width"]
 
     @property
     def frameheight(self):
         """height in pixels of frames in video stream."""
-        return self._streammetadata['height']
+        return self._streammetadata["height"]
 
     @property
     def framesize(self):
@@ -313,7 +336,7 @@ class VideoFileStream:
         of the video file. Note that this may not be accurate. Use
         `count_frames` to measure the actual number (may take a lot of
         time). This info may also not be available, in which case None is returned."""
-        nframes = self._streammetadata.get('nb_frames', None)
+        nframes = self._streammetadata.get("nb_frames", None)
         if nframes is not None:
             nframes = int(nframes)
         return nframes
@@ -323,8 +346,9 @@ class VideoFileStream:
         return self._videofile
 
     def __repr__(self):
-        return (f"{self.__class__.__name__}('{self.filepath}', stream"
-                f"={self._streamnumber})")
+        return (
+            f"{self.__class__.__name__}('{self.filepath}', stream={self._streamnumber})"
+        )
 
     def __str__(self):
         s = self.__repr__()
@@ -335,7 +359,7 @@ class VideoFileStream:
         s += f"\n    framesize: {self.framesize}"
         return s
 
-    def count_frames(self, threads=8, ffprobepath='ffprobe'):
+    def count_frames(self, threads=8, ffprobepath="ffprobe"):
         """Count the number of frames in video file stream.
 
         This can be necessary as the number of frames reported in the
@@ -356,14 +380,25 @@ class VideoFileStream:
             The number of frames in video file.
 
         """
-        return count_frames(self.filepath, streamnumber=self._streamnumber,
-                            threads=threads, ffprobepath=ffprobepath, )
+        return count_frames(
+            self.filepath,
+            streamnumber=self._streamnumber,
+            threads=threads,
+            ffprobepath=ffprobepath,
+        )
 
     @frameiterator
-    def iter_frames(self, startat: str | None = None, startframe: int | None = None,
-                    nframes: int | None = None, stepsize: int | None = None,
-                    color: bool = True, ffmpegpath: str | Path = 'ffmpeg',
-                    reportprogress: bool = False, loglevel: str = 'quiet'):
+    def iter_frames(
+        self,
+        startat: str | None = None,
+        startframe: int | None = None,
+        nframes: int | None = None,
+        stepsize: int | None = None,
+        color: bool = True,
+        ffmpegpath: str | Path = "ffmpeg",
+        reportprogress: bool = False,
+        loglevel: str = "quiet",
+    ):
         """Iterate over frames in video.
 
         Parameters
@@ -397,20 +432,24 @@ class VideoFileStream:
             channel).
 
         """
-        for i,frame in enumerate(iterread_videofile(self.filepath,
-                                                    startat=startat,
-                                                    startframe=startframe,
-                                                    nframes=nframes,
-                                                    color=color,
-                                                    streamnumber=self._streamnumber,
-                                                    ffmpegpath=ffmpegpath,
-                                                    loglevel=loglevel)):
+        for i, frame in enumerate(
+            iterread_videofile(
+                self.filepath,
+                startat=startat,
+                startframe=startframe,
+                nframes=nframes,
+                color=color,
+                streamnumber=self._streamnumber,
+                ffmpegpath=ffmpegpath,
+                loglevel=loglevel,
+            )
+        ):
             if reportprogress:
                 progress(i, self.nframes)
             if not stepsize or (i % stepsize) == 0:
                 yield frame
 
-    def get_frame(self, framenumber, color=True, ffmpegpath='ffmpeg'):
+    def get_frame(self, framenumber, color=True, ffmpegpath="ffmpeg"):
         """Get frame specified by frame sequence number.
 
         Note that this can take a lot of processing because the video
@@ -440,10 +479,11 @@ class VideoFileStream:
         >>> frame = vfs.get_frame(500)
 
         """
-        return get_frame(self.filepath, framenumber=framenumber,
-                         color=color, ffmpegpath=ffmpegpath)
+        return get_frame(
+            self.filepath, framenumber=framenumber, color=color, ffmpegpath=ffmpegpath
+        )
 
-    def get_frameat(self, time, color=True, ffmpegpath='ffmpeg'):
+    def get_frameat(self, time, color=True, ffmpegpath="ffmpeg"):
         """Get frame at specified time.
 
         Parameters
@@ -472,9 +512,13 @@ class VideoFileStream:
         >>> frame = vfs.get_frameat('00:00:05.05') # same thing
 
         """
-        return get_frameat(self.filepath, time=time, color=color,
-                           streamnumber=self._streamnumber,
-                           ffmpegpath=ffmpegpath)
+        return get_frameat(
+            self.filepath,
+            time=time,
+            color=color,
+            streamnumber=self._streamnumber,
+            ffmpegpath=ffmpegpath,
+        )
 
     def show(self, startat=None, nframes=None, framerate=None):
         """Shows frames in a video window.
@@ -510,12 +554,12 @@ def testvideostreamsmall():
         An instance of Birdwatcher's VideoFileSteam class.
 
     """
-    file = 'zf20s_low.mp4'
-    path = Path(__file__).parent / 'testvideos' / file
+    file = "zf20s_low.mp4"
+    path = Path(__file__).parent / "testvideos" / file
     return VideoFileStream(path)
 
 
-def walk_videofiles(dirpath, extension='.avi'):
+def walk_videofiles(dirpath, extension=".avi"):
     """Walks recursively over contents of `dirpath` and yield pathlib Path
     objects of videofiles, as defined by their `extension`.
 
@@ -529,16 +573,15 @@ def walk_videofiles(dirpath, extension='.avi'):
     """
 
     dirpath = Path(dirpath)
-    if extension.startswith('.'):
+    if extension.startswith("."):
         extension = extension[1:]
-    for file in dirpath.rglob(f'*.{extension}'):
+    for file in dirpath.rglob(f"*.{extension}"):
         yield file
 
 
 ## FIXME collect much more info
-def videofilesduration(dirpath, extension='avi'):
-    files = sorted(
-        [f for f in walk_videofiles(dirpath=dirpath, extension=extension)])
+def videofilesduration(dirpath, extension="avi"):
+    files = sorted([f for f in walk_videofiles(dirpath=dirpath, extension=extension)])
     s = 0
     for i, f in enumerate(files):
         s += VideoFileStream(f).duration
