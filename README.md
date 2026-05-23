@@ -93,11 +93,6 @@ Python 3 versions may also work.
     ```
     pip install git+https://github.com/gbeckers/birdwatcher@master
     ```
-    For the development version use:
-    
-    ```
-    pip install git+https://github.com/gbeckers/birdwatcher@develop
-    ```
 
 ## Run notebooks tutorial
 
