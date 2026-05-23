@@ -4,16 +4,15 @@ import src.birdwatcher.ffmpeg
 
 
 class TestVideoFile(unittest.TestCase):
-
     class TestExtractAudio(unittest.TestCase):
-
         def test_extract_audio_noaudio(self):
             vf = bw.testvideostreamsmall().videofile
-            self.assertRaises(src.birdwatcher.ffmpeg.NoAudioStreamError,
-                              vf.extract_audio)
+            self.assertRaises(
+                src.birdwatcher.ffmpeg.NoAudioStreamError, vf.extract_audio
+            )
+
 
 class TestVideoStream(unittest.TestCase):
-
     def test_size(self):
         vf = bw.testvideostreamsmall()
         self.assertEqual(vf.framewidth, 1280)
@@ -35,16 +34,9 @@ class TestVideoStream(unittest.TestCase):
     def test_getframe(self):
         vf = bw.testvideostreamsmall()
         frame = vf.get_frame(100)
-        self.assertSequenceEqual(frame.shape, (720,1280,3))
-    
+        self.assertSequenceEqual(frame.shape, (720, 1280, 3))
+
     def test_getframeat(self):
         vf = bw.testvideostreamsmall()
-        frame = vf.get_frameat('00:10.')
-        self.assertSequenceEqual(frame.shape, (720,1280,3))
-
-
-
-
-
-
-
+        frame = vf.get_frameat("00:10.")
+        self.assertSequenceEqual(frame.shape, (720, 1280, 3))

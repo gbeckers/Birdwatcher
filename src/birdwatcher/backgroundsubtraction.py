@@ -17,14 +17,16 @@ import cv2 as cv
 import numpy as np
 
 
-__all__ = ['BackgroundSubtractorMOG2', 'BackgroundSubtractorKNN',
-           'BackgroundSubtractorLSBP']
+__all__ = [
+    "BackgroundSubtractorMOG2",
+    "BackgroundSubtractorKNN",
+    "BackgroundSubtractorLSBP",
+]
 
 
 class BaseBackgroundSubtractor:
-
-    _initparams = {}                # to be implemented by subclass
-    _setparams = {}                 # to be implemented by subclass
+    _initparams = {}  # to be implemented by subclass
+    _setparams = {}  # to be implemented by subclass
     _bgsubtractorcreatefunc = None  # to be implemented by subclass
 
     def __init__(self, **kwargs):
@@ -49,7 +51,7 @@ class BaseBackgroundSubtractor:
 
     def _set_params(self, **kwargs):
         for key, val in kwargs.items():
-            methodname = f'set{key}'
+            methodname = f"set{key}"
             self._bgs.__getattribute__(methodname)(val)
 
     def get_params(self):
@@ -87,8 +89,7 @@ class BaseBackgroundSubtractor:
 
         """
 
-        return self._bgs.apply(image=frame, fgmask=fgmask,
-                               learningRate=learningRate)
+        return self._bgs.apply(image=frame, fgmask=fgmask, learningRate=learningRate)
 
 
 class BackgroundSubtractorKNN(BaseBackgroundSubtractor):
@@ -121,14 +122,16 @@ class BackgroundSubtractorKNN(BaseBackgroundSubtractor):
         Value 0 in the mask always means background, 255 means foreground.
 
     """
-    
-    _setparams = {'History': 5,
-                  'kNNSamples': 10,
-                  'NSamples': 6,
-                  'Dist2Threshold': 500,
-                  'DetectShadows': False,
-                  'ShadowThreshold': 0.5,
-                  'ShadowValue': 127}
+
+    _setparams = {
+        "History": 5,
+        "kNNSamples": 10,
+        "NSamples": 6,
+        "Dist2Threshold": 500,
+        "DetectShadows": False,
+        "ShadowThreshold": 0.5,
+        "ShadowValue": 127,
+    }
 
     _bgsubtractorcreatefunc = cv.createBackgroundSubtractorKNN
 
@@ -185,23 +188,26 @@ class BackgroundSubtractorMOG2(BaseBackgroundSubtractor):
         Value 0 in the mask always means background, 255 means foreground.
 
     """
-    
-    _setparams = {'History': 3,
-                  'ComplexityReductionThreshold': 0.05,
-                  'BackgroundRatio': 0.1,
-                  'NMixtures': 7,
-                  'VarInit': 15,
-                  'VarMin': 10,
-                  'VarMax': 75,
-                  'VarThreshold': 70,
-                  'VarThresholdGen': 9,
-                  'DetectShadows': False,
-                  'ShadowThreshold': 0.5,
-                  'ShadowValue': 0}
+
+    _setparams = {
+        "History": 3,
+        "ComplexityReductionThreshold": 0.05,
+        "BackgroundRatio": 0.1,
+        "NMixtures": 7,
+        "VarInit": 15,
+        "VarMin": 10,
+        "VarMax": 75,
+        "VarThreshold": 70,
+        "VarThresholdGen": 9,
+        "DetectShadows": False,
+        "ShadowThreshold": 0.5,
+        "ShadowValue": 0,
+    }
 
     _bgsubtractorcreatefunc = cv.createBackgroundSubtractorMOG2
 
-#TODO this bgs does nor work with roi or nroi
+
+# TODO this bgs does nor work with roi or nroi
 class BackgroundSubtractorLSBP(BaseBackgroundSubtractor):
     """Wraps OpenCV's `BackgroundSubtractorLSBP` class. Parameter names follow
     those in OpenCV.
@@ -237,18 +243,20 @@ class BackgroundSubtractorLSBP(BaseBackgroundSubtractor):
 
     """
 
-    _initparams = {'mc': 0,
-                   'nSamples': 20,
-                   'LSBPRadius': 16,
-                   'Tlower': 2.0,
-                   'Tupper': 32.0,
-                   'Tinc': 1.0,
-                   'Tdec': 0.05,
-                   'Rscale': 10.0,
-                   'Rincdec': 0.005,
-                   'noiseRemovalThresholdFacBG': 0.0004,
-                   'noiseRemovalThresholdFacFG': 0.0008,
-                   'LSBPthreshold': 8,
-                   'minCount': 2}
+    _initparams = {
+        "mc": 0,
+        "nSamples": 20,
+        "LSBPRadius": 16,
+        "Tlower": 2.0,
+        "Tupper": 32.0,
+        "Tinc": 1.0,
+        "Tdec": 0.05,
+        "Rscale": 10.0,
+        "Rincdec": 0.005,
+        "noiseRemovalThresholdFacBG": 0.0004,
+        "noiseRemovalThresholdFacFG": 0.0008,
+        "LSBPthreshold": 8,
+        "minCount": 2,
+    }
 
     _bgsubtractorcreatefunc = cv.bgsegm.createBackgroundSubtractorLSBP

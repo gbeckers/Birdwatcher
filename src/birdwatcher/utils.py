@@ -8,19 +8,19 @@ from contextlib import contextmanager
 from typing import Tuple, List, Union
 
 
-def roi_to_npindex(roi: Tuple[Union[int,int,int,int]]
-                        | List[Union[int,int,int, int]]) -> Tuple[Union[slice, slice]]:
+def roi_to_npindex(
+    roi: Tuple[Union[int, int, int, int]] | List[Union[int, int, int, int]],
+) -> Tuple[Union[slice, slice]]:
     """Convert a region of interest (roi) to a numpy index tuple."""
     return (slice(roi[0], roi[1]), slice(roi[2], roi[3]))
 
+
 def datetimestring():
-    return time.strftime('%Y%m%d%H%M%S')
+    return time.strftime("%Y%m%d%H%M%S")
 
 
 def product_dict(**kwargs):
-    """Generates a Cartesian product of dictionary values.
-    
-    """
+    """Generates a Cartesian product of dictionary values."""
     keys = kwargs.keys()
     vals = kwargs.values()
     for instance in itertools.product(*vals):
@@ -28,13 +28,13 @@ def product_dict(**kwargs):
 
 
 @contextmanager
-def tempdir(dirname='.', keep=False, report=False):
+def tempdir(dirname=".", keep=False, report=False):
     """Yields a temporary directory which is removed when context is
     closed."""
     try:
         tempdirname = tempfile.mkdtemp(dir=dirname)
         if report:
-            print('created tempdir {}'.format(tempdirname))
+            print("created tempdir {}".format(tempdirname))
         yield pathlib.Path(tempdirname)
     except:
         raise
@@ -42,7 +42,7 @@ def tempdir(dirname='.', keep=False, report=False):
         if not keep:
             shutil.rmtree(tempdirname)
             if report:
-                print('removed temp dir {}'.format(tempdirname))
+                print("removed temp dir {}".format(tempdirname))
 
 
 def peek_iterable(iterable):
@@ -51,7 +51,7 @@ def peek_iterable(iterable):
     return first, itertools.chain([first], gen)
 
 
-def derive_filepath(filepath, append_string='', suffix=None, path=None):
+def derive_filepath(filepath, append_string="", suffix=None, path=None):
     """Generate a file path based on the name and potentially path of the
     input file path.
 
@@ -75,7 +75,7 @@ def derive_filepath(filepath, append_string='', suffix=None, path=None):
     stem = filepath.stem
     if suffix is None:
         suffix = filepath.suffix
-    filename = f'{stem}_{append_string}{suffix}'
+    filename = f"{stem}_{append_string}{suffix}"
     if path is None:
         dpath = filepath.parent / filename
     else:
@@ -83,7 +83,7 @@ def derive_filepath(filepath, append_string='', suffix=None, path=None):
     return dpath
 
 
-def progress(count, total, status=''):
+def progress(count, total, status=""):
 
     # The MIT License (MIT)
     # Copyright (c) 2016 Vladimir Ignatev
@@ -109,10 +109,10 @@ def progress(count, total, status=''):
     filled_len = int(round(bar_len * count / float(total)))
 
     percents = round(100.0 * count / float(total), 1)
-    bar = '=' * filled_len + '-' * (bar_len - filled_len)
+    bar = "=" * filled_len + "-" * (bar_len - filled_len)
 
-    sys.stdout.write('[%s] %s%s ...%s\r' % (bar, percents, '%', status))
-    sys.stdout.flush() # As suggested by Rom Ruben (see: http://stackoverflow.com/questions/3173320/text-progress-bar-in-the-console/27871113#comment50529068_27871113)
+    sys.stdout.write("[%s] %s%s ...%s\r" % (bar, percents, "%", status))
+    sys.stdout.flush()  # As suggested by Rom Ruben (see: http://stackoverflow.com/questions/3173320/text-progress-bar-in-the-console/27871113#comment50529068_27871113)
 
 
 def print_dirstructure(dirpath):
@@ -125,16 +125,16 @@ def print_dirstructure(dirpath):
 
     """
     for root, dirs, files in os.walk(dirpath):
-        level = root.replace(dirpath, '').count(os.sep)
-        indent = ' ' * 4 * (level)
-        print(f'{indent}{os.path.basename(root)}/')
-        subindent = ' ' * 4 * (level + 1)
+        level = root.replace(dirpath, "").count(os.sep)
+        indent = " " * 4 * (level)
+        print(f"{indent}{os.path.basename(root)}/")
+        subindent = " " * 4 * (level + 1)
         for f in files:
             if pathlib.Path(f).is_dir():
-                print(f'{subindent}{f}')
+                print(f"{subindent}{f}")
 
 
-def walk_paths(dirpath, extension='.*'):
+def walk_paths(dirpath, extension=".*"):
     """Walks recursively over contents of `dirpath` and yield contents as
     pathlib Path objects, potentially based on their `extension`.
 
@@ -147,7 +147,7 @@ def walk_paths(dirpath, extension='.*'):
 
     """
     dirpath = pathlib.Path(dirpath)
-    if extension.startswith('.'):
+    if extension.startswith("."):
         extension = extension[1:]
-    for file in dirpath.rglob(f'*.{extension}'):
+    for file in dirpath.rglob(f"*.{extension}"):
         yield file
