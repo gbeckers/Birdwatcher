@@ -1,14 +1,20 @@
-"""This module provides background subtractors. Background subtraction is a
-major preprocessing step in many computer vision applications. It extracts the
-moving foreground from static background.
+"""This module provides adaptive background subtractors.
 
-All classes are based on OpenCV's background subtraction algorithms. They
-can be used for example in movement detection. Note that OpenCV's API to
-parameters of these algorithms is inconsistent. Sometimes parameters can be
-provided at instantiation, sometimes you can change them with a method. In
-Birdwatcher you can only provide parameters to background subtractor objects
-at instantiation. The parameter names follow those of OpenCV to avoid
-confusion.
+Background subtraction is a major preprocessing step in many computer vision
+applications. It extracts the moving foreground from static background. In
+the case of *adaptive* background subtraction, the background is updated
+continuously based on recent frames to prevent false detections by,
+e.g., changes in lighting conditions or animals moving objects in their cage.
+
+All classes are based on OpenCV's background subtraction algorithms. Note that
+OpenCV's API to parameters of these algorithms is inconsistent. Sometimes
+parameters can be provided at object instantiation, sometimes they can be set
+them with a method. To be consistent, in Birdwatcher, parameters of background
+subtractor objects at set at instantiation. The parameter names follow
+those of OpenCV to avoid confusion.
+
+See the tutorial jupyter notebook for examples on how to use this functionality:
+https://github.com/gbeckers/Birdwatcher/blob/main/notebooks/2_backgroundsubtraction.ipynb
 
 """
 # TODO: incorporate the use of https://github.com/andrewssobral/bgslibrary

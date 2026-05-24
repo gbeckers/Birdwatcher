@@ -1,4 +1,10 @@
-"""This module contains objects and functions helpfull for determining which settings result in optimal movement detection."""
+"""This module provides objects and functions that help determine appropriate
+settings for movement or location detection.
+
+See the tutorial jupyter notebook for examples on how to use this functionality:
+https://github.com/gbeckers/Birdwatcher/blob/main/notebooks/4_parameterselection.ipynb
+
+"""
 
 import json
 from pathlib import Path

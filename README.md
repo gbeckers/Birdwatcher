@@ -7,7 +7,7 @@
 [![Codecov status](https://codecov.io/gh/gbeckers/Birdwatcher/branch/master/graph/badge.svg?token=829BH0NSVM)](https://codecov.io/gh/gbeckers/Birdwatcher)
 
 <p align="left">
-  <img src="https://github.com/gbeckers/Birdwatcher/blob/develop/videos/banner.gif">
+  <img src="https://github.com/gbeckers/Birdwatcher/blob/main/videos/banner.gif">
 </p>
 
 **Birdwatcher** is a Python computer vision library for analyzing animal

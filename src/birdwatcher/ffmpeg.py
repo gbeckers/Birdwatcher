@@ -1,12 +1,12 @@
-"""This module provides an interface for video file input and output using
-FFmpeg. Most users will not use functions and classes from this module
-directly, but rather through methods and functions in other modules. We use
-FFmpeg instead of video IO in OpenCV because we want to be more flexible so
-that the user can decide for a (potentially self-compiled) version of FFmpeg
-that supports functionality not present in OpenCV. E.g., specific codecs,
-CUDA support. It is easier to compile or find specific versions of FFmpeg
-than of OpenCV. Keeping all video IO in this module, allows for the easy
-addition of other ways of video IO in Birdwatcher in the future.
+"""This is a helper module, providing an interface for video file input and
+output using FFmpeg.
+
+Most users will not use functions and classes from this module directly, but
+rather through methods and functions in `video`, `frames` and `coordinatearrays`
+modules. Birdwatcher uses FFmpeg for video and audio IO instead of OpenCV to
+increase flexibility. This way, users can use a version of FFmpeg that supports
+functionality not present in OpenCV. E.g., specific codecs, or CUDA support.
+It is easier to compile or find specific versions of FFmpeg than of OpenCV.
 
 """
 
@@ -53,8 +53,9 @@ AUDIOCODEC_TO_EXTENSION = {
 
 
 class FFmpegError(RuntimeError):
-    def __init__(self, cmd: list[str], returncode: int, stdout: str = "",
-                 stderr: str = "") -> None:
+    def __init__(
+        self, cmd: list[str], returncode: int, stdout: str = "", stderr: str = ""
+    ) -> None:
         self.cmd = cmd
         self.returncode = returncode
         self.stdout = stdout
@@ -241,8 +242,9 @@ def arraytovideo(
     return Path(filepath)
 
 
-def videofileinfo(filepath: str | Path, ffprobepath: str | Path = "ffprobe") -> \
-dict[str, Any]:
+def videofileinfo(
+    filepath: str | Path, ffprobepath: str | Path = "ffprobe"
+) -> dict[str, Any]:
     args = [
         str(ffprobepath),
         "-print_format",
@@ -629,7 +631,7 @@ def extract_audio(
     if not codec in supported_audio_codecs(ffmpegpath=ffmpegpath):
         raise ValueError(f'ffmpeg does not support codec "{codec}"')
     if outputpath is None:
-        outputpath = Path(filepath).with_suffix('')
+        outputpath = Path(filepath).with_suffix("")
     ext = AUDIOCODEC_TO_EXTENSION.get(codec)
     outputpath = Path(outputpath)
     if outputpath.suffix:
@@ -642,7 +644,7 @@ def extract_audio(
     elif ext is not None:
         outputpath = outputpath.with_suffix(ext)
     else:
-        outputpath = outputpath.with_suffix('.mkv') # fallback Matroska
+        outputpath = outputpath.with_suffix(".mkv")  # fallback Matroska
     if outputpath.exists() and not overwrite:
         raise FileExistsError(
             f'"{outputpath}" already exists, use `overwrite` parameter'

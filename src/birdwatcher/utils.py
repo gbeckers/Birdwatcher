@@ -16,6 +16,7 @@ def roi_to_npindex(
 
 
 def datetimestring():
+    """Returns a string of the current date and time."""
     return time.strftime("%Y%m%d%H%M%S")
 
 

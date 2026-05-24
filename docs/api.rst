@@ -25,11 +25,6 @@ Frame processing
 
 .. currentmodule:: birdwatcher
 
-:class:`Frames` is a central class in Birdwatcher. It is an iterable that
-yields frames and many of its methods return another Frames object. Since
-there are quite a few methods, we'll list property and method names first,
-and then provide detailed info below that.
-
 .. automodule:: birdwatcher.frames
 
 .. autoclass:: birdwatcher.Frames
@@ -44,8 +39,6 @@ and then provide detailed info below that.
 
 Movement detection
 ==================
-
-Movement detection contains top-level functionality. The classes, methods and functions provided in these submodules, are written to help the user get the most out of Birdwatcher. Also see the notebooks for examples how to use it and  how to find the optimal parameter settings for movement detection.
 
 .. automodule:: birdwatcher.movementdetection.movementdetection
 

@@ -1,10 +1,15 @@
-"""This module contains classes for generating image frames and general
-processing functionality such as measurement, drawing of labels/text and
+"""The `frames` module contains classes for generating image frames and
+general processing functionality such as measurement, drawing of labels/text and
 saving as video files.
 
-Many methods mirror functions from OpenCV. Docstrings are provided but
-it is a good idea to look at OpenCV's documentation and examples if you want
-to understand the parameters in more depth.
+The main class is `Frames`, which has a central role in Birdwatcher. It yields
+video frames as numpy arrays when iterated over, but it also has many methods
+that implement transforms and that return another Frames object. This way,
+multiple methods can be concatenated.
+
+Many methods mirror functions from OpenCV. All methods have doc strings,
+but it is a good idea to consult OpenCV's documentation and examples to obtain a
+deeper understanding of what exactly they do and how to use their parameters.
 
 """
 
@@ -44,8 +49,7 @@ def _check_writable(frame: npt.NDArray):
         return frame
 
 
-def frameiterator(func: Callable[..., Iterator[npt.NDArray]]) -> Callable[
-    ..., Frames]:
+def frameiterator(func: Callable[..., Iterator[npt.NDArray]]) -> Callable[..., Frames]:
     @wraps(func)
     def wrapper(*args: Any, **kwargs: Any) -> Frames:
         processingdata = []
@@ -69,10 +73,12 @@ def frameiterator(func: Callable[..., Iterator[npt.NDArray]]) -> Callable[
 class Frames:
     """An iterator of video frames with useful methods.
 
-    This is a main base class in Birdwatcher, as many functions and
-    methods return this type and take it as input. Many methods of `Frames`
-    objects return new `Frames` objects, but some of them generate final
-    output, such as a video file or a measurement.
+    This is a main base class in Birdwatcher that is normally not instantiated
+    by users, but is returned by Birdwatcher functions and methods that generate
+    frames. Many functions and methods in Birdwatcher return this type
+    and take it as input.  Most methods of `Frames` objects return new `Frames`
+    objects, but some of them generate final output, such as a video file or a
+    measurement.
 
     Parameters
     ----------
@@ -95,9 +101,9 @@ class Frames:
     """
 
     def __init__(
-            self,
-            frames: Iterator[npt.NDArray[Any]],
-            processingdata: list[dict[str, Any]] | None = None,
+        self,
+        frames: Iterator[npt.NDArray[Any]],
+        processingdata: list[dict[str, Any]] | None = None,
     ) -> None:
 
         first, frames = peek_iterable(frames)
@@ -157,15 +163,15 @@ class Frames:
 
     def tovideo(
         self,
-            filepath: str | Path,
-            framerate: int,
-            crf: int = 23,
-            scale: tuple[int, int] | None = None,
-            vformat: str = "mp4",
-            codec: str = "libopenh264",
-            pixfmt: str = "yuv420p",
-            ffmpegpath: str | Path = "ffmpeg",
-            overwrite: bool = False,
+        filepath: str | Path,
+        framerate: int,
+        crf: int = 23,
+        scale: tuple[int, int] | None = None,
+        vformat: str = "mp4",
+        codec: str = "libopenh264",
+        pixfmt: str = "yuv420p",
+        ffmpegpath: str | Path = "ffmpeg",
+        overwrite: bool = False,
     ) -> VideoFileStream:
         """Writes frames to video file.
 
@@ -215,10 +221,10 @@ class Frames:
 
     @frameiterator
     def blur(
-            self,
-            ksize: tuple[int, int],
-            anchor: tuple[int, int] = (-1, -1),
-            borderType: int = cv.BORDER_DEFAULT,
+        self,
+        ksize: tuple[int, int],
+        anchor: tuple[int, int] = (-1, -1),
+        borderType: int = cv.BORDER_DEFAULT,
     ) -> Frames:
         """Blurs frames using the normalized box filter.
 
@@ -276,12 +282,12 @@ class Frames:
     @frameiterator
     def draw_circles(
         self,
-            centers: Iterable[tuple[int, int]],
-            radius: int = 6,
-            color: tuple[int, int, int] = (255, 100, 0),
-            thickness: int = 2,
-            linetype: int = cv.LINE_AA,
-            shift: int = 0,
+        centers: Iterable[tuple[int, int]],
+        radius: int = 6,
+        color: tuple[int, int, int] = (255, 100, 0),
+        thickness: int = 2,
+        linetype: int = cv.LINE_AA,
+        shift: int = 0,
     ) -> Frames:
         """Draws circles on frames.
 
@@ -329,10 +335,10 @@ class Frames:
 
     @frameiterator
     def draw_rectangles(
-            self,
-            points: Iterable[tuple[int, int, int, int]],
-            color: tuple[int, int, int] = (255, 100, 0),
-            thickness: int = 2,
+        self,
+        points: Iterable[tuple[int, int, int, int]],
+        color: tuple[int, int, int] = (255, 100, 0),
+        thickness: int = 2,
     ) -> Frames:
         """Draws rectangles on frames.
 
@@ -402,13 +408,13 @@ class Frames:
     @frameiterator
     def draw_framenumbers(
         self,
-            startat: int = 0,
-            org: tuple[int, int] = (2, 25),
-            fontface: int = cv.FONT_HERSHEY_SIMPLEX,
-            fontscale: float = 1,
-            color: tuple[int, int, int] = (200, 200, 200),
-            thickness: int = 2,
-            linetype: int = cv.LINE_AA,
+        startat: int = 0,
+        org: tuple[int, int] = (2, 25),
+        fontface: int = cv.FONT_HERSHEY_SIMPLEX,
+        fontscale: float = 1,
+        color: tuple[int, int, int] = (200, 200, 200),
+        thickness: int = 2,
+        linetype: int = cv.LINE_AA,
     ) -> Frames:
         """Draws the frame number on frames.
 
@@ -453,13 +459,13 @@ class Frames:
     @frameiterator
     def draw_text(
         self,
-            textiterator: Iterable[str],
-            org: tuple[int, int] = (2, 25),
-            fontface: int = cv.FONT_HERSHEY_SIMPLEX,
-            fontscale: float = 1,
-            color: tuple[int, int, int] = (200, 200, 200),
-            thickness: int = 2,
-            linetype: int = cv.LINE_AA,
+        textiterator: Iterable[str],
+        org: tuple[int, int] = (2, 25),
+        fontface: int = cv.FONT_HERSHEY_SIMPLEX,
+        fontscale: float = 1,
+        color: tuple[int, int, int] = (200, 200, 200),
+        thickness: int = 2,
+        linetype: int = cv.LINE_AA,
     ) -> Frames:
         """Draws text on frames.
 
@@ -575,8 +581,9 @@ class Frames:
             yield idx
 
     @frameiterator
-    def morphologyex(self, morphtype: str = "open", kernelsize: int = 2,
-                     iterations: int = 1) -> Frames:
+    def morphologyex(
+        self, morphtype: str = "open", kernelsize: int = 2, iterations: int = 1
+    ) -> Frames:
         """Performs advanced morphological transformations on frames.
 
         Can perform advanced morphological transformations using an erosion
@@ -618,9 +625,13 @@ class Frames:
             yield cv.morphologyEx(frame, morphnum, kernel, iterations=iterations)
 
     @frameiterator
-    def add_weighted(self, alpha: float,
-                     frames: Union[Iterator[npt.NDArray[Any]], "Frames"],
-                     beta: float, gamma: float = 0) -> Frames:
+    def add_weighted(
+        self,
+        alpha: float,
+        frames: Union[Iterator[npt.NDArray[Any]], "Frames"],
+        beta: float,
+        gamma: float = 0,
+    ) -> Frames:
         """Calculates the weighted sum of frames from self and the frames
         of the object specified by the `frames` parameter.
 
@@ -649,10 +660,12 @@ class Frames:
 
     @frameiterator
     def apply_backgroundsegmenter(
-            self, bgs: Any, fgmask: npt.NDArray[Any] | None = None,
-            learningRate: float = -1.0,
-            roi: tuple[int, int, int, int] | None = None,
-            nroi: tuple[int, int, int, int] | None = None
+        self,
+        bgs: Any,
+        fgmask: npt.NDArray[Any] | None = None,
+        learningRate: float = -1.0,
+        roi: tuple[int, int, int, int] | None = None,
+        nroi: tuple[int, int, int, int] | None = None,
     ) -> Frames:
         """Compute foreground masks based on input sequence of frames.
 
@@ -745,8 +758,9 @@ class Frames:
             yield cv.absdiff(frame_self, frame)
 
     @frameiterator
-    def threshold(self, thresh: int, maxval: int = 255,
-                  threshtype: str = "tozero") -> Frames:
+    def threshold(
+        self, thresh: int, maxval: int = 255, threshtype: str = "tozero"
+    ) -> Frames:
         """Thresholds frames at value `thresh`.
 
         Parameters
@@ -784,8 +798,7 @@ class Frames:
             )[1]
 
     @frameiterator
-    def resize(self, dsize: tuple[int, int],
-               interpolation: str = "linear") -> Frames:
+    def resize(self, dsize: tuple[int, int], interpolation: str = "linear") -> Frames:
         """Resizes frames.
 
         Parameters
@@ -824,8 +837,9 @@ class Frames:
             )
 
     @frameiterator
-    def resizebyfactor(self, fx: float, fy: float,
-                       interpolation: str = "linear") -> Frames:
+    def resizebyfactor(
+        self, fx: float, fy: float, interpolation: str = "linear"
+    ) -> Frames:
         """Resizes frames by a specified factor.
 
         Parameters
@@ -865,9 +879,12 @@ class Frames:
                 src=frame, dsize=(0, 0), fx=fx, fy=fy, interpolation=interpolation
             )
 
-    def find_contours(self, retrmode: str = "tree", apprmethod: str = "simple",
-                      offset: tuple[int, int] = (0, 0)) -> Iterator[
-        tuple[tuple[npt.NDArray[Any], ...], npt.NDArray[Any]]]:
+    def find_contours(
+        self,
+        retrmode: str = "tree",
+        apprmethod: str = "simple",
+        offset: tuple[int, int] = (0, 0),
+    ) -> Iterator[tuple[tuple[npt.NDArray[Any], ...], npt.NDArray[Any]]]:
         """Finds contours in frames.
 
         Contours can only be performed on gray frames. Use threshold or edge
@@ -960,9 +977,14 @@ class FramesColor(Frames):
 
     """
 
-    def __init__(self, nframes: int, height: int, width: int,
-                 color: tuple[int, int, int] = (0, 0, 0),
-                 dtype: str = "uint8") -> None:
+    def __init__(
+        self,
+        nframes: int,
+        height: int,
+        width: int,
+        color: tuple[int, int, int] = (0, 0, 0),
+        dtype: str = "uint8",
+    ) -> None:
         """Creates an iterator that yields color frames.
 
         Parameters
@@ -996,8 +1018,14 @@ class FramesGray(Frames):
 
     """
 
-    def __init__(self, nframes: int, height: int, width: int, value: int = 0,
-                 dtype: str = "uint8") -> None:
+    def __init__(
+        self,
+        nframes: int,
+        height: int,
+        width: int,
+        value: int = 0,
+        dtype: str = "uint8",
+    ) -> None:
         """Creates an iterator that yields gray frames.
 
         Parameters
@@ -1031,8 +1059,9 @@ class FramesNoise(Frames):
 
     """
 
-    def __init__(self, nframes: int, height: int, width: int,
-                 dtype: str = "uint8") -> None:
+    def __init__(
+        self, nframes: int, height: int, width: int, dtype: str = "uint8"
+    ) -> None:
         """Creates an iterator that yields gray frames.
 
         Parameters
@@ -1058,8 +1087,9 @@ class FramesNoise(Frames):
         super().__init__(frames=frames)
 
 
-def framegray(height: int, width: int, value: int = 0, dtype: str = "uint8") -> \
-npt.NDArray[Any]:
+def framegray(
+    height: int, width: int, value: int = 0, dtype: str = "uint8"
+) -> npt.NDArray[Any]:
     """Creates a gray frame.
 
     Parameters
@@ -1081,8 +1111,12 @@ npt.NDArray[Any]:
     return np.ones((height, width), dtype=dtype) * value
 
 
-def framecolor(height: int, width: int, color: tuple[int, int, int] = (0, 0, 0),
-               dtype: str = "uint8") -> npt.NDArray[Any]:
+def framecolor(
+    height: int,
+    width: int,
+    color: tuple[int, int, int] = (0, 0, 0),
+    dtype: str = "uint8",
+) -> npt.NDArray[Any]:
     """Creates a color frame.
 
     Parameters
@@ -1104,8 +1138,7 @@ def framecolor(height: int, width: int, color: tuple[int, int, int] = (0, 0, 0),
     return np.ones((height, width, 3), dtype=dtype) * np.asanyarray(color, dtype=dtype)
 
 
-def framenoise(height: int, width: int, dtype: str = "uint8") -> npt.NDArray[
-    Any]:
+def framenoise(height: int, width: int, dtype: str = "uint8") -> npt.NDArray[Any]:
     """Creates a noise frame.
 
     Parameters
@@ -1126,15 +1159,15 @@ def framenoise(height: int, width: int, dtype: str = "uint8") -> npt.NDArray[
 
 
 def create_frameswithmovingcircle(
-        nframes: int,
-        width: int,
-        height: int,
-        framecolor: tuple[int, int, int] = (0, 0, 0),
-        circlecolor: tuple[int, int, int] = (255, 100, 0),
-        radius: int = 6,
-        thickness: int = 2,
-        linetype: int = 8,
-        dtype: str = "uint8",
+    nframes: int,
+    width: int,
+    height: int,
+    framecolor: tuple[int, int, int] = (0, 0, 0),
+    circlecolor: tuple[int, int, int] = (255, 100, 0),
+    radius: int = 6,
+    thickness: int = 2,
+    linetype: int = 8,
+    dtype: str = "uint8",
 ) -> Frames:
     frames = FramesColor(
         nframes=nframes, width=width, height=height, color=framecolor, dtype=dtype
