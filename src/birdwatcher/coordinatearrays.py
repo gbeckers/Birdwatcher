@@ -1,14 +1,24 @@
-"""This module provides objects and functions for coordinate data.
-Coordinates are pixel positions (x,y) in a Frame. Coordinate Arrays are a
-convenient way of storing output from image algorithms that determine if a
-pixel is categorized as something (e.g. crossing some threshold).
-Information is memory-mapped from disk, because data can easily become very
-large and will not fit in RAM memory. Since the number of pixels per frame may
-be variable, we use Ragged Arrays from the python library Darr to store them.
-This is not the most disk-space efficient way of doing this (no compression),
-but it is fast and the data can easily be read in any scientific computing
-environement (Python, Matlab, R, Mathematica, etc.) Coordinate files can be
-archived in compressed form (lzma) to save disk space.
+"""This module provides classes and functions for coordinate data.
+
+Coordinates are pixel positions (x,y) in a Frame, which is often the output of
+an image processing algorithm that returns the coordinates of detected objects
+in an image. Frame coordinates are stored in a 2D numpy array, where the first
+dimension is the frame number, and the second dimension is the coordinate
+(x,y) pair. The coordinates of multiple frames are stored in a ragged array,
+which means that the number of coordinates per frame is not fixed. This is
+useful for streaming video data, where the number of coordinates per frame is
+variable.
+
+Coordinate Arrays are a convenient way of storing coordinate data. Information
+is memory-mapped from disk, because data can easily become very large and
+will often not fit in RAM memory. We subclass `RaggedArray` from the python
+library Darr to store them. This is not the most disk-space efficient way of
+doing this (no compression), but it is fast and the data can easily be read in
+any scientific computing environment (Python, Matlab, R, Mathematica,
+etc.) Coordinate files can be archived in compressed form to save disk space.
+
+See the tutorial jupyter notebook for examples on how to use this functionality:
+https://github.com/gbeckers/Birdwatcher/blob/main/notebooks/3_coordinatearrays.ipynb
 
 """
 

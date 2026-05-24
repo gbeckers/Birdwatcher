@@ -1,7 +1,19 @@
-"""This module contains classes and functions to work with video files. It
-depends on FFmpeg.
+"""This module contains functionality to read video file information and video
+stream data.
+
+The `VideoFile` class is used to obtain information on video file properties,
+to extract audio, and get video streams as `VideoFileStream` objects.
+
+`VideoFileStream` objects are used to read video frames as numpy arrays. Key is
+the `iter_frames` method, which returns a `Frames` object, a central class in
+Birdwatcher that implements a diverse array of methods to transform or analyze
+video frames.
+
+See the tutorial jupyter notebook for examples on how to use this functionality:
+https://github.com/gbeckers/Birdwatcher/blob/main/notebooks/1_videoframes.ipynb
 
 """
+
 from __future__ import annotations
 
 from pathlib import Path
@@ -237,7 +249,7 @@ class VideoFileStream:
     ----------
     filepath : str or pathlib.Path
         Path to videofile.
-    streamnumber : int, deafult=0
+    streamnumber : int, default=0
         Video stream number to use as input. Often there is just
         one video stream present in a video file (default=0), but
         if there are more, use this parameter to specify
@@ -458,8 +470,9 @@ class VideoFileStream:
             if not stepsize or (i % stepsize) == 0:
                 yield frame
 
-    def get_frame(self, framenumber:int, color: bool = True,
-                  ffmpegpath: str | Path ="ffmpeg") -> npt.NDArray[np.uint8]:
+    def get_frame(
+        self, framenumber: int, color: bool = True, ffmpegpath: str | Path = "ffmpeg"
+    ) -> npt.NDArray[np.uint8]:
         """Get frame specified by frame sequence number.
 
         Note that this can take a lot of processing because the video
@@ -493,8 +506,9 @@ class VideoFileStream:
             self.filepath, framenumber=framenumber, color=color, ffmpegpath=ffmpegpath
         )
 
-    def get_frameat(self, time: str, color: bool = True,
-                    ffmpegpath: str | Path = "ffmpeg") -> npt.NDArray[np.uint8]:
+    def get_frameat(
+        self, time: str, color: bool = True, ffmpegpath: str | Path = "ffmpeg"
+    ) -> npt.NDArray[np.uint8]:
         """Get frame at specified time.
 
         Parameters
@@ -531,8 +545,12 @@ class VideoFileStream:
             ffmpegpath=ffmpegpath,
         )
 
-    def show(self, startat: str | None = None, nframes: int | None = None,
-             framerate: int | None = None):
+    def show(
+        self,
+        startat: str | None = None,
+        nframes: int | None = None,
+        framerate: int | None = None,
+    ):
         """Shows frames in a video window.
 
         The frames of a VideoFileStream are displayed in a seperate window.

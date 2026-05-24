@@ -1,8 +1,18 @@
 Release notes
 =============
 
+Main branch
+-----------
+
+- VideoFileStream and VideoFile attributes are more robust to missing stream
+information provided by ffprobe
+- Documentation improvements
+- Switched from develop / master branch system to main branch system with
+frequent PR merges
+
 Version 0.6
 -----------
+
 Commits by Gabriel Beckers.
 
 - modernize package structure

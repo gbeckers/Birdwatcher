@@ -1,7 +1,6 @@
-"""This module provides convenient functions for plotting video-related data.
-
-These are based on Matplotlib. If you want to display things automatically
-in Jupyter, use `%matplotlib inline`
+"""This module provides convenient functions for plotting video-related data,
+based on Matplotlib.To display plots and images automatically in Jupyter,
+use `%matplotlib inline`
 
 """
 

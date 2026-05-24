@@ -1,3 +1,19 @@
+"""
+This module contains top-level functionality for movement detection based on
+adaptive background subtraction.
+
+Adaptive background subtraction is a useful approach when dealing with a static
+camera and a potentially changing background (e.g., changing weather,
+lighting, or animals changing the position of objects in their cage). Adaptive
+subtractors continuously update the reference frame based on recent frames to
+prevent false detections. Static background subtractors only use a single
+static reference frame and would be more difficult to use in changing conditions.
+
+See the tutorial jupyter notebook for examples on how to use this functionality:
+https://github.com/gbeckers/Birdwatcher/blob/main/notebooks/5_movementdetection.ipynb
+
+"""
+
 from pathlib import Path
 
 import darr
