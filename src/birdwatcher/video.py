@@ -615,3 +615,4 @@ def videofilesduration(dirpath, extension="avi"):
     s = 0
     for i, f in enumerate(files):
         s += VideoFileStream(f).duration
+    return s

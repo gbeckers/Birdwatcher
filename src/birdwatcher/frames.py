@@ -55,7 +55,9 @@ def frameiterator(func: Callable[..., Iterator[npt.NDArray]]) -> Callable[..., F
         processingdata = []
         self = args[0]
         if hasattr(self, "get_info"):
-            processingdata = self.get_info().get("processingdata") or []
+            # Copy so derived Frames don't share/mutate the parent's
+            # provenance list (branching otherwise corrupts each branch).
+            processingdata = list(self.get_info().get("processingdata") or [])
         processingdata.append(
             {
                 "methodname": func.__name__,
@@ -698,15 +700,16 @@ class Frames:
         """
         if roi is not None:
             firstframe = self.peek_frame()
-            completeframe = np.zeros(
-                (firstframe.shape[0], firstframe.shape[1]), dtype=np.uint8
-            )
+            completeshape = (firstframe.shape[0], firstframe.shape[1])
         for frame in self._frames:
             if roi is not None:
                 h1, h2, w1, w2 = roi
                 frame = frame[h1:h2, w1:w2]
             mask = bgs.apply(frame=frame, fgmask=fgmask, learningRate=learningRate)
             if roi is not None:
+                # Allocate fresh per-frame so consumers that aggregate
+                # (e.g. list(...), stacking) get independent arrays.
+                completeframe = np.zeros(completeshape, dtype=np.uint8)
                 completeframe[h1:h2, w1:w2] = mask
                 mask = completeframe
             if nroi is not None:

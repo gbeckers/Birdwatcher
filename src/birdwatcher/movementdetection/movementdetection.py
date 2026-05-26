@@ -189,7 +189,7 @@ def detect_movement(
     metadata["roi"] = roi
     metadata["nroi"] = nroi
     metadata["birdwatcherversion"] = __version__
-    metadata["ffmegversion"] = ffmpegversion()
+    metadata["ffmpegversion"] = ffmpegversion()
 
     frames = apply_settings(vfs, output_settings, startat, nframes, roi, nroi, bgs_type)
 
