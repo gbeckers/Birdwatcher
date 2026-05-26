@@ -4,11 +4,10 @@ Release notes
 Main branch
 -----------
 
-- VideoFileStream and VideoFile attributes are more robust to missing stream
-information provided by ffprobe
+- VideoFileStream and VideoFile attributes are more robust to missing stream information provided by ffprobe
 - Documentation improvements
-- Switched from develop / master branch system to main branch system with
-frequent PR merges
+- Switched from develop / master branch system to main branch system with frequent PR merges
+- Fixes for a number of minor inconsistencies or other problems in code
 
 Version 0.6
 -----------
