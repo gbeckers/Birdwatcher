@@ -31,10 +31,9 @@ from pathlib import Path
 import numpy as np
 from darr import RaggedArray, delete_raggedarray, create_raggedarray
 
+from . import __version__
 from .utils import tempdir
 from .frames import frameiterator
-
-__version__ = "0.6.0"
 
 
 __all__ = [

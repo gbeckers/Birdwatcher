@@ -86,8 +86,11 @@ class VideoFile:
         return self._formatinfo
 
     @property
-    def duration(self) -> float:
-        return float(self._formatinfo["duration"])
+    def duration(self) -> float | None:
+        """Duration of the video file in seconds, as reported in the
+        container metadata, or None if not available."""
+        d = self._formatinfo.get("duration")
+        return float(d) if d is not None else None
 
     @property
     def streamsinfo(self) -> tuple[dict]:
@@ -162,20 +165,18 @@ class VideoFile:
         return VideoFileStream(self._filepath, streamnumber=streamnumber)
 
     def get_audiocodec(self, streamnumber: int = 0) -> str | None:
-        """
+        """Return the codec name of the selected audio stream, or None
+        if there is no audio stream.
 
         Parameters
         ----------
-        streamindex: int or None, optional
-            Index of the audio stream. Note that this is the stream number as
-            provided by the 'index' key of the `streamsinfo`,
-            `videostreamsinfo` and `audiostreamsinfo` attributes.
-            If `None`, the first audio stream is used. Use the `audiostreamindices`
+        streamnumber : int, default=0
+            Which audio stream to inspect. Use the `audiostreamsinfo`
             attribute to see which audio streams are available.
 
         Returns
         -------
-        audiocodec: str
+        audiocodec : str or None
 
         """
         return detect_audio_codec(str(self._filepath), streamnumber=streamnumber)
@@ -219,11 +220,8 @@ class VideoFile:
                     'verbose', 'debug' ,'trace'}, optional
             Level of info that ffmpeg should print to terminal. Default is
             'quiet'.
-        streamindex: int or None, optional
-            Index of the audio stream. Note that this is the stream number as
-            provided by the 'index' key of the `streamsinfo`,
-            `videostreamsinfo` and `audiostreamsinfo` attributes.
-            If `None`, the first audio stream is used. Use the `audiostreamindices`
+        streamnumber : int, default=0
+            Which audio stream to extract. Use the `audiostreamsinfo`
             attribute to see which audio streams are available.
 
         """

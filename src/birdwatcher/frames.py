@@ -61,7 +61,7 @@ def frameiterator(func: Callable[..., Iterator[npt.NDArray]]) -> Callable[..., F
         processingdata.append(
             {
                 "methodname": func.__name__,
-                "methodargs": [str(arg) for arg in args],
+                "methodargs": [str(arg) for arg in args[1:]],
                 "methodkwargs": dict(
                     (str(key), str(item)) for (key, item) in kwargs.items()
                 ),
@@ -350,8 +350,11 @@ class Frames:
         Parameters
         ----------
         points : iterable
-            Iterable that generates sequences of rectangle corners h1, h2, w1, w2
-            ((x1, y1), (x2, y2)) per frame. Origin is left top.
+            Iterable producing one rectangle per frame as a sequence
+            (h1, h2, w1, w2): top row, bottom row, left column, right
+            column. Origin is the top-left of the image. This matches
+            the (h1, h2, w1, w2) convention used by `crop` and the
+            `roi`/`nroi` arguments elsewhere in Birdwatcher.
         color : tuple of ints, optional
             Color of rectangle (BGR). The default (255, 100, 0) color is blue.
         thickness : int, default=2
@@ -526,10 +529,10 @@ class Frames:
         filepath : str
             Name of the filepath that should be written to.
         metadata : dict, optional
-        ignore_firstnframes : int, default=10
+        ignore_firstnframes : int, default=0
             Do not provide coordinates for the first n frames. These often
             have a lot of false positives.
-        overwrite : bool, default=True
+        overwrite : bool, default=False
              Overwrite existing CoordinateArrays or not.
 
         Returns
@@ -934,9 +937,13 @@ class Frames:
             meanframe = framecolor(
                 self.frameheight, self.framewidth, color=(0, 0, 0), dtype="float64"
             )
-        for i, frame in enumerate(self._frames):
+        count = 0
+        for frame in self._frames:
             meanframe += frame
-        meanframe /= i + 1
+            count += 1
+        if count == 0:
+            raise ValueError("cannot compute mean of an empty frame iterator")
+        meanframe /= count
         if dtype is None:
             dtype = self._dtype
         return meanframe.astype(dtype)
@@ -1151,14 +1158,18 @@ def framenoise(height: int, width: int, dtype: str = "uint8") -> npt.NDArray[Any
     width : int
         Width of frame.
     dtype : numpy dtype, default='uint8'
-        Dtype of frame.
+        Integer dtype of frame. Pixel values span the full range of
+        the dtype (e.g. 0-255 for uint8, 0-65535 for uint16).
 
     Returns
     -------
     numpy ndarray
 
     """
-    return np.random.randint(0, 255, (height, width, 3), dtype=dtype)
+    info = np.iinfo(dtype)
+    return np.random.randint(
+        info.min, int(info.max) + 1, (height, width, 3), dtype=dtype
+    )
 
 
 def create_frameswithmovingcircle(
