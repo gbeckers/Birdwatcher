@@ -5,12 +5,11 @@ import shutil
 import tempfile
 import time
 from contextlib import contextmanager
-from typing import Tuple, List, Union
 
 
 def roi_to_npindex(
-    roi: Tuple[Union[int, int, int, int]] | List[Union[int, int, int, int]],
-) -> Tuple[Union[slice, slice]]:
+    roi: tuple[int, int, int, int] | list[int],
+) -> tuple[slice, slice]:
     """Convert a region of interest (roi) to a numpy index tuple."""
     return (slice(roi[0], roi[1]), slice(roi[2], roi[3]))
 
@@ -32,13 +31,11 @@ def product_dict(**kwargs):
 def tempdir(dirname=".", keep=False, report=False):
     """Yields a temporary directory which is removed when context is
     closed."""
+    tempdirname = tempfile.mkdtemp(dir=dirname)
+    if report:
+        print("created tempdir {}".format(tempdirname))
     try:
-        tempdirname = tempfile.mkdtemp(dir=dirname)
-        if report:
-            print("created tempdir {}".format(tempdirname))
         yield pathlib.Path(tempdirname)
-    except:
-        raise
     finally:
         if not keep:
             shutil.rmtree(tempdirname)
@@ -47,8 +44,16 @@ def tempdir(dirname=".", keep=False, report=False):
 
 
 def peek_iterable(iterable):
+    """Yields the first item of an iterable plus a chained iterator
+    that still includes that first item.
+
+    Raises ValueError if the input iterable is empty.
+    """
     gen = (i for i in iterable)
-    first = next(gen)
+    try:
+        first = next(gen)
+    except StopIteration:
+        raise ValueError("cannot peek into an empty iterable") from None
     return first, itertools.chain([first], gen)
 
 

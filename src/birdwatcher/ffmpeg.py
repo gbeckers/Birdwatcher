@@ -364,17 +364,27 @@ def iterread_videofile(
                         f"({len(data)} bytes, expected {frameproperties.size}). "
                         "The video may be truncated."
                     )
+                # Natural EOF: surface ffmpeg failures so callers see a real
+                # error instead of a silently empty/truncated iterator.
+                stderr_data = p.stderr.read() if p.stderr is not None else b""
+                p.wait()
+                if p.returncode != 0:
+                    raise FFmpegError(
+                        cmd=args,
+                        returncode=p.returncode,
+                        stderr=stderr_data.decode("utf-8", errors="replace"),
+                    )
                 break
             if nframes is not None and frameno >= nframes:
                 break
             yield np.frombuffer(data, dtype=np.uint8).reshape(frameproperties.shape)
             frameno += 1
     finally:
-        p.kill()
-        p.wait()
+        if p.poll() is None:
+            p.kill()
+            p.wait()
 
 
-# TODO check threads code
 def count_frames(
     filepath: str | Path,
     streamnumber: int = 0,
@@ -383,7 +393,7 @@ def count_frames(
 ) -> int:
     args = [
         str(ffprobepath),
-        f"-threads:{threads}",
+        "-threads",
         str(threads),
         "-count_frames",
         "-select_streams",
@@ -431,9 +441,16 @@ def get_frame(
         "pipe:1",
     ]
     with subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE) as p:
-        return np.frombuffer(
-            p.stdout.read(frameproperties.size), dtype=np.uint8
-        ).reshape(frameproperties.shape)
+        data = p.stdout.read(frameproperties.size)
+        stderr_data = p.stderr.read() if p.stderr is not None else b""
+        p.wait()
+        if p.returncode != 0 or len(data) != frameproperties.size:
+            raise FFmpegError(
+                cmd=args,
+                returncode=p.returncode if p.returncode is not None else -1,
+                stderr=stderr_data.decode("utf-8", errors="replace"),
+            )
+        return np.frombuffer(data, dtype=np.uint8).reshape(frameproperties.shape)
 
 
 def get_frameat(
@@ -624,15 +641,22 @@ def extract_audio(
 
     """
     filepath = Path(filepath)
+    # The codec name we look up to choose an output extension is not the
+    # same as the codec we pass to ffmpeg. When the user asks for stream
+    # copy, we still need the input's codec name to pick a sensible
+    # extension, but ffmpeg must receive "copy" so that no re-encoding
+    # happens.
     if codec == "copy":
-        codec = detect_audio_codec(str(filepath))
-        if not codec:
+        codec_for_ext = detect_audio_codec(str(filepath))
+        if not codec_for_ext:
             raise NoAudioStreamError(f'No audio stream in file "{filepath}"')
-    if not codec in supported_audio_codecs(ffmpegpath=ffmpegpath):
-        raise ValueError(f'ffmpeg does not support codec "{codec}"')
+    else:
+        if codec not in supported_audio_codecs(ffmpegpath=ffmpegpath):
+            raise ValueError(f'ffmpeg does not support codec "{codec}"')
+        codec_for_ext = codec
     if outputpath is None:
         outputpath = Path(filepath).with_suffix("")
-    ext = AUDIOCODEC_TO_EXTENSION.get(codec)
+    ext = AUDIOCODEC_TO_EXTENSION.get(codec_for_ext)
     outputpath = Path(outputpath)
     if outputpath.suffix:
         if outputpath.suffix.lower() != ext:
