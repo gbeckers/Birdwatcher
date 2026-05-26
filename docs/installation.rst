@@ -40,7 +40,7 @@ Python 3 versions may also work.
 
       pip install Birdwatcher
 
-   If instead you want the latest version of the git master branch from, use:
+   If instead you want the latest version of the git main branch from, use:
 
    .. code-block:: bash
 

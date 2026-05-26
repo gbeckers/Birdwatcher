@@ -88,7 +88,7 @@ Python 3 versions may also work.
    pip install Birdwatcher
    ```
 
-   If instead you want the latest version of the git master branch, use:
+   If instead you want the latest version of the git main branch, use:
 
     ```
     pip install git+https://github.com/gbeckers/birdwatcher@main
