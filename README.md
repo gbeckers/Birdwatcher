@@ -91,7 +91,7 @@ Python 3 versions may also work.
    If instead you want the latest version of the git master branch, use:
 
     ```
-    pip install git+https://github.com/gbeckers/birdwatcher@master
+    pip install git+https://github.com/gbeckers/birdwatcher@main
     ```
 
 ## Run notebooks tutorial

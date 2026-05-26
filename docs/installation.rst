@@ -44,7 +44,7 @@ Python 3 versions may also work.
 
    .. code-block:: bash
 
-      pip install git+https://github.com/gbeckers/birdwatcher@master
+      pip install git+https://github.com/gbeckers/birdwatcher@main
 
 
 **Dependencies**
