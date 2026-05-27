@@ -3,8 +3,8 @@ Concatenating transformations
 
 .. currentmodule:: birdwatcher
 
-If you want to apply multiple transformations to a video, it is best to
-concatenate them on a :class:`Frames` object:
+When applying multiple transformations to a video, it is best to concatenate
+them on a :class:`Frames` object:
 
 .. code:: python
 

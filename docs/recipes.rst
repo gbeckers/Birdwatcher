@@ -3,15 +3,16 @@ Recipes
 
 
 
-A collection of short howto's. For more eleborate explanation, use
-the `tutorial notebooks <https://github.com/gbeckers/Birdwatcher/tree/master/notebooks>`__ on Github.
+A collection of short example howto's. Note that the best way to learn to work
+with Birdwatcher is to download and run the `tutorial notebooks <https://github
+.com/gbeckers/Birdwatcher/tree/master/notebooks>`__ on Github.
 
 .. toctree::
     :maxdepth: 2
 
-    recipes/videofileproperties
     recipes/detectmovement
     recipes/loadingdetectionresults
+    recipes/videofileproperties
     recipes/resizevideo
     recipes/addframenumbers
     recipes/concatenatingtransformations

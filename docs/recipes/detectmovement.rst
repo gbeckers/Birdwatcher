@@ -1,11 +1,19 @@
-Detecting movement dynamically
-==============================
+Detecting movement
+==================
 
 .. currentmodule:: birdwatcher.movementdetection
 
-In many lab situations, 'movement' can be captured based on detecting video frame pixels that changed with respect to those in a reference frame, the 'background'. Think of a static scene, a bird cage filmed, in which a bird moves around. There are many 'background subtraction' algorithms that estimate which pixels change when movement takes place.
+In many lab situations, 'movement' can be captured based on detecting video
+frame pixels that changed with respect to those in a reference frame, the
+'background'. Think of a bird filmed in a cage with a static camera. There are
+many 'background subtraction' algorithms that estimate which pixels change
+when movement takes place.
 
-Here we apply an 'adaptive' background subtraction method, which is a useful approach when dealing with a static camera but potentially slowly changing background (e.g., changing weather, lighting). Adaptive subtractors continuously update the reference frame based on recent frames, to prevent false detections.
+Here we apply an 'adaptive' background subtraction method, which is a useful
+approach when dealing with a potentially slowly or intermittently changing
+background (e.g., changing lighting, bird moving an object in cage). To
+prevent such false detections, adaptive subtractors continuously update the
+reference frame based on information in recent frames.
 
 The high-level function :func:`detect_movement` implements this:
 
@@ -31,18 +39,38 @@ saved.
     └── movementvideo.mp4 (file)
 
 The returned results, the ``coords``, ``coordscount`` and ``coordsmean``
-are numpy-like arrays that map to the disk-based data folders and can
-immediately be used for further analyses, but can also be loaded in a later
-session. The included movement video can be used for quick inspection of
-results, showing the positive pixels superimposed on the original video. If you
-are not happy with the results, you can tweak the detection parameters, if
-needed based on an automated procedure to find the settings you need (see
+are numpy-like arrays that have been saved to disk, and can
+immediately be used for further analyses as they are memory-mapped. They can
+also be quickly loaded in a later session.
+
+The included movement video can be
+used for visual inspection of results, showing the positive pixels superimposed
+on the original video. If you are not happy with the results, you can tweak
+the detection parameters, if needed based on an automated procedure to find
+the settings you need (see
 `tutorial notebook <https://github.com/gbeckers/Birdwatcher/blob/master/notebooks
 /4_parameterselection.ipynb>`__).
 
+.. raw:: html
+
+    <div style="margin: 1em 0;">
+      <video
+        autoplay
+        muted
+        loop
+        playsinline
+        width="100%"
+        style="border-radius: 12px;"
+      >
+        <source src="../_static/movementclip.webm" type="video/webm">
+      </video>
+    </div>
+
+
 The ``coords`` array contains the coordinates (x,y) of the pixels that are
-above the significance threshold for considering them 'changed´. We can for
-example see which pixels are detected in video frame number 157:
+above the significance threshold, and are considered 'changed´ (red in the
+video above) . We can for example see which pixels are detected in video
+frame number 157:
 
 .. code-block:: python
 
@@ -85,8 +113,8 @@ There is a blob of positive pixels roughly around x: 700 to 800 and y: 350 to
   :width: 720
   :class: custom-image
 
-A bird jumps from one perch to the other. We can quantify the amount of
-movement in the frame by counting the number of detected pixels:
+Indeed, that is the bird jumping from one perch to the other. We can quantify
+the amount of movement in the frame by counting the number of detected pixels:
 
 .. code-block:: python
 
@@ -94,10 +122,9 @@ movement in the frame by counting the number of detected pixels:
     >>> len(c)
     821
 
-The pixel count for every frame is provided by the ``coordscount`` variable
-in the :func:`detect_movement` function that we used above. We can thus plot the
-count of positive pixels (i.e. where change took place ) for each frames in
-the video:
+The number of positive pixels per frame is provided by the ``coordscount`` variable
+returned by the the :func:`detect_movement` function that we used above. We can
+plot them to get an impression of when movement took place in the video:
 
 .. code-block:: python
 
@@ -111,8 +138,9 @@ the video:
   :width: 720
   :class: custom-image
 
-Similarly, we can look at the means of the x- and y-coordinates based on the
-``coordsmean`` variable returned by the :func:`detect_movement` function :
+Similarly, to get an idea of where movenement took place, we can look at the
+means of the x- and y-coordinates based on the ``coordsmean`` variable returned
+by the :func:`detect_movement` function :
 
 .. code-block:: python
 
@@ -125,8 +153,8 @@ Similarly, we can look at the means of the x- and y-coordinates based on the
   :width: 720
   :class: custom-image
 
-Without having watched the video, we conclude that the
-bird sat on perch #3, jumped to perch #4 (on equal height, x changed, y did
-not), jumped back, and then jumped to the higher perch #1. If we know the
-framerate of the video, we can calculate exactly when the bird was doing this
-. Note that the origin of coordinates in the video is top left.
+Without having watched the video, we conclude that the bird sat on perch #3,
+jumped to perch #4 (on equal height, x changed, y did not), jumped back, and
+then jumped to the higher perch #1. If we know the framerate of the video, we
+can calculate exactly when the bird was doing this . Note that the origin of
+coordinates in the video is top left.
