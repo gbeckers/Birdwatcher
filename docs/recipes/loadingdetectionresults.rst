@@ -29,6 +29,23 @@ To read the ``coords`` data in a later session, use the
     RaggedArray (497 subarrays with atom shape (2,), r)
     >>> ca.show(framerate=25) # shows the results as a video on screen
 
+
+.. raw:: html
+
+    <div style="margin: 1em 0;">
+      <video
+        autoplay
+        muted
+        loop
+        playsinline
+        width="100%"
+        style="border-radius: 12px;"
+      >
+        <source src="_static/movementclipcoords.webm" type="video/webm">
+      </video>
+    </div>
+
+
 The other two disk-based arrays are derived from the ``coords`` data and are
 plain Darr arrays:
 

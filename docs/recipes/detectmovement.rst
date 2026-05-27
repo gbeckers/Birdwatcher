@@ -51,6 +51,7 @@ the settings you need (see
 `tutorial notebook <https://github.com/gbeckers/Birdwatcher/blob/master/notebooks
 /4_parameterselection.ipynb>`__).
 
+
 .. raw:: html
 
     <div style="margin: 1em 0;">
