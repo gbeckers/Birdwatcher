@@ -41,7 +41,7 @@ To read the ``coords`` data in a later session, use the
         width="100%"
         style="border-radius: 12px;"
       >
-        <source src="_static/movementclipcoords.webm" type="video/webm">
+        <source src="/_static/movementclipcoords.webm" type="video/webm">
       </video>
     </div>
 

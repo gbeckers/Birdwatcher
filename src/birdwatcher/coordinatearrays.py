@@ -171,7 +171,7 @@ class CoordinateArrays(RaggedArray):
         framerate=None,
         crf=17,
         scale=None,
-        format="mp4",
+        vformat="mp4",
         codec="libopenh264",
         pixfmt="yuv420p",
         ffmpegpath="ffmpeg",
@@ -200,7 +200,7 @@ class CoordinateArrays(RaggedArray):
         scale : tuple, optional
             (width, height). The default (None) does not change width and
             height.
-        format : str, default='mp4'
+        vformat : str, default='mp4'
             ffmpeg video format.
         codec : str, default='libopenh264'
             ffmpeg video codec.
@@ -238,7 +238,7 @@ class CoordinateArrays(RaggedArray):
             framerate=framerate,
             scale=scale,
             crf=crf,
-            vformat=format,
+            vformat=vformat,
             codec=codec,
             pixfmt=pixfmt,
             ffmpegpath=ffmpegpath,
