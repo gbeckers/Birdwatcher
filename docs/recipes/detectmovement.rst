@@ -63,7 +63,7 @@ the settings you need (see
         width="100%"
         style="border-radius: 12px;"
       >
-        <source src="/_static/movementclip.webm" type="video/webm">
+        <source src="../_static/movementclip.webm" type="video/webm">
       </video>
     </div>
 
