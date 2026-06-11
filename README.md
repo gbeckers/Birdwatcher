@@ -44,7 +44,7 @@ Birdwatcher is based on [FFmpeg](https://www.ffmpeg.org/) and [OpenCV](https://o
 
 This project is developed by Gabriel Beckers and Carien Mol, at Experimental Psychology,
 Utrecht University. Birdwatcher is open source and freely available
-under the terms of the terms of the [New BSD 
+under the terms of the [New BSD 
 License](https://opensource.org/licenses/BSD-3-Clause). Despite its name, Birdwatcher 
 is not limited to birds — it has also been used  successfully to analyze dog behavior 
 and can be applied to any moving subject.
