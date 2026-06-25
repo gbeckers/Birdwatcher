@@ -5,6 +5,7 @@ import shutil
 import tempfile
 import time
 from contextlib import contextmanager
+from typing import Any, Generator
 
 
 def roi_to_npindex(
@@ -14,12 +15,12 @@ def roi_to_npindex(
     return (slice(roi[0], roi[1]), slice(roi[2], roi[3]))
 
 
-def datetimestring():
+def datetimestring() -> str:
     """Returns a string of the current date and time."""
     return time.strftime("%Y%m%d%H%M%S")
 
 
-def product_dict(**kwargs):
+def product_dict(**kwargs) -> Generator[dict[Any, Any], Any, None]:
     """Generates a Cartesian product of dictionary values."""
     keys = kwargs.keys()
     vals = kwargs.values()
@@ -28,7 +29,7 @@ def product_dict(**kwargs):
 
 
 @contextmanager
-def tempdir(dirname=".", keep=False, report=False):
+def tempdir(dirname=".", keep=False, report=False) -> Generator[pathlib.Path, None, None]:
     """Yields a temporary directory which is removed when context is
     closed."""
     tempdirname = tempfile.mkdtemp(dir=dirname)
@@ -43,7 +44,7 @@ def tempdir(dirname=".", keep=False, report=False):
                 print("removed temp dir {}".format(tempdirname))
 
 
-def peek_iterable(iterable):
+def peek_iterable(iterable) -> tuple[Any, Generator[Any, None, None]]:
     """Yields the first item of an iterable plus a chained iterator
     that still includes that first item.
 
@@ -57,7 +58,7 @@ def peek_iterable(iterable):
     return first, itertools.chain([first], gen)
 
 
-def derive_filepath(filepath, append_string="", suffix=None, path=None):
+def derive_filepath(filepath: str | pathlib.Path, append_string="", suffix=None, path=None) -> pathlib.Path:
     """Generate a file path based on the name and potentially path of the
     input file path.
 
@@ -78,6 +79,7 @@ def derive_filepath(filepath, append_string="", suffix=None, path=None):
         Path derived from video file path.
 
     """
+    filepath = pathlib.Path(filepath)
     stem = filepath.stem
     if suffix is None:
         suffix = filepath.suffix
@@ -89,7 +91,7 @@ def derive_filepath(filepath, append_string="", suffix=None, path=None):
     return dpath
 
 
-def progress(count, total, status=""):
+def progress(count: int, total: int, status: str = "") -> None:
 
     # The MIT License (MIT)
     # Copyright (c) 2016 Vladimir Ignatev
@@ -118,10 +120,10 @@ def progress(count, total, status=""):
     bar = "=" * filled_len + "-" * (bar_len - filled_len)
 
     sys.stdout.write("[%s] %s%s ...%s\r" % (bar, percents, "%", status))
-    sys.stdout.flush()  # As suggested by Rom Ruben (see: http://stackoverflow.com/questions/3173320/text-progress-bar-in-the-console/27871113#comment50529068_27871113)
+    sys.stdout.flush()
 
 
-def print_dirstructure(dirpath):
+def print_dirstructure(dirpath: str) -> None:
     """Prints the hierarchical structure of directories, starting at `dirpath`
 
     Parameters
@@ -140,7 +142,7 @@ def print_dirstructure(dirpath):
                 print(f"{subindent}{f}")
 
 
-def walk_paths(dirpath, extension=".*"):
+def walk_paths(dirpath: str | pathlib.Path, extension=".*") -> Generator[pathlib.Path, None, None]:
     """Walks recursively over contents of `dirpath` and yield contents as
     pathlib Path objects, potentially based on their `extension`.
 
