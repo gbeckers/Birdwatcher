@@ -39,9 +39,9 @@ default_settings = {
         "color": False,  # booleans only
         "blur": 0,  # use '0' for no blur
         "morphologyex": True,  # booleans only
-        "resizebyfactor": 1,
+        "resizebyfactor": 1,  # use '1' for no change in size
     }
-}  # use '1' for no change in size
+}
 
 
 def batch_detect_movement(
@@ -169,10 +169,11 @@ def detect_movement(
     if not isinstance(vfs, VideoFileStream):
         raise TypeError(f"`vfs` parameter not a VideoFileStream object.")
 
+    # get flat dict
     output_settings = {
         **bgs_type().get_params(),
         **default_settings["processing"],
-    }  # get flat dict
+    } 
     if settings is not None:
         settings = {**settings["bgs_params"], **settings["processing"]}
         output_settings.update(settings)
