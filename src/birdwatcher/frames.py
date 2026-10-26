@@ -78,7 +78,7 @@ class Frames:
     This is a main base class in Birdwatcher that is normally not instantiated
     by users, but is returned by Birdwatcher functions and methods that generate
     frames. Many functions and methods in Birdwatcher return this type
-    and take it as input.  Most methods of `Frames` objects return new `Frames`
+    and take it as input. Most methods of `Frames` objects return new `Frames`
     objects, but some of them generate final output, such as a video file or a
     measurement.
 

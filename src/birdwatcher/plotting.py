@@ -1,5 +1,5 @@
 """This module provides convenient functions for plotting video-related data,
-based on Matplotlib.To display plots and images automatically in Jupyter,
+based on Matplotlib. To display plots and images automatically in Jupyter,
 use `%matplotlib inline`
 
 """

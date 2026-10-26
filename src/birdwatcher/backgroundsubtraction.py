@@ -9,7 +9,7 @@ e.g., changes in lighting conditions or animals moving objects in their cage.
 All classes are based on OpenCV's background subtraction algorithms. Note that
 OpenCV's API to parameters of these algorithms is inconsistent. Sometimes
 parameters can be provided at object instantiation, sometimes they can be set
-them with a method. To be consistent, in Birdwatcher, parameters of background
+with a method. To be consistent, in Birdwatcher, parameters of background
 subtractor objects at set at instantiation. The parameter names follow
 those of OpenCV to avoid confusion.
 
