@@ -267,7 +267,6 @@ def ffmpegversion(ffmpegpath: str | Path = "ffmpeg") -> str | None:
         return None
 
 
-## FIXME startat: choice to be precise or not
 def iterread_videofile(
     filepath: str | Path,
     startat: str | None = None,

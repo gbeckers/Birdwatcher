@@ -60,7 +60,6 @@ def _coordstoframe(coords, width, height, nchannels=None, dtype="uint8", value=1
     return frame
 
 
-# fixme, should we allow for 3 values: (x, y, val)?
 class CoordinateArrays(RaggedArray):
     """A disk-based data type to store frame coordinates of consecutive
     frames.

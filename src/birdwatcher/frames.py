@@ -280,7 +280,6 @@ class Frames:
         for frame in self._frames:
             yield cv.Canny(frame, minval, maxval)
 
-    # FIXME multiple circles per frame?
     @frameiterator
     def draw_circles(
         self,
@@ -948,8 +947,6 @@ class Frames:
             dtype = self._dtype
         return meanframe.astype(dtype)
 
-    # TODO Frames should have a frame rate
-    # TODO Exception handling
     def show(self, framerate: int = 25):
         """Shows frames in a video window.
 

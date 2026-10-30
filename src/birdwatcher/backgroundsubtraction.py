@@ -17,7 +17,6 @@ See the tutorial jupyter notebook for examples on how to use this functionality:
 https://github.com/gbeckers/Birdwatcher/blob/main/notebooks/2_backgroundsubtraction.ipynb
 
 """
-# TODO: incorporate the use of https://github.com/andrewssobral/bgslibrary
 
 import cv2 as cv
 import numpy as np
@@ -213,7 +212,6 @@ class BackgroundSubtractorMOG2(BaseBackgroundSubtractor):
     _bgsubtractorcreatefunc = cv.createBackgroundSubtractorMOG2
 
 
-# TODO this bgs does nor work with roi or nroi
 class BackgroundSubtractorLSBP(BaseBackgroundSubtractor):
     """Wraps OpenCV's `BackgroundSubtractorLSBP` class. Parameter names follow
     those in OpenCV.

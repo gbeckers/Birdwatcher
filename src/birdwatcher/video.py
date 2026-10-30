@@ -607,7 +607,6 @@ def walk_videofiles(dirpath: str | Path, extension: str = ".avi") -> Iterator[Pa
         yield file
 
 
-## FIXME collect much more info
 def videofilesduration(dirpath, extension="avi"):
     files = sorted([f for f in walk_videofiles(dirpath=dirpath, extension=extension)])
     s = 0

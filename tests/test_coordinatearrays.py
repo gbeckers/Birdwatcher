@@ -31,7 +31,6 @@ class TestCoordinateArrays(unittest.TestCase):
         self.ca1.iterappend([((1, 2), (3, 4)), ((5, 6), (7, 8))])
 
     def tearDown(self):
-        # TODO: is this really necessary?
         for p in self.tempdirname1.rglob("*"):
             if not os.access(p, os.W_OK):
                 os.chmod(p, stat.S_IWUSR)
