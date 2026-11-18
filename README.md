@@ -66,7 +66,7 @@ Python 3 versions may also work.
 3. Create new environment for Birdwatcher (name is up to you, in example here 'mybirdwatcher'). We install some other packages at the same time:
 
     ```
-    conda create -n mybirdwatcher python=3.14 git=2.51 ffmpeg=8.0.1 numpy=2.4.2 matplotlib=3.10.8 pandas=3.0.0 seaborn=0.13.2
+    conda create -n mybirdwatcher python=3.14 git=2.51 ffmpeg=8.0.1 numpy=2.4.2 matplotlib=3.10.8 pandas=3.0.0 seaborn=0.13.2 pip
     ```
 4. Switch to this new environment:
 
