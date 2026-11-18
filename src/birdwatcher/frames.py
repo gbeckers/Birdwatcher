@@ -581,7 +581,8 @@ class Frames:
             if idx is None:
                 idx = np.zeros((0, 2), dtype=np.uint16)
             else:
-                idx = idx[:, 0, :]
+                # OpenCV 4.x returns (N, 1, 2), 5.x returns (N, 2)
+                idx = idx.reshape(-1, 2)
             yield idx
 
     @frameiterator
