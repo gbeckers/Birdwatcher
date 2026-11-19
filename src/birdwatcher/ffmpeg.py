@@ -502,7 +502,9 @@ def _get_frameproperties(
         shape = (height, width)
         size = height * width
         pix_fmt = "gray"
-    return FrameProperties(shape, size, height, width, pix_fmt)
+    return FrameProperties(
+        shape=shape, size=size, width=width, height=height, pix_fmt=pix_fmt
+    )
 
 
 def _check_loglevelarg(loglevelarg: str) -> None:
