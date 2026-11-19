@@ -9,4 +9,5 @@ from .video import *
 from .backgroundsubtraction import *
 from .coordinatearrays import *
 from .frames import *
+from .dependencies import versions
 from .ffmpeg import supported_audio_codecs, supported_video_codecs

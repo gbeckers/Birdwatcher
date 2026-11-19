@@ -21,6 +21,8 @@ https://github.com/gbeckers/Birdwatcher/blob/main/notebooks/2_backgroundsubtract
 import cv2 as cv
 import numpy as np
 
+from .dependencies import opencvversions
+
 
 __all__ = [
     "BackgroundSubtractorMOG2",
@@ -50,6 +52,23 @@ class BaseBackgroundSubtractor:
 
     def __str__(self):
         return self.__class__.__name__
+
+    @classmethod
+    def get_dependencies(cls):
+        """Get versions of the software this background subtraction
+        algorithm depends on.
+
+        This is a classmethod, so it can be called on the class without
+        instantiating it. Subclasses that are not based on OpenCV should
+        override it.
+
+        Returns
+        -------
+        dict
+            Dictionary with version information.
+
+        """
+        return opencvversions()
 
     def __repr__(self):
         return f"<{self.__class__.__name__} {hex(id(self))}>"

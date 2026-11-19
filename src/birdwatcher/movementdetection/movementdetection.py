@@ -18,12 +18,11 @@ from pathlib import Path
 
 import darr
 
-from .. import __version__
+from ..dependencies import versions
 from ..utils import derive_filepath
 from ..coordinatearrays import _archive
 from ..backgroundsubtraction import BackgroundSubtractorMOG2
 from ..video import VideoFileStream
-from ..ffmpeg import ffmpegversion
 
 
 __all__ = [
@@ -183,13 +182,13 @@ def detect_movement(
 
     metadata = {}
     metadata["backgroundsegmentclass"] = str(bgs_type)
+    metadata["backgroundsegmentdependencies"] = bgs_type.get_dependencies()
     metadata["settings"] = output_settings
     metadata["startat"] = startat
     metadata["nframes"] = nframes
     metadata["roi"] = roi
     metadata["nroi"] = nroi
-    metadata["birdwatcherversion"] = __version__
-    metadata["ffmpegversion"] = ffmpegversion()
+    metadata["versions"] = versions()
 
     frames = apply_settings(vfs, output_settings, startat, nframes, roi, nroi, bgs_type)
 
