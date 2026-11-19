@@ -6,7 +6,10 @@ Main branch
 
 - add CITATION.cff file for Zenodo
 - more information on versions of dependencies saved as metadata coordinate arrays
-- add more tests (utils.py and movementdetection.py)
+- add more tests (utils.py, movementdetection.py, videoinput.py, ffmpeg.py)
+- fix codecov badge
+- fix bug returned width and height swap in _get_frameproperties (function wasn't used so far)
+
 
 Version 0.6.1
 -------------
