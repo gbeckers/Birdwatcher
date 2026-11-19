@@ -1,5 +1,5 @@
 import unittest
-import src.birdwatcher as bw
+import birdwatcher as bw
 
 
 class TestVideoStreamIteration(unittest.TestCase):

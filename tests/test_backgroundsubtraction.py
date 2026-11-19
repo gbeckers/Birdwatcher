@@ -1,6 +1,6 @@
 import unittest
-import src.birdwatcher as bw
-from src.birdwatcher.frames import create_frameswithmovingcircle
+import birdwatcher as bw
+from birdwatcher.frames import create_frameswithmovingcircle
 
 
 class TestBackgroundSubtractorKNN(unittest.TestCase):

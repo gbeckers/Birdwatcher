@@ -1,6 +1,6 @@
 import unittest
-import src.birdwatcher as bw
-import src.birdwatcher.ffmpeg
+import birdwatcher as bw
+import birdwatcher.ffmpeg
 
 
 class TestVideoFile(unittest.TestCase):
@@ -8,7 +8,7 @@ class TestVideoFile(unittest.TestCase):
         def test_extract_audio_noaudio(self):
             vf = bw.testvideostreamsmall().videofile
             self.assertRaises(
-                src.birdwatcher.ffmpeg.NoAudioStreamError, vf.extract_audio
+                birdwatcher.ffmpeg.NoAudioStreamError, vf.extract_audio
             )
 
 

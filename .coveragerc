@@ -1,5 +1,5 @@
 [run]
-source = birdwatcher
+source = src/birdwatcher
 
 [report]
 omit =

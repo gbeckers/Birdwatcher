@@ -3,8 +3,8 @@ import tempfile
 import shutil
 from pathlib import Path
 
-import src.birdwatcher as bw
-import src.birdwatcher.movementdetection as md
+import birdwatcher as bw
+import birdwatcher.movementdetection as md
 
 
 settings = {

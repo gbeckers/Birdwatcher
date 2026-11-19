@@ -5,8 +5,8 @@ import shutil
 import numpy as np
 from numpy.testing import assert_array_equal
 
-import src.birdwatcher as bw
-from src.birdwatcher.frames import Frames, FramesColor, framecolor, framegray
+import birdwatcher as bw
+from birdwatcher.frames import Frames, FramesColor, framecolor, framegray
 
 
 colorlist = [

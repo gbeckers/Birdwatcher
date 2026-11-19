@@ -8,7 +8,7 @@ from pathlib import Path
 
 import numpy as np
 
-import src.birdwatcher.utils as utils
+import birdwatcher.utils as utils
 
 
 class TestRoiToNpIndex(unittest.TestCase):
