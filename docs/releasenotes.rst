@@ -1,16 +1,18 @@
 Release notes
 =============
 
-Main branch
------------
+Version 0.6.1
+-------------
 
 - VideoFileStream and VideoFile attributes are more robust to missing stream information provided by ffprobe
 - Documentation improvements
 - Switched from develop / master branch system to main branch system with frequent PR merges
 - Fixes for a number of minor inconsistencies or other problems in code
+- Fixes problem opencv 5.x findnonzero returning array with different shape than 4.x
+- add pip in install instructions
 
-Version 0.6
------------
+Version 0.6.0
+-------------
 
 Commits by Gabriel Beckers.
 

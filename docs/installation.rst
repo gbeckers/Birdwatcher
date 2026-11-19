@@ -17,7 +17,7 @@ Python 3 versions may also work.
 
    .. code-block:: bash
 
-     conda create -n mybirdwatcher python=3.14 git=2.51 ffmpeg=8.0.1 numpy=2.4.2 matplotlib=3.10.8 pandas=3.0.0 seaborn=0.13.2
+     conda create -n mybirdwatcher python=3.14 git=2.51 ffmpeg=8.0.1 numpy=2.4.2 matplotlib=3.10.8 pandas=3.0.0 seaborn=0.13.2 pip
 
 #. Switch to this new environment:
 
