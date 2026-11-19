@@ -50,4 +50,6 @@ jobs:
         pytest --cov=birdwatcher --cov-report=xml --cov-config=.coveragerc
     - uses: codecov/codecov-action@v5
       with:
+        token: ${{ secrets.CODECOV_TOKEN }}
+        fail_ci_if_error: true
         verbose: true # optional (default = false)
