@@ -1,0 +1,31 @@
+cff-version: 1.2.0
+message: "If you use Birdwatcher in your research, please cite this software."
+type: software
+
+title: "Birdwatcher: A Python computer vision library for animal behavior"
+
+abstract: >
+  Birdwatcher is a Python library for analyzing animal
+  behavior using computer vision. It provides tools
+  for movement detection, background subtraction,
+  video processing, and behavioral data analysis.
+
+authors:
+  - family-names: Beckers
+    given-names: Gabriel
+    affiliation: Utrecht University
+
+  - family-names: Mol
+    given-names: Carien
+    affiliation: Utrecht University
+
+repository-code: "https://github.com/gbeckers/Birdwatcher"
+
+license: BSD-3-Clause
+
+keywords:
+  - animal behavior
+  - computer vision
+  - movement detection
+  - Python
+  - behavioral analysis
