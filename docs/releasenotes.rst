@@ -6,9 +6,12 @@ Main branch
 
 - add CITATION.cff file for Zenodo
 - more information on versions of dependencies saved as metadata coordinate arrays
+- add more tests (utils.py and movementdetection.py)
 
 Version 0.6.1
 -------------
+
+Commits by Gabriel Beckers and Carien Mol
 
 - VideoFileStream and VideoFile attributes are more robust to missing stream information provided by ffprobe
 - Documentation improvements

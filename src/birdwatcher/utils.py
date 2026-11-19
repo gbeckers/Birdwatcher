@@ -123,7 +123,7 @@ def progress(count: int, total: int, status: str = "") -> None:
     sys.stdout.flush()
 
 
-def print_dirstructure(dirpath: str) -> None:
+def print_dirstructure(dirpath: str | pathlib.Path) -> None:
     """Prints the hierarchical structure of directories, starting at `dirpath`
 
     Parameters
@@ -132,14 +132,14 @@ def print_dirstructure(dirpath: str) -> None:
         The top-level directory to start at.
 
     """
+    dirpath = str(dirpath)
     for root, dirs, files in os.walk(dirpath):
         level = root.replace(dirpath, "").count(os.sep)
         indent = " " * 4 * (level)
         print(f"{indent}{os.path.basename(root)}/")
         subindent = " " * 4 * (level + 1)
         for f in files:
-            if pathlib.Path(f).is_dir():
-                print(f"{subindent}{f}")
+            print(f"{subindent}{f}")
 
 
 def walk_paths(dirpath: str | pathlib.Path, extension=".*") -> Generator[pathlib.Path, None, None]:
