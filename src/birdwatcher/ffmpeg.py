@@ -10,9 +10,12 @@ It is easier to compile or find specific versions of FFmpeg than of OpenCV.
 
 """
 
+import codecs
 import json
 import subprocess
+import sys
 import re
+import threading
 import warnings
 import functools
 from dataclasses import dataclass
@@ -108,6 +111,56 @@ def run_ffprobe_json(args: list[str]) -> dict[str, Any]:
     return json.loads(result.stdout)
 
 
+def _effective_loglevel(loglevel: str) -> str:
+    """Returns the loglevel to pass to ffmpeg.
+
+    FFmpeg's stderr is always captured, so that its error messages can be
+    included in an `FFmpegError`. A user-requested 'quiet' therefore runs
+    ffmpeg at 'error' level; that output is captured but not echoed.
+
+    """
+    _check_loglevelarg(loglevel)
+    return "error" if loglevel == "quiet" else loglevel
+
+
+def _echo_stderr(text: str, loglevel: str) -> None:
+    """Prints captured ffmpeg stderr output, unless loglevel is 'quiet'."""
+    if text and loglevel != "quiet":
+        sys.stderr.write(text)
+        sys.stderr.flush()
+
+
+class _StderrReader(threading.Thread):
+    """Drains a subprocess's stderr in a background thread.
+
+    Without this, ffmpeg can block on a full stderr pipe while we block on
+    reading its stdout or writing its stdin, which deadlocks both processes.
+    Output is optionally echoed to sys.stderr, and the last `maxbytes` are
+    kept for error reporting.
+
+    """
+
+    def __init__(self, stream, loglevel: str, maxbytes: int = 65536) -> None:
+        super().__init__(daemon=True)
+        self._stream = stream
+        self._loglevel = loglevel
+        self._maxbytes = maxbytes
+        self._buffer = bytearray()
+        self._decoder = codecs.getincrementaldecoder("utf-8")(errors="replace")
+
+    def run(self) -> None:
+        while chunk := self._stream.read1(4096):
+            _echo_stderr(self._decoder.decode(chunk), self._loglevel)
+            self._buffer += chunk
+            if len(self._buffer) > self._maxbytes:
+                del self._buffer[: -self._maxbytes]
+
+    def text(self) -> str:
+        """Waits until stderr is closed and returns the captured output."""
+        self.join()
+        return self._buffer.decode("utf-8", errors="replace")
+
+
 def arraytovideo(
     frames,
     filepath: str | Path,
@@ -158,7 +211,7 @@ def arraytovideo(
     See ffmpeg documentation for more information.
 
     """
-    _check_loglevelarg(loglevel)
+    ffmpegloglevel = _effective_loglevel(loglevel)
     frame, framegen = peek_iterable(frames)
     height, width, *_ = frame.shape
     filepath = Path(filepath)
@@ -184,7 +237,7 @@ def arraytovideo(
         str(ffmpegpath),
         #'-hwaccel',
         "-loglevel",
-        loglevel,
+        ffmpegloglevel,
         "-f",
         "rawvideo",
         "-vcodec",
@@ -210,35 +263,44 @@ def arraytovideo(
         outwidth, outheight = scale
         args.extend(["-vf", f"scale={outwidth}:{outheight}"])
     args.extend(["-y", str(filepath)])
-    p = None
+    p = subprocess.Popen(
+        args,
+        stdin=subprocess.PIPE,
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.PIPE,
+    )
+    stderrreader = _StderrReader(p.stderr, loglevel=loglevel)
+    stderrreader.start()
     try:
-        p = subprocess.Popen(
-            args,
-            stdin=subprocess.PIPE,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-        )
+        pipebroken = False
         for frame in framegen:
             if frame.dtype != np.uint8:
                 raise TypeError("Frames must have dtype uint8")
             if not frame.flags["C_CONTIGUOUS"]:
                 frame = np.ascontiguousarray(frame)
-            p.stdin.write(frame.tobytes())
-        p.stdin.close()
-        p.stdin = None
-        stdout, stderr = p.communicate()
-        if p.returncode != 0:
+            try:
+                p.stdin.write(frame.tobytes())
+            except OSError:
+                # ffmpeg exited early (BrokenPipeError on POSIX, EINVAL on
+                # Windows); its own error message is reported below.
+                pipebroken = True
+                break
+        try:
+            p.stdin.close()
+        except OSError:
+            pipebroken = True
+        p.wait()
+        if p.returncode != 0 or pipebroken:
             raise FFmpegError(
                 cmd=args,
                 returncode=p.returncode,
-                stdout=stdout.decode("utf-8", errors="replace"),
-                stderr=stderr.decode("utf-8", errors="replace"),
+                stderr=stderrreader.text(),
             )
-    except Exception:
-        if p is not None:
+    finally:
+        if p.poll() is None:
             p.kill()
             p.wait()
-        raise
+        stderrreader.join()
     return Path(filepath)
 
 
@@ -318,9 +380,11 @@ def iterread_videofile(
 
     """
     # frameshape, framesize, frameheight, framewidth, pix_fmt
-    _check_loglevelarg(loglevel)
-    frameproperties = _get_frameproperties(filepath=filepath, color=color)
-    args = [str(ffmpegpath), "-loglevel", loglevel]
+    ffmpegloglevel = _effective_loglevel(loglevel)
+    frameproperties = _get_frameproperties(
+        filepath=filepath, color=color, streamnumber=streamnumber
+    )
+    args = [str(ffmpegpath), "-loglevel", ffmpegloglevel]
 
     if startframe is not None:  # overrides startat
         args.extend(
@@ -352,9 +416,13 @@ def iterread_videofile(
     ]
 
     p = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    stderrreader = _StderrReader(p.stderr, loglevel=loglevel)
+    stderrreader.start()
     try:
         frameno = 0
         while True:
+            if nframes is not None and frameno >= nframes:
+                break
             data = p.stdout.read(frameproperties.size)
             if len(data) < frameproperties.size:
                 if len(data) > 0:
@@ -365,16 +433,13 @@ def iterread_videofile(
                     )
                 # Natural EOF: surface ffmpeg failures so callers see a real
                 # error instead of a silently empty/truncated iterator.
-                stderr_data = p.stderr.read() if p.stderr is not None else b""
                 p.wait()
                 if p.returncode != 0:
                     raise FFmpegError(
                         cmd=args,
                         returncode=p.returncode,
-                        stderr=stderr_data.decode("utf-8", errors="replace"),
+                        stderr=stderrreader.text(),
                     )
-                break
-            if nframes is not None and frameno >= nframes:
                 break
             yield np.frombuffer(data, dtype=np.uint8).reshape(frameproperties.shape)
             frameno += 1
@@ -382,6 +447,8 @@ def iterread_videofile(
         if p.poll() is None:
             p.kill()
             p.wait()
+        p.stdout.close()
+        stderrreader.join()
 
 
 def count_frames(
@@ -415,12 +482,14 @@ def get_frame(
     ffmpegpath: str | Path = "ffmpeg",
     loglevel: str = "quiet",
 ) -> npt.NDArray[np.uint8]:
-    _check_loglevelarg(loglevel)
-    frameproperties = _get_frameproperties(filepath=filepath, color=color)
+    ffmpegloglevel = _effective_loglevel(loglevel)
+    frameproperties = _get_frameproperties(
+        filepath=filepath, color=color, streamnumber=streamnumber
+    )
     args = [
         str(ffmpegpath),
         "-loglevel",
-        loglevel,
+        ffmpegloglevel,
         "-i",
         str(filepath),
         "-map",
@@ -439,17 +508,15 @@ def get_frame(
         "rawvideo",
         "pipe:1",
     ]
-    with subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE) as p:
-        data = p.stdout.read(frameproperties.size)
-        stderr_data = p.stderr.read() if p.stderr is not None else b""
-        p.wait()
-        if p.returncode != 0 or len(data) != frameproperties.size:
-            raise FFmpegError(
-                cmd=args,
-                returncode=p.returncode if p.returncode is not None else -1,
-                stderr=stderr_data.decode("utf-8", errors="replace"),
-            )
-        return np.frombuffer(data, dtype=np.uint8).reshape(frameproperties.shape)
+    # subprocess.run reads stdout and stderr concurrently, so ffmpeg can't
+    # block on a full stderr pipe.
+    result = subprocess.run(args, capture_output=True)
+    stderr = result.stderr.decode("utf-8", errors="replace")
+    _echo_stderr(stderr, loglevel)
+    data = result.stdout
+    if result.returncode != 0 or len(data) != frameproperties.size:
+        raise FFmpegError(cmd=args, returncode=result.returncode, stderr=stderr)
+    return np.frombuffer(data, dtype=np.uint8).reshape(frameproperties.shape)
 
 
 def get_frameat(
@@ -492,6 +559,11 @@ def _get_frameproperties(
     videostreamsinfo = tuple(
         stream for stream in vsi if stream["codec_type"] == "video"
     )
+    if not 0 <= streamnumber < len(videostreamsinfo):
+        raise ValueError(
+            f'No video stream number {streamnumber} in "{filepath}" '
+            f"({len(videostreamsinfo)} video stream(s) available)"
+        )
     height = videostreamsinfo[streamnumber]["height"]
     width = videostreamsinfo[streamnumber]["width"]
     if color:
@@ -528,10 +600,14 @@ def _check_loglevelarg(loglevelarg: str) -> None:
 # Audio
 
 
-def detect_audio_codec(filepath: str | Path, streamnumber: int = 0) -> str | None:
-    """Detect the audio codec used in the video file."""
+def _audiostreaminfo(
+    filepath: str | Path,
+    streamnumber: int = 0,
+    ffprobepath: str | Path = "ffprobe",
+) -> dict[str, Any] | None:
+    """Returns ffprobe info of an audio stream, or None if it doesn't exist."""
     args = [
-        "ffprobe",
+        str(ffprobepath),
         "-v",
         "quiet",
         "-print_format",
@@ -541,12 +617,35 @@ def detect_audio_codec(filepath: str | Path, streamnumber: int = 0) -> str | Non
         f"a:{streamnumber}",
         str(filepath),
     ]
-    result = run_ffprobe_json(args)
-    streams = result.get("streams", [])
-    if not streams:
-        return None
-    else:
-        return streams[0]["codec_name"]
+    streams = run_ffprobe_json(args).get("streams", [])
+    return streams[0] if streams else None
+
+
+def detect_audio_codec(
+    filepath: str | Path,
+    streamnumber: int = 0,
+    ffprobepath: str | Path = "ffprobe",
+) -> str | None:
+    """Detect the audio codec used in an audio stream of a video file.
+
+    Parameters
+    ----------
+    filepath : str or pathlib.Path
+        Path to the video file.
+    streamnumber : int, default=0
+        Which audio stream to inspect.
+    ffprobepath : str or pathlib.Path, optional
+        Path to ffprobe executable. Default is `ffprobe`, which means it should
+        be in the system path.
+
+    Returns
+    -------
+    str or None
+        Codec name, or None if there is no such audio stream.
+
+    """
+    info = _audiostreaminfo(filepath, streamnumber, ffprobepath)
+    return None if info is None else info["codec_name"]
 
 
 def supported_encoders(kind: str, ffmpegpath: str | None = "ffmpeg") -> set[str]:
@@ -566,25 +665,18 @@ def supported_encoders(kind: str, ffmpegpath: str | None = "ffmpeg") -> set[str]
 
     """
 
-    _AUDIO_ENCODER_RE = re.compile(
+    _ENCODER_RE = re.compile(
         rf"^\s*{re.escape(kind)}\S*\s+([^\s]+)",
         re.MULTILINE,
     )
 
     args = [str(ffmpegpath), "-hide_banner", "-encoders"]
     result = run_ffmpeg(args)
-    if result.returncode != 0:
-        raise FFmpegError(
-            cmd=result.args,
-            returncode=result.returncode,
-            stdout=result.stdout,
-            stderr=result.stderr,
-        )
-    codecs = {
-        match.group(1).lower() for match in _AUDIO_ENCODER_RE.finditer(result.stdout)
+    encoders = {
+        match.group(1).lower() for match in _ENCODER_RE.finditer(result.stdout)
     }
-    codecs.discard("=")
-    return codecs
+    encoders.discard("=")
+    return encoders
 
 
 supported_audio_codecs = functools.partial(supported_encoders, "A")
@@ -599,8 +691,9 @@ def extract_audio(
     codec: str = "copy",
     channel: int | None = None,
     streamnumber: int = 0,
-    ffmpegpath="ffmpeg",
+    ffmpegpath: str | Path = "ffmpeg",
     loglevel: str = "quiet",
+    ffprobepath: str | Path = "ffprobe",
 ) -> Path:
     """Extract audio as wav file.
 
@@ -624,7 +717,10 @@ def extract_audio(
         default 'copy' to avoid the possibility of introducing artefacts, unless
         you know what you are doing.
     channel : int, default=None
-        Channel number to extract. The default None will extract all channels.
+        Channel number to extract, counting from 1 (so 1 is the first
+        channel). The default None will extract all channels. Extracting a
+        single channel requires re-encoding, so it cannot be combined with
+        `codec='copy'`; specify an audio codec such as 'pcm_s24le'.
     streamnumber : int, default=0
         Which audio stream to extract.
     ffmpegpath : str or pathlib.Path, optional
@@ -634,6 +730,9 @@ def extract_audio(
                 'verbose', 'debug' ,'trace'}, optional
         Level of info that ffmpeg should print to terminal. Default is
         'quiet'.
+    ffprobepath : str or pathlib.Path, optional
+        Path to ffprobe executable. Default is `ffprobe`, which means it should
+        be in the system path.
 
     Returns
     -------
@@ -642,15 +741,41 @@ def extract_audio(
 
     """
     filepath = Path(filepath)
+    ffmpegloglevel = _effective_loglevel(loglevel)
+    if channel is not None:
+        if codec == "copy":
+            raise ValueError(
+                "Extracting a single channel requires re-encoding, which is "
+                "not possible with codec='copy'. Specify an audio codec, "
+                "e.g. codec='pcm_s24le'."
+            )
+        if channel < 1:
+            raise ValueError(
+                f"`channel` should be 1 or higher (channels are numbered "
+                f"from 1), got {channel}"
+            )
+    streaminfo = _audiostreaminfo(
+        filepath, streamnumber=streamnumber, ffprobepath=ffprobepath
+    )
+    if streaminfo is None:
+        raise NoAudioStreamError(
+            f'No audio stream number {streamnumber} in file "{filepath}"'
+        )
+    inputcodec = streaminfo["codec_name"]
+    nchannels = streaminfo.get("channels")
+    # ffmpeg's pan filter silently outputs silence for nonexisting channels
+    if channel is not None and nchannels is not None and channel > nchannels:
+        raise ValueError(
+            f"`channel` is {channel}, but audio stream {streamnumber} has "
+            f"only {nchannels} channel(s)"
+        )
     # The codec name we look up to choose an output extension is not the
     # same as the codec we pass to ffmpeg. When the user asks for stream
     # copy, we still need the input's codec name to pick a sensible
     # extension, but ffmpeg must receive "copy" so that no re-encoding
     # happens.
     if codec == "copy":
-        codec_for_ext = detect_audio_codec(str(filepath))
-        if not codec_for_ext:
-            raise NoAudioStreamError(f'No audio stream in file "{filepath}"')
+        codec_for_ext = inputcodec
     else:
         if codec not in supported_audio_codecs(ffmpegpath=ffmpegpath):
             raise ValueError(f'ffmpeg does not support codec "{codec}"')
@@ -660,11 +785,11 @@ def extract_audio(
     ext = AUDIOCODEC_TO_EXTENSION.get(codec_for_ext)
     outputpath = Path(outputpath)
     if outputpath.suffix:
-        if outputpath.suffix.lower() != ext:
+        if ext is not None and outputpath.suffix.lower() != ext:
             warnings.warn(
                 f'Specified audio extension ("{outputpath.suffix}") is '
                 f'not the same as the default ("{ext}") for this codec '
-                f'("{codec}"). Proceeding anyway.'
+                f'("{codec_for_ext}"). Proceeding anyway.'
             )
     elif ext is not None:
         outputpath = outputpath.with_suffix(ext)
@@ -674,11 +799,10 @@ def extract_audio(
         raise FileExistsError(
             f'"{outputpath}" already exists, use `overwrite` parameter'
         )
-    _check_loglevelarg(loglevel)
     args = [
         str(ffmpegpath),
         "-loglevel",
-        loglevel,
+        ffmpegloglevel,
         "-y",
         "-i",
         str(filepath),
@@ -691,5 +815,6 @@ def extract_audio(
     if channel is not None:
         args += ["-af", f"pan=mono|c0=c{channel - 1}"]
     args += [str(outputpath)]
-    run_ffmpeg(args)
+    result = run_ffmpeg(args)
+    _echo_stderr(result.stderr, loglevel)
     return outputpath

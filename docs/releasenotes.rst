@@ -9,6 +9,9 @@ Main branch
 - add more tests (utils.py, movementdetection.py, videoinput.py, ffmpeg.py)
 - fix codecov badge
 - fix bug returned width and height swap in _get_frameproperties (function wasn't used so far)
+- fix/improve ffmpeg error message handling
+- `iterread_videofile` and `get_frame` now take `streamnumber` into account for frame size
+- improve `extract_audio` channel handling
 
 
 Version 0.6.1

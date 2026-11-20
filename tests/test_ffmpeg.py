@@ -1,7 +1,10 @@
+import io
 import subprocess
 import tempfile
+import threading
 import unittest
 import warnings
+from contextlib import redirect_stderr
 from pathlib import Path
 
 import numpy as np
@@ -49,6 +52,26 @@ def _noiseframes(nframes=10, height=48, width=64, color=True, seed=0):
     rng = np.random.default_rng(seed)
     shape = (height, width, 3) if color else (height, width)
     return [rng.integers(0, 256, size=shape, dtype=np.uint8) for _ in range(nframes)]
+
+
+def _run_with_timeout(testcase, func, timeout=60):
+    """Runs func in a thread and fails the test if it does not finish in
+    time, so that a deadlock fails the test instead of hanging the suite."""
+    result = {}
+
+    def target():
+        try:
+            result["value"] = func()
+        except BaseException as e:
+            result["error"] = e
+
+    t = threading.Thread(target=target, daemon=True)
+    t.start()
+    t.join(timeout)
+    testcase.assertFalse(t.is_alive(), "ffmpeg call appears to be deadlocked")
+    if "error" in result:
+        raise result["error"]
+    return result.get("value")
 
 
 def _gradientframes(nframes=10, height=48, width=64, color=True):
@@ -187,7 +210,41 @@ class TestReadVideo(unittest.TestCase):
 
     def test_iterread_badstream(self):
         gen = birdwatcher.ffmpeg.iterread_videofile(self.path, streamnumber=5)
-        self.assertRaises(FFmpegError, next, gen)
+        self.assertRaises(ValueError, next, gen)
+
+    def test_iterread_verbose_no_deadlock(self):
+        # 'trace' produces far more stderr output than a pipe buffer holds;
+        # it must be drained while frames are read.
+        buf = io.StringIO()
+        with redirect_stderr(buf):
+            n = _run_with_timeout(
+                self,
+                lambda: sum(
+                    1
+                    for _ in birdwatcher.ffmpeg.iterread_videofile(
+                        self.path, nframes=100, loglevel="trace"
+                    )
+                ),
+            )
+        self.assertEqual(n, 100)
+        self.assertGreater(len(buf.getvalue()), 65536)
+
+    def test_iterread_quiet_does_not_echo(self):
+        buf = io.StringIO()
+        with redirect_stderr(buf):
+            list(birdwatcher.ffmpeg.iterread_videofile(self.path, nframes=2))
+        self.assertEqual(buf.getvalue(), "")
+
+    def test_get_frame_badstream(self):
+        self.assertRaises(
+            ValueError, birdwatcher.ffmpeg.get_frame, self.path, 0, streamnumber=1
+        )
+
+    def test_get_frame_verbose_echoes(self):
+        buf = io.StringIO()
+        with redirect_stderr(buf):
+            birdwatcher.ffmpeg.get_frame(self.path, 0, loglevel="info")
+        self.assertIn("Stream", buf.getvalue())
 
     def test_get_frame(self):
         frame = birdwatcher.ffmpeg.get_frame(self.path, 3)
@@ -357,14 +414,38 @@ class TestArrayToVideo(unittest.TestCase):
         )
 
     def test_ffmpeg_failure(self):
-        # A single frame avoids a BrokenPipeError racing the FFmpegError.
-        with self.assertRaises((FFmpegError, BrokenPipeError)):
+        # Enough frames that writing to ffmpeg's stdin fails once it has
+        # exited; this must surface as FFmpegError, not BrokenPipeError.
+        with self.assertRaises(FFmpegError) as cm:
             birdwatcher.ffmpeg.arraytovideo(
-                _gradientframes(1),
+                _gradientframes(200, height=480, width=640),
                 self.tmpdir / "v.mp4",
                 framerate=10,
                 codec="nonexistingcodec",
             )
+        # error message is captured even with the default loglevel='quiet'
+        self.assertIn("nonexistingcodec", cm.exception.stderr)
+
+    def test_verbose_no_deadlock(self):
+        path = self.tmpdir / "verbose.mp4"
+        buf = io.StringIO()
+        with redirect_stderr(buf):
+            _run_with_timeout(
+                self,
+                lambda: birdwatcher.ffmpeg.arraytovideo(
+                    _gradientframes(50), path, framerate=10, loglevel="debug"
+                ),
+            )
+        self.assertEqual(birdwatcher.ffmpeg.count_frames(path), 50)
+        self.assertGreater(len(buf.getvalue()), 65536)
+
+    def test_quiet_does_not_echo(self):
+        buf = io.StringIO()
+        with redirect_stderr(buf):
+            birdwatcher.ffmpeg.arraytovideo(
+                _gradientframes(2), self.tmpdir / "q.mp4", framerate=10
+            )
+        self.assertEqual(buf.getvalue(), "")
 
 
 class TestAudio(unittest.TestCase):
@@ -391,6 +472,14 @@ class TestAudio(unittest.TestCase):
 
     def test_detect_audio_codec_noaudio(self):
         self.assertIsNone(birdwatcher.ffmpeg.detect_audio_codec(self.noaudio))
+
+    def test_detect_audio_codec_ffprobepath(self):
+        self.assertRaises(
+            FileNotFoundError,
+            birdwatcher.ffmpeg.detect_audio_codec,
+            self.avpath,
+            ffprobepath="/nonexisting/ffprobe",
+        )
 
     def test_detect_audio_codec_nostream(self):
         self.assertIsNone(
@@ -490,11 +579,82 @@ class TestAudio(unittest.TestCase):
         )
 
     def test_extract_bad_streamnumber(self):
+        for codec in ("copy", "pcm_s16le"):
+            self.assertRaises(
+                NoAudioStreamError,
+                birdwatcher.ffmpeg.extract_audio,
+                self.avpath,
+                outputpath=self.outdir / "sound",
+                codec=codec,
+                streamnumber=3,
+            )
+
+    def test_extract_channel_with_copy(self):
         self.assertRaises(
-            FFmpegError,
+            ValueError,
+            birdwatcher.ffmpeg.extract_audio,
+            self.avpath,
+            outputpath=self.outdir / "sound",
+            channel=1,
+        )
+
+    def test_extract_channel_zero(self):
+        self.assertRaises(
+            ValueError,
             birdwatcher.ffmpeg.extract_audio,
             self.avpath,
             outputpath=self.outdir / "sound",
             codec="pcm_s16le",
-            streamnumber=3,
+            channel=0,
         )
+
+    def test_extract_channel_too_high(self):
+        # ffmpeg itself silently produces silence for nonexisting channels
+        self.assertRaises(
+            ValueError,
+            birdwatcher.ffmpeg.extract_audio,
+            self.avpath,
+            outputpath=self.outdir / "sound",
+            codec="pcm_s16le",
+            channel=3,
+        )
+
+    def test_extract_suffix_mismatch_names_codec(self):
+        with self.assertWarnsRegex(UserWarning, r'codec \("aac"\)'):
+            birdwatcher.ffmpeg.extract_audio(
+                self.avpath, outputpath=self.outdir / "sound.mka"
+            )
+
+    def test_extract_unknown_codec_ext_no_warning(self):
+        # codecs without a default extension should not warn about one
+        with warnings.catch_warnings():
+            warnings.simplefilter("error")
+            out = birdwatcher.ffmpeg.extract_audio(
+                self.avpath,
+                outputpath=self.outdir / "sound.mka",
+                codec="pcm_u8",
+            )
+        self.assertTrue(out.exists())
+
+    def test_extract_ffprobepath(self):
+        self.assertRaises(
+            FileNotFoundError,
+            birdwatcher.ffmpeg.extract_audio,
+            self.avpath,
+            outputpath=self.outdir / "sound",
+            ffprobepath=self.outdir / "noffprobe",
+        )
+
+    def test_extract_verbose_echoes(self):
+        buf = io.StringIO()
+        with redirect_stderr(buf):
+            birdwatcher.ffmpeg.extract_audio(
+                self.avpath, outputpath=self.outdir / "sound", loglevel="info"
+            )
+        self.assertIn("Stream", buf.getvalue())
+
+    def test_extract_videofile_method(self):
+        out = bw.VideoFile(self.avpath).extract_audio(
+            outputpath=self.outdir / "sound", codec="pcm_s16le", channel=2
+        )
+        self.assertEqual(self._audiostreams(out)[0]["channels"], 1)

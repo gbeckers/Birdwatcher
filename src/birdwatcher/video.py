@@ -190,6 +190,7 @@ class VideoFile:
         ffmpegpath: str | Path = "ffmpeg",
         loglevel: str = "quiet",
         streamnumber: int = 0,
+        ffprobepath: str | Path = "ffprobe",
     ) -> Path:
         """Extract audio to audio file.
 
@@ -211,8 +212,10 @@ class VideoFile:
             default 'copy' to avoid the possibility of introducing artefacts, unless
             you know what you are doing.
         channel : int, default=None
-            Channel number to extract. The default None will extract all
-            channels.
+            Channel number to extract, counting from 1 (so 1 is the first
+            channel). The default None will extract all channels. Extracting
+            a single channel requires re-encoding, so it cannot be combined
+            with `codec='copy'`; specify an audio codec such as 'pcm_s24le'.
         ffmpegpath : str or pathlib.Path, optional
             Path to ffmpeg executable. Default is `ffmpeg`, which means it
             should be in the system path.
@@ -223,6 +226,14 @@ class VideoFile:
         streamnumber : int, default=0
             Which audio stream to extract. Use the `audiostreamsinfo`
             attribute to see which audio streams are available.
+        ffprobepath : str or pathlib.Path, optional
+            Path to ffprobe executable. Default is `ffprobe`, which means it
+            should be in the system path.
+
+        Returns
+        -------
+        pathlib.Path
+            The path of the generated audio file.
 
         """
         filepath = self._filepath
@@ -235,6 +246,7 @@ class VideoFile:
             ffmpegpath=ffmpegpath,
             loglevel=loglevel,
             streamnumber=streamnumber,
+            ffprobepath=ffprobepath,
         )
 
 
