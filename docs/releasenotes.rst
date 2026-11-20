@@ -1,8 +1,8 @@
 Release notes
 =============
 
-Main branch
------------
+Version 0.6.2
+-------------
 
 - add CITATION.cff file for Zenodo
 - more information on versions of dependencies saved as metadata coordinate arrays
