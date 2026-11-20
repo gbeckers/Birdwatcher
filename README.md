@@ -2,7 +2,7 @@
 
 [![Github CI Status](https://github.com/gbeckers/Birdwatcher/actions/workflows/python_package.yml/badge.svg)](https://github.com/gbeckers/Birdwatcher/actions/workflows/python_package.yml)
 [![PyPI version](https://img.shields.io/badge/pypi-0.6.2-orange.svg)](https://pypi.org/project/birdwatcher/)
-[![Docs Status](https://readthedocs.org/projects/birdwatcher/badge/?version=latest)](https://birdwatcher.readthedocs.io/en/latest/)
+[![Docs Status](https://app.readthedocs.org/projects/birdwatcher/badge/?version=latest)](https://birdwatcher.readthedocs.io/en/latest/)
 [![Repo Status](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
 [![Codecov status](https://codecov.io/gh/gbeckers/Birdwatcher/branch/main/graph/badge.svg?token=829BH0NSVM)](https://codecov.io/gh/gbeckers/Birdwatcher)
 [![DOI](https://zenodo.org/badge/156536373.svg)](https://doi.org/10.5281/zenodo.24388855)
