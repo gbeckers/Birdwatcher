@@ -49,6 +49,15 @@ def _check_writable(frame: npt.NDArray):
         return frame
 
 
+def _lookup_option(options: dict[str, int], value: str, name: str) -> int:
+    try:
+        return options[value]
+    except KeyError:
+        raise ValueError(
+            f"`{value}` is not a valid {name}; choose from {list(options)}"
+        ) from None
+
+
 def frameiterator(func: Callable[..., Iterator[npt.NDArray]]) -> Callable[..., Frames]:
     @wraps(func)
     def wrapper(*args: Any, **kwargs: Any) -> Frames:
@@ -622,9 +631,7 @@ class Frames:
             "tophat": cv.MORPH_TOPHAT,
             "blackhat": cv.MORPH_BLACKHAT,
         }
-        morphnum = morphtypes.get(morphtype, None)
-        if morphnum is None:
-            raise ValueError(f"`{morphtype}` is not a valid morphtype")
+        morphnum = _lookup_option(morphtypes, morphtype, "morphtype")
         kernel = np.ones((kernelsize, kernelsize), np.uint8)
         for frame in self._frames:
             yield cv.morphologyEx(frame, morphnum, kernel, iterations=iterations)
@@ -797,7 +804,7 @@ class Frames:
             "otsu": cv.THRESH_OTSU,
             "triangle": cv.THRESH_TRIANGLE,
         }
-        threshtype = threshtypes[threshtype]
+        threshtype = _lookup_option(threshtypes, threshtype, "threshtype")
         for frame in self._frames:
             yield cv.threshold(
                 src=frame, thresh=thresh, maxval=maxval, type=threshtype
@@ -836,7 +843,7 @@ class Frames:
             "cubic": cv.INTER_CUBIC,
             "lanczos4": cv.INTER_LANCZOS4,
         }
-        interpolation = interptypes[interpolation]
+        interpolation = _lookup_option(interptypes, interpolation, "interpolation")
         for frame in self._frames:
             yield cv.resize(
                 src=frame, dsize=dsize, fx=0, fy=0, interpolation=interpolation
@@ -879,7 +886,7 @@ class Frames:
             "cubic": cv.INTER_CUBIC,
             "lanczos4": cv.INTER_LANCZOS4,
         }
-        interpolation = interptypes[interpolation]
+        interpolation = _lookup_option(interptypes, interpolation, "interpolation")
         for frame in self._frames:
             yield cv.resize(
                 src=frame, dsize=(0, 0), fx=fx, fy=fy, interpolation=interpolation
@@ -910,23 +917,32 @@ class Frames:
             the parent-child relationship between contours.
 
         """
-        retrmode = {
-            "tree": cv.RETR_TREE,
-            "external": cv.RETR_EXTERNAL,
-            "list": cv.RETR_LIST,
-            "ccomp": cv.RETR_CCOMP,
-            "floodfill": cv.RETR_FLOODFILL,
-        }[retrmode]
-        apprmethod = {
-            "none": cv.CHAIN_APPROX_NONE,
-            "simple": cv.CHAIN_APPROX_SIMPLE,
-            "tc89_l1": cv.CHAIN_APPROX_TC89_L1,
-            "tc89_kcos": cv.CHAIN_APPROX_TC89_KCOS,
-        }[apprmethod]
-        for frame in self._frames:
-            yield cv.findContours(
-                frame, mode=retrmode, method=apprmethod, offset=offset
-            )
+        mode = _lookup_option(
+            {
+                "tree": cv.RETR_TREE,
+                "external": cv.RETR_EXTERNAL,
+                "list": cv.RETR_LIST,
+                "ccomp": cv.RETR_CCOMP,
+                "floodfill": cv.RETR_FLOODFILL,
+            },
+            retrmode,
+            "retrmode",
+        )
+        method = _lookup_option(
+            {
+                "none": cv.CHAIN_APPROX_NONE,
+                "simple": cv.CHAIN_APPROX_SIMPLE,
+                "tc89_l1": cv.CHAIN_APPROX_TC89_L1,
+                "tc89_kcos": cv.CHAIN_APPROX_TC89_KCOS,
+            },
+            apprmethod,
+            "apprmethod",
+        )
+        # Validate eagerly (above), then return a lazy generator.
+        return (
+            cv.findContours(frame, mode=mode, method=method, offset=offset)
+            for frame in self._frames
+        )
 
     def calc_meanframe(self, dtype: str | None = None) -> npt.NDArray[Any]:
         if self.nchannels == 1:
