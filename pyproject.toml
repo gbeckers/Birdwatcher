@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name="birdwatcher"
-version = "0.6.1"
+version = "0.6.2"
 authors = [
   {name = "Gabriel Beckers", email = "g.j.l.beckers@uu.nl"},
   {name = "Carien Mol", email = "c.mol@uu.nl"}
