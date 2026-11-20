@@ -16,3 +16,8 @@ output/
 
 # Docs
 docs/_build
+# Virtual environments
+venv/
+
+# Coverage
+.coverage
