@@ -8,7 +8,7 @@
 [![DOI](https://zenodo.org/badge/156536373.svg)](https://doi.org/10.5281/zenodo.24388855)
 
 <p align="left">
-  <img src="https://github.com/gbeckers/Birdwatcher/blob/main/videos/banner.gif">
+  <img src="https://raw.githubusercontent.com/gbeckers/Birdwatcher/main/videos/banner.gif">
 </p>
 
 **Birdwatcher** is a Python computer vision library for analyzing animal
