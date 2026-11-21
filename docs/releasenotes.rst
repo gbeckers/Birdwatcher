@@ -1,8 +1,17 @@
 Release notes
 =============
 
+Main
+----
+
+- add tests for frames.py and plotting.py
+- fix `ax` parameter and default height in `imshow_frame`
+
+
 Version 0.6.2
 -------------
+
+Commits by Gabriel Beckers
 
 - add CITATION.cff file for Zenodo
 - more information on versions of dependencies saved as metadata coordinate arrays

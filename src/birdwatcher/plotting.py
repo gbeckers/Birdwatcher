@@ -28,8 +28,9 @@ def imshow_frame(
         Provide if you already have an axes in which the frame should be
         plotted.
     figsize : (float, float), optional
-        Width, height in inches. If not provided, defaults to
-        rcParams["figure.figsize"] = [6.4, 4.8].
+        Width, height in inches. Only used when a new figure is created. If
+        not provided, the width is 14 inches and the height follows the
+        aspect ratio of the frame.
     draw_rectangle : (int, int, int, int), optional
         Draw a rectangle on image. h1, h2, w1, w2. Origin is left top.
 
@@ -39,12 +40,17 @@ def imshow_frame(
         The matplotlib Figure and Axes objects.
 
     """
-    if fig is None:
-        w = 14
-        h = frame.shape[1] * w / frame.shape[0]
-        fig, ax = plt.subplots(figsize=(w, h))
     if ax is None:
-        fig.add_axes()
+        if fig is None:
+            if figsize is None:
+                w = 14
+                h = frame.shape[0] * w / frame.shape[1]
+                figsize = (w, h)
+            fig, ax = plt.subplots(figsize=figsize)
+        else:
+            ax = fig.add_subplot()
+    elif fig is None:
+        fig = ax.figure
     if cmap is None:
         if frame.ndim == 3:
             cmap = None
