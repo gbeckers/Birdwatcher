@@ -2,8 +2,6 @@
 Development
 ###########
 
-.. contents:: :local:
-
 Contributing
 ============
 

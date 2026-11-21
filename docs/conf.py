@@ -21,7 +21,6 @@ import os
 import sys
 
 sys.path.insert(0, os.path.abspath("."))
-import pydata_sphinx_theme
 
 
 # -- General configuration ------------------------------------------------
@@ -90,8 +89,8 @@ todo_include_todos = False
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-# html_theme = 'default'
-html_theme = "pydata_sphinx_theme"
+html_theme = "furo"
+html_title = f"Birdwatcher {release}"
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
@@ -103,18 +102,6 @@ html_theme = "pydata_sphinx_theme"
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ["_static", "recipes/images"]
-
-# Custom sidebar templates, must be a dictionary that maps document names
-# to template names.
-#
-# This is required for the alabaster theme
-# refs: http://alabaster.readthedocs.io/en/latest/installation.html#sidebars
-html_sidebars = {
-    "**": [
-        "relations.html",  # needs 'show_related': True theme option to display
-        "searchbox.html",
-    ]
-}
 
 
 # -- Options for HTMLHelp output ------------------------------------------
