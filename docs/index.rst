@@ -92,5 +92,5 @@ Indices and tables
    :target: https://pypi.org/project/birdwatcher/
 .. |Docs Status| image:: https://readthedocs.org/projects/birdwatcher/badge/?version=latest
    :target: https://birdwatcher.readthedocs.io/en/latest/
-.. |Codecov status| image:: https://codecov.io/gh/gbeckers/Birdwatcher/branch/master/graph/badge.svg?token=829BH0NSVM
+.. |Codecov status| image:: https://codecov.io/gh/gbeckers/Birdwatcher/branch/main/graph/badge.svg?token=829BH0NSVM
    :target: https://codecov.io/gh/gbeckers/Birdwatcher
