@@ -1,10 +1,12 @@
 Release notes
 =============
 
-Main
-----
+Version 0.6.3
+-------------
 
-- add tests for frames.py and plotting.py
+Commits by Gabriel Beckers
+
+- add more tests for frames, plotting, coordinate arrays and parameter selection
 - fix `ax` parameter and default height in `imshow_frame`
 
 
